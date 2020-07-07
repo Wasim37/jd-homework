@@ -19,4 +19,3 @@ print("NumPy version: {}".format(np.__version__))
 print("SciPy version: {}".format(sp.__version__))
 print("IPython version: {}".format(IPython.__version__))
 print("scikit-learn version: {}".format(sklearn.__version__))
-
