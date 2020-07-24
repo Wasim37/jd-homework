@@ -3,28 +3,33 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 12:31:25
-@LastEditTime: 2020-07-18 00:14:52
+@LastEditTime: 2020-07-19 14:07:35
 @LastEditors: Please set LastEditors
 @Description: Train the model.
 @FilePath: /JD_project_2/baseline/model/train.py
 '''
 
-
-import torch
-from model import Seq2seq
+import pickle
 import os
+import sys
+import pathlib
+
 import numpy as np
-from dataset import SampleDataset
 from torch import optim
 from torch.utils.data import DataLoader
-import pickle
+import torch
 from torch.nn.utils import clip_grad_norm_
-from dataset import collate_fn
 from tqdm import tqdm
-from evaluate import evaluate
-import config
 from tensorboardX import SummaryWriter
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+
 from dataset import PairDataset
+from model import Seq2seq
+import config
+from evaluate import evaluate
+from dataset import collate_fn, SampleDataset
 
 
 def train(dataset, val_dataset, v, start_epoch=0):
@@ -74,10 +79,12 @@ def train(dataset, val_dataset, v, start_epoch=0):
     writer = 
     # tqdm: A tool for drawing progress bars during training.
     with tqdm(total=config.epochs) as epoch_progress:
+        # Loop for epochs.
         for epoch in range(start_epoch, config.epochs):
             batch_losses = []  # Get loss of each batch.
             with tqdm(total=len(train_dataloader) // config.batch_size)\
                     as batch_progress:
+                # Lopp for batches.
                 for batch, data in enumerate(tqdm(train_dataloader)):
                     x, y, x_len, y_len, oov, len_oovs = data
                     assert not np.any(np.isnan(x.numpy()))
@@ -101,7 +108,7 @@ def train(dataset, val_dataset, v, start_epoch=0):
                     # Update weights.
 
                     # Output and record epoch loss every 100 batches.
-                    if (batch+1 % 100) == 0:
+                    if (batch % 100) == 0:
                         batch_progress.set_description(f'Epoch {epoch}')
                         batch_progress.set_postfix(Batch=batch,
                                                    Loss=loss.item())
@@ -118,7 +125,7 @@ def train(dataset, val_dataset, v, start_epoch=0):
             epoch_progress.set_description(f'Epoch {epoch}')
             epoch_progress.set_postfix(Loss=epoch_loss)
             epoch_progress.update()
-
+            # Calculate evaluation loss.
             avg_val_loss = evaluate(model, val_data, epoch)
 
             print('training loss:{}'.format(epoch_loss),

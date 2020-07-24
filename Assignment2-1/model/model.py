@@ -3,17 +3,23 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 11:00:51
-@LastEditTime: 2020-07-18 00:31:02
+@LastEditTime: 2020-07-18 16:47:58
 @LastEditors: Please set LastEditors
 @Description: Define the model.
 @FilePath: /JD_project_2/baseline/model/model.py
 '''
 
 
-import torch
 import os
+import sys
+import pathlib
+
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
 import config
 
 
@@ -246,6 +252,8 @@ class Seq2seq(nn.Module):
                                        device=self.DEVICE)
 
     def load_model(self):
+        """Load saved model if there exits one.
+        """        
         if (os.path.exists(config.encoder_save_name)):
             self.encoder = torch.load(config.encoder_save_name)
             self.decoder = torch.load(config.decoder_save_name)

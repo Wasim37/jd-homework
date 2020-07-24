@@ -3,13 +3,14 @@
 '''
 @Author: jby
 @Date: 2020-07-13 14:18:13
-@LastEditTime: 2020-07-17 23:59:25
+@LastEditTime: 2020-07-18 14:17:37
 @LastEditors: Please set LastEditors
 @Description: Define the vocabulary object.
 @FilePath: /JD_project_2/baseline/model/vocab.py
 '''
 
 from collections import Counter
+
 import numpy as np
 
 
@@ -36,9 +37,16 @@ class Vocab(object):
         #          TODO: module 1 task 1          #
         ###########################################
 
-
-
     def load_embeddings(self, file_path: str, dtype=np.float32) -> int:
+        """Load embedding word vector.
+
+        Args:
+            file_path (str): The file path of word vector to load.
+            dtype (numpy dtype, optional): Defaults to np.float32.
+
+        Returns:
+            int: Number of embedded tokens.
+        """
         num_embeddings = 0
         vocab_size = len(self)
         with open(file_path, 'rb') as f:
@@ -46,10 +54,13 @@ class Vocab(object):
                 line = line.split()
                 word = line[0].decode('utf-8')
                 idx = self.word2index.get(word)
+                # Check whether the token is in the vocab.
                 if idx is not None:
                     vec = np.array(line[1:], dtype=dtype)
                     if self.embeddings is None:
+                        # Get embedding dimension.
                         n_dims = len(vec)
+                        # Initialize word vectors.
                         self.embeddings = np.random.normal(
                             np.zeros((vocab_size, n_dims))).astype(dtype)
                         self.embeddings[self.PAD] = np.zeros(n_dims)

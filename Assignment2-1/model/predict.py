@@ -3,19 +3,25 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 11:00:51
-@LastEditTime: 2020-07-18 00:19:03
+@LastEditTime: 2020-07-18 16:48:37
 @LastEditors: Please set LastEditors
 @Description: Generate a summary.
 @FilePath: /JD_project_2/baseline/model/predict.py
 '''
 
-import config
-import torch
-from dataset import PairDataset
-from model import Seq2seq
-from utils import source2ids, outputids2words, Beam, timer, add2heap
-import jieba
+
 import random
+
+import torch
+import jieba
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+
+import config
+from model import Seq2seq
+from dataset import PairDataset
+from utils import source2ids, outputids2words, Beam, timer, add2heap
 
 
 class Predict():
@@ -82,11 +88,9 @@ class Predict():
             decoder_input_t = 
             decoder_word_idx = 
             summary.append(decoder_word_idx)
-            # Replace the indexes of OOV words with the index of OOV token
+            # Replace the indexes of OOV words with the index of UNK token
             # to prevent index-out-of-bound error in the decoder.
-            oov_token = 
-            oov_token = 
-            decoder_input_t = 
+            decoder_input_t = self.replace_oov(decoder_input_t)
 
         return summary
 
@@ -116,10 +120,9 @@ class Predict():
         # Get context vector from attention network.
         context_vector, attention_weights = 
 
-        # Replace the indexes of OOV words with the index of OOV token
+        # Replace the indexes of OOV words with the index of UNK token
         # to prevent index-out-of-bound error in the decoder.
-        oov_token = 
-        decoder_input_t = 
+        decoder_input_t = self.replace_oov(decoder_input_t)
         p_vocab, decoder_states = 
 
         # Calculate log probabilities.
@@ -218,22 +221,22 @@ class Predict():
         Returns:
             str: The final summary.
         """
+        # Do tokenization if the input is raw text.
         if isinstance(text, str) and tokenize:
             text = list(jieba.cut(text))
         x, oov = source2ids(text, self.vocab)
         x = torch.tensor(x).to(self.DEVICE)
         max_oovs = len(oov)
-        oov_token = torch.full(x.shape, self.vocab.UNK).long().to(self.DEVICE)
-        x_copy = torch.where(x > len(self.vocab) - 1, oov_token, x)
+        x_copy = self.replace_oov(x)
         x_copy = x_copy.unsqueeze(0)
         x_padding_masks = torch.ne(x_copy, 0).byte().float()
-        if beam_search:
+        if beam_search:  # Use beam search to decode.
             summary = self.beam_search(x_copy,
                                        max_sum_len=config.max_dec_steps,
                                        beam_width=config.beam_size,
                                        max_oovs=max_oovs,
                                        x_padding_masks=x_padding_masks)
-        else:
+        else:  # Use greedy search to decode.
             summary = self.greedy_search(x_copy,
                                          max_sum_len=config.max_dec_steps,
                                          max_oovs=max_oovs,
@@ -243,6 +246,21 @@ class Predict():
                                   self.vocab)
         return summary.replace('<SOS>', '').replace('<EOS>', '').strip()
 
+    def replace_oov(self, input_t):
+        """Replace oov tokens with <UNK> token in an input tensor.
+
+        Args:
+            input_t (Tensor): The input tensor.
+
+        Returns:
+            Tensor: All oov tokens are replaced with <UNK> token.
+        """        
+        oov_token = torch.full(input_t.shape,
+                               self.vocab.UNK).long().to(self.DEVICE)
+        input_t = torch.where(input_t > len(self.vocab) - 1,
+                              oov_token,
+                              input_t)
+        return input_t
 
 if __name__ == "__main__":
     pred = Predict()

@@ -3,16 +3,16 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 11:07:48
-@LastEditTime: 2020-07-18 00:06:27
+@LastEditTime: 2020-07-18 14:25:15
 @LastEditors: Please set LastEditors
 @Description: Helper functions or classes used for the model.
 @FilePath: /JD_project_2/baseline/model/utils.py
 '''
 
-
-import numpy as np
 import time
 import heapq
+
+import numpy as np
 
 
 def timer(module):
@@ -55,6 +55,14 @@ def count_words(counter, text):
 
 
 def sort_batch_by_len(data_batch):
+    """
+
+    Args:
+        data_batch (Tensor): Batch before sorted.
+
+    Returns:
+        Tensor: Batch after sorted.
+    """
     res = {'x': [],
            'y': [],
            'x_len': [],

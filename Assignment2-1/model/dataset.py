@@ -3,20 +3,24 @@
 '''
 @Author: jby
 @Date: 2020-07-13 11:00:51
-@LastEditTime: 2020-07-18 02:00:02
+@LastEditTime: 2020-07-18 15:40:27
 @LastEditors: Please set LastEditors
 @Description: Define the format of data used in the model.
 @FilePath: /JD_project_2/baseline/model/dataset.py
 '''
-
-
-from typing import Callable
-from utils import simple_tokenizer, count_words
-from vocab import Vocab
-from torch.utils.data import Dataset
-import torch
-from utils import sort_batch_by_len, source2ids
+import sys
+import os
+import pathlib
 from collections import Counter
+from typing import Callable
+
+import torch
+from torch.utils.data import Dataset
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+from utils import simple_tokenizer, count_words, sort_batch_by_len, source2ids
+from vocab import Vocab
 import config
 
 
@@ -40,6 +44,7 @@ class PairDataset(object):
             for i, line in enumerate(f):
                 # Split the source and reference by the <sep> tag.
                 pair = line.strip().split('<sep>')
+                # Check whether there is an actual pair.
                 if len(pair) != 2:
                     print("Line %d of %s is malformed." % (i, filename))
                     print(line)
@@ -150,4 +155,5 @@ def collate_fn(batch):
     x_len = torch.tensor(data_batch["x_len"])
     y_len = torch.tensor(data_batch["y_len"])
     return x_padded, y_padded, x_len, y_len, OOV, len_OOV
+
 
