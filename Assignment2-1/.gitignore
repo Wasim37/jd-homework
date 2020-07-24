@@ -1,3 +1,5 @@
 /model
+/saved_model
+/runs
 *.pdf
 .DS_Store
