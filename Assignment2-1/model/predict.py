@@ -11,17 +11,18 @@
 
 
 import random
-
 import torch
 import jieba
-
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
+import sys
+import pathlib
 
 import config
 from model import Seq2seq
 from dataset import PairDataset
 from utils import source2ids, outputids2words, Beam, timer, add2heap
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
 
 
 class Predict():
@@ -83,7 +84,7 @@ class Predict():
 
             context_vector, attention_weights = self.model.attention(decoder_states, encoder_output, x_padding_masks)
 
-            p_vocab, decoder_states = self.model.decoder(decoder_input_t.unsqueeze(1), decoder_states, encoder_output)
+            p_vocab, decoder_states = self.model.decoder(decoder_input_t.unsqueeze(1), decoder_states, encoder_output, context_vector)
             # Get next token with maximum probability.
             decoder_input_t = torch.argmax(p_vocab, dim=1).to(self.DEVICE)
             decoder_word_idx = decoder_input_t.item()
@@ -114,7 +115,7 @@ class Predict():
         ###########################################
 
         # use decoder to generate vocab distribution for the next token
-        decoder_input_t = torch.tensor(beam.tokens[-1].resjape(1, -1))
+        decoder_input_t = torch.tensor(beam.tokens[-1]).reshape(1, -1)
         decoder_input_t = decoder_input_t.to(self.DEVICE)
 
         # Get context vector from attention network.
@@ -126,8 +127,8 @@ class Predict():
         decoder_input_t = self.replace_oov(decoder_input_t)
         p_vocab, decoder_states = self.model.decoder(decoder_input_t,
                                                      beam.decoder_states,
-                                                     ancoder_output,
-                                                     content_vector)
+                                                     encoder_output,
+                                                     context_vector)
 
         # Calculate log probabilities.
         log_probs = torch.log(p_vocab.squeeze())
@@ -147,7 +148,7 @@ class Predict():
 
         # Extend the current hypo with top k tokens, resulting k new hypos.
         best_k = [
-            beam.extend(x, log_prob[x], decoder_states, attention_weights,
+            beam.extend(x, log_probs[x], decoder_states, attention_weights,
                         beam.max_oovs, beam.encoder_input)
             for x in topk_idx.tolist()
         ]
