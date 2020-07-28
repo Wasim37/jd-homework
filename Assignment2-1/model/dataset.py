@@ -17,8 +17,7 @@ from typing import Callable
 import torch
 from torch.utils.data import Dataset
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 from utils import simple_tokenizer, count_words, sort_batch_by_len, source2ids
 from vocab import Vocab
 import config
@@ -39,8 +38,8 @@ class PairDataset(object):
         self.filename = filename
         self.pairs = []
 
-        with open(filename, 'rt', encoding='utf-8') as f:
-            next(f)
+        with open(curPath + filename, 'rt', encoding='utf-8') as f:
+            # next(f)
             for i, line in enumerate(f):
                 # Split the source and reference by the <sep> tag.
                 pair = line.strip().split('<sep>')
@@ -64,7 +63,7 @@ class PairDataset(object):
                 self.pairs.append((src, tgt))
         print("%d pairs." % len(self.pairs))
 
-    def build_vocab(self, embed_file: str = None) -> Vocab:
+    def build_vocab(self, embed_file: str = None):
         """Build the vocabulary for the data set.
 
         Args:
@@ -87,6 +86,12 @@ class PairDataset(object):
         # Filter the vocabulary by keeping only the top k tokens in terms of
         # word frequncy in the data set, where k is the maximum vocab size set
         # in "config.py".
+
+        word_counts = word_counts.most_common(config.max_vocab_size)
+        words = [word for word, counts in word_counts]
+        vocab.add_words(words)
+        # for word, _ in word_counts.most_common(config.max_vocab_size):
+        #     vocab.add_words([word])
 
         if embed_file is not None:
             count = vocab.load_embeddings(embed_file)

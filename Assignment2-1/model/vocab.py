@@ -36,8 +36,23 @@ class Vocab(object):
         ###########################################
         #          TODO: module 1 task 1          #
         ###########################################
+        # wordIndex = list(range(len(words)))  # 全部word标签
+        # self.word2index = dict(zip(words, wordIndex))  # label的名字对应标签的字典
+        # self.index2word = dict(zip(wordIndex, words))  # label的标签对应名字的字典
+        # for word in words:
+        #     if word not in self.word2index:
+        #         self.word2index[word] = len(self)
+        #         self.index2word[len(self)] = word
+        #         self.word2count[word] = 1
+        #     else:
+        #         self.word2count[word] += 1
+        for word in words:
+            if word not in self.word2index:
+                self.word2index[word] = len(self.index2word)
+                self.index2word.append(word)
+        self.word2count.update(words)
 
-    def load_embeddings(self, file_path: str, dtype=np.float32) -> int:
+    def load_embeddings(self, file_path: str, dtype=np.float32):
         """Load embedding word vector.
 
         Args:

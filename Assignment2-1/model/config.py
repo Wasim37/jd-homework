@@ -18,7 +18,7 @@ embed_size: int = 300
 
 # Data
 max_vocab_size = 20000
-embed_file: Optional[str] = None  # use pre-trained embeddings
+embed_file: Optional[str] = 'D:\\BaiduYunDownload\\sgns.target.word-ngram.1-2.dynwin5.thr10.neg5.dim300.iter5\\sgns.target.word-ngram.1-2.dynwin5.thr10.neg5.dim300.iter5'  # use pre-trained embeddings
 data_path: str = '../files/train.txt'
 val_data_path: Optional[str] = '../files/dev.txt'
 test_data_path: Optional[str] = '../files/test.txt'
@@ -36,7 +36,7 @@ pointer: bool = True
 dec_in_dropout = 0
 dec_rnn_dropout = 0
 dec_out_dropout = 0
-is_cuda = True
+is_cuda = False
 encoder_save_name = '../saved_model/encoder.pt'
 decoder_save_name = '../saved_model/decoder.pt'
 attention_save_name = '../saved_model/attention.pt'

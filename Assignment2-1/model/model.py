@@ -18,9 +18,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+import config
+
 abs_path = pathlib.Path(__file__).parent.absolute()
 sys.path.append(sys.path.append(abs_path))
-import config
 
 
 class Encoder(nn.Module):
@@ -34,8 +35,8 @@ class Encoder(nn.Module):
         ###########################################
         super(Encoder, self).__init__()
         self.hidden_size = hidden_size
-        self.embedding = 
-        self.lstm = 
+        self.embedding = nn.Embedding(vocab_size, embed_size)
+        self.lstm = nn.LSTM(embed_size, hidden_size, bidirectional=True, dropout=rnn_drop, batch_first=True)
 
     def forward(self, x):
         """Define forward propagation for the endoer.
@@ -54,7 +55,8 @@ class Encoder(nn.Module):
         ###########################################
         #          TODO: module 2 task 1.2        #
         ###########################################
-
+        embedded = self.embedding(x)
+        output, hidden = self.lstm(embedded)
         return output, hidden
 
 
@@ -65,8 +67,8 @@ class Attention(nn.Module):
         #          TODO: module 2 task 3.1        #
         ###########################################
         self.Wh = nn.Linear(2*hidden_units, 2*hidden_units, bias=False)
-        self.Ws = 
-        self.v = 
+        self.Ws = nn.Linear(2*hidden_units, 2*hidden_units, bias=False)
+        self.v = nn.Linear(2*hidden_units, 1, bias=False)
 
     def forward(self, decoder_states, encoder_output, x_padding_masks):
         """Define forward propagation for the attention network.
@@ -95,32 +97,32 @@ class Attention(nn.Module):
         # Concatenate h and c to get s_t and expand the dim of s_t.
         h_dec, c_dec = decoder_states
         # (1, batch_size, 2*hidden_units)
-        s_t = 
+        s_t = torch.cat([h_dec, c_dec], dim=2)
         # (batch_size, 1, 2*hidden_units)
-        s_t = 
+        s_t = s_t.transpose(0, 1)
         # (batch_size, seq_length, 2*hidden_units)
-        s_t = 
+        s_t = s_t.expand_as(encoder_output).contiguous()
 
         # calculate attention scores
         # Equation(11).
         # Wh h_* (batch_size, seq_length, 2*hidden_units)
-        encoder_features = 
+        encoder_features = self.Wh(encoder_output.contiguous())
         # Ws s_t (batch_size, seq_length, 2*hidden_units)
-        decoder_features = 
+        decoder_features = self.Ws(s_t)
         # (batch_size, seq_length, 2*hidden_units)
-        att_inputs = 
+        att_inputs = encoder_features + decoder_features
         # (batch_size, seq_length, 1)
-        score = 
+        score = self.v(torch.tanh(att_inputs))
         # (batch_size, seq_length)
-        attention_weights = 
+        attention_weights = F.softmax(score, dim=1).squeeze(2)
         attention_weights = attention_weights * x_padding_masks
         # Normalize attention weights after excluding padded positions.
-        normalization_factor = 
-        attention_weights = 
+        normalization_factor = attention_weights.sum(1, keepdim=True)
+        attention_weights = attention_weights / normalization_factor
         # (batch_size, 1, 2*hidden_units)
-        context_vector = 
+        context_vector = torch.bmm(attention_weights.unsqueeze(1), encoder_output)
         # (batch_size, 2*hidden_units)
-        context_vector = 
+        context_vector = context_vector.squeeze(1)
 
         return context_vector, attention_weights
 
@@ -141,10 +143,10 @@ class Decoder(nn.Module):
         #          TODO: module 2 task 2.1        #
         ###########################################
 
-        self.lstm = 
+        self.lstm = nn.LSTM(embed_size, hidden_size, batch_first=True)
 
-        self.W1 = 
-        self.W2 = 
+        self.W1 = nn.Linear(3*self.hidden_size, self.hidden_size)
+        self.W2 = nn.Linear(self.hidden_size, vocab_size)
 
     def forward(self, decoder_input, decoder_states, encoder_output,
                 context_vector):
@@ -175,22 +177,21 @@ class Decoder(nn.Module):
         #          TODO: module 2 task 2.2        #
         ###########################################
 
-        decoder_emb = 
-
-        decoder_output, decoder_states = 
+        decoder_emb = self.embedding(decoder_input)
+        decoder_output, decoder_states = self.lstm(decoder_emb, decoder_states)
 
         # concatenate context vector and decoder state
         # (batch_size, 3*hidden_units)
-        decoder_output =  # Reshape.
-        concat_vector = 
+        decoder_output = decoder_output.view(-1, config.hidden_size)# Reshape.
+        concat_vector = torch.cat([decoder_output, context_vector], dim=-1)
 
         # calculate vocabulary distribution
         # (batch_size, hidden_units)
-        FF1_out = 
+        FF1_out = self.W1(concat_vector)
         # (batch_size, vocab_size)
-        FF2_out = 
+        FF2_out = self.W2(FF1_out)
         # (batch_size, vocab_size)
-        p_vocab = 
+        p_vocab = F.softmax(FF2_out, dim=1)
 
         return p_vocab, decoder_states
 
@@ -229,10 +230,7 @@ class ReduceState(nn.Module):
 
 
 class Seq2seq(nn.Module):
-    def __init__(
-            self,
-            v
-    ):
+    def __init__(self, v):
         super(Seq2seq, self).__init__()
         self.v = v
         self.DEVICE = torch.device("cuda" if config.is_cuda else "cpu")
@@ -253,7 +251,7 @@ class Seq2seq(nn.Module):
 
     def load_model(self):
         """Load saved model if there exits one.
-        """        
+        """
         if (os.path.exists(config.encoder_save_name)):
             self.encoder = torch.load(config.encoder_save_name)
             self.decoder = torch.load(config.decoder_save_name)
@@ -281,40 +279,40 @@ class Seq2seq(nn.Module):
         #          TODO: module 2 task 4          #
         ###########################################
 
-        oov_token = 
-        x_copy = 
-        x_padding_masks = 
-        encoder_output, encoder_states = 
+        oov_token = torch.full(x.shape, self.v.UNK).long().to(self.DEVICE)
+        x_copy = torch.where(x > len(self.v) - 1, oov_token, x)
+        x_padding_masks = torch.ne(x_copy, 0).byte().float()
+        encoder_output, encoder_states = self.encoder(x_copy)
         # Reduce encoder hidden states.
-        decoder_states =  
+        decoder_states = self.reduce_state(encoder_states)
 
         # Calculate loss for every step.
         step_losses = []
         for t in range(y.shape[1]-1):
-            decoder_input_t =   # x_t
-            decoder_target_t =   # y_t
+            decoder_input_t = y[:, t]  # x_t
+            decoder_target_t = y[:, t+1] # y_t
             # Get context vector from the attention network.
-            context_vector, attention_weights = 
+            context_vector, attention_weights = self.attention(decoder_states, encoder_output, x_padding_masks)
             # Get vocab distribution and hidden states from the decoder.
-            p_vocab, decoder_states = 
+            p_vocab, decoder_states = self.decoder(decoder_input_t.unsqueeze(1), decoder_states, encoder_output, context_vector)
 
             # Get the probabilities predict by the model for target tokens.
-            target_probs = 
+            target_probs = torch.gather(p_vocab, 1, decoder_target_t.unsqueeze(1))
             target_probs = target_probs.squeeze(1)
             # Apply a mask such that pad zeros do not affect the loss
-            mask = 
+            mask = torch.ne(decoder_target_t, 0).byte()
             # Do smoothing to prevent getting NaN loss because of log(0).
-            loss = 
+            loss = -torch.log(target_probs + config.eps)
             mask = mask.float()
             loss = loss * mask
             step_losses.append(loss)
 
-        sample_losses = 
+        sample_losses = torch.sum(torch.stack(step_losses, 1), 1)
         # get the non-padded length of each sequence in the batch
-        seq_len_mask = 
-        batch_seq_len = 
+        seq_len_mask = torch.ne(y, 0).byte().float()
+        batch_seq_len = torch.sum(seq_len_mask, dim=1)
 
         # get batch loss by dividing the loss of each batch
         # by the target sequence length and mean
-        batch_loss = 
+        batch_loss = torch.mean(sample_losses / batch_seq_len)
         return batch_loss

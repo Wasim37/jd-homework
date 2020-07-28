@@ -108,7 +108,18 @@ def outputids2words(id_list, source_oovs, vocab):
     ###########################################
 
     words = []
-
+    for i in id_list:
+        try:
+            w = vocab.index2word[i]
+        except IndexError: #w is oov
+            assert_msg = "ERROR ID can't find"
+            assert source_oovs is not Noe, assert_msg
+            source_oov_idx = i - vocab.size()
+            try:
+                w = source_oovs[source_oov_idx]
+            except ValueError:
+                raise ValueError("ERROR ID can't find OOV")
+        words.append(w)
     return ' '.join(words)
 
 
@@ -135,7 +146,16 @@ def source2ids(source_words, vocab):
     ids = []
     oovs = []
     unk_id = vocab["<UNK>"]
- 
+
+    for word in source_words:
+        i = vocab[word]
+        if i == unk_id:
+            if word not in oovs:
+                oovs.append(word)
+            oov_num = oovs.index(word)
+            ids.append(vocab.size() + oov_num)
+        else:
+            ids.append(i)
     return ids, oovs
 
 
