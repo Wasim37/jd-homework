@@ -87,8 +87,8 @@ class Attention(nn.Module):
                 The hidden states from lstm (h_n, c_n) in the decoder,
                 each with shape (1, batch_size, hidden_units)
             encoder_output (Tensor):
-                The output from the lstm in the decoder with
-                shape (batch_size, seq_len, hidden_units).
+                The output from the lstm in the encoder with
+                shape (batch_size, seq_len, 2*hidden_units).
             x_padding_masks (Tensor):
                 The padding masks for the input sequences
                 with shape (batch_size, seq_len).
