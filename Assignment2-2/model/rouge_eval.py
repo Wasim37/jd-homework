@@ -16,12 +16,14 @@ import pathlib
 from rouge import Rouge
 import jieba
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
-
 from predict import Predict
 from utils import timer
 import config
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
+
 
 
 class RougeEval():
@@ -36,7 +38,7 @@ class RougeEval():
 
     def process(self):
         print('Reading from ', self.path)
-        with open(self.path, 'r') as test:
+        with open(curPath + self.path, 'r', encoding='utf-8') as test:
             for line in test:
                 source, ref = line.strip().split('<sep>')
                 ref = ''.join(list(jieba.cut(ref))).replace('。', '.')
@@ -75,7 +77,7 @@ result = rouge_eval.get_average()
 print('rouge1: ', result['rouge-1'])
 print('rouge2: ', result['rouge-2'])
 print('rougeL: ', result['rouge-l'])
-with open('../files/rouge_result.txt', 'a') as file:
+with open(curPath + '../files/rouge_result.txt', 'a') as file:
     for r, metrics in result.items():
         file.write(r+'\n')
         for metric, value in metrics.items():

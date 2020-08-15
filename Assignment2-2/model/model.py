@@ -18,10 +18,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
 import config
 from utils import timer, replace_oovs
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 class Encoder(nn.Module):
@@ -286,19 +288,19 @@ class PGN(nn.Module):
 
     def load_model(self):
 
-        if (os.path.exists(config.encoder_save_name)):
+        if (os.path.exists(curPath + config.encoder_save_name)):
             print('Loading model: ', config.encoder_save_name)
-            self.encoder = torch.load(config.encoder_save_name)
-            self.decoder = torch.load(config.decoder_save_name)
-            self.attention = torch.load(config.attention_save_name)
-            self.reduce_state = torch.load(config.reduce_state_save_name)
+            self.encoder = torch.load(curPath + config.encoder_save_name)
+            self.decoder = torch.load(curPath + config.decoder_save_name)
+            self.attention = torch.load(curPath + config.attention_save_name)
+            self.reduce_state = torch.load(curPath + config.reduce_state_save_name)
 
         elif config.fine_tune:
             print('Loading model: ', '../saved_model/pgn/encoder.pt')
-            self.encoder = torch.load('../saved_model/pgn/encoder.pt')
-            self.decoder = torch.load('../saved_model/pgn/decoder.pt')
-            self.attention = torch.load('../saved_model/pgn/attention.pt')
-            self.reduce_state = torch.load('../saved_model/pgn/reduce_state.pt')
+            self.encoder = torch.load(curPath + '../saved_model/pgn/encoder.pt')
+            self.decoder = torch.load(curPath + '../saved_model/pgn/decoder.pt')
+            self.attention = torch.load(curPath + '../saved_model/pgn/attention.pt')
+            self.reduce_state = torch.load(curPath + '../saved_model/pgn/reduce_state.pt')
 
 #     @timer('final dist')
     def get_final_distribution(self, x, p_gen, p_vocab, attention_weights,

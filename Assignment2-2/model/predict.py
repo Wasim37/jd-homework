@@ -17,13 +17,14 @@ import pathlib
 import torch
 import jieba
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
-
 import config
 from model import PGN
 from dataset import PairDataset
 from utils import source2ids, outputids2words, Beam, timer, add2heap, replace_oovs
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 class Predict():
@@ -43,8 +44,7 @@ class Predict():
         self.stop_word = list(
             set([
                 self.vocab[x.strip()] for x in
-                open(config.stop_word_file
-                     ).readlines()
+                open(curPath + config.stop_word_file, encoding='utf-8').readlines()
             ]))
         self.model.load_model()
         self.model.to(self.DEVICE)
@@ -293,7 +293,7 @@ if __name__ == "__main__":
     pred = Predict()
     print('vocab_size: ', len(pred.vocab))
     # Randomly pick a sample in test set to predict.
-    with open(config.test_data_path, 'r') as test:
+    with open(curPath + config.test_data_path, 'r', encoding='utf-8') as test:
         picked = random.choice(list(test))
         source, ref = picked.strip().split('<sep>')
 

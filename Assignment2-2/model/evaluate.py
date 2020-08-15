@@ -17,11 +17,12 @@ from tqdm import tqdm
 import numpy as np
 from torch.utils.data import DataLoader
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
-
 from dataset import collate_fn
 import config
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 def evaluate(model, val_data, epoch):

@@ -13,16 +13,15 @@
 import numpy as np
 import time
 import heapq
-import random
 import sys
 import pathlib
-
+import os
 import torch
+import config
 
 abs_path = pathlib.Path(__file__).parent.absolute()
 sys.path.append(sys.path.append(abs_path))
-
-import config
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 def timer(module):

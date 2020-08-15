@@ -19,11 +19,13 @@ from typing import Callable
 import torch
 from torch.utils.data import Dataset
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
 from utils import simple_tokenizer, count_words, sort_batch_by_len, source2ids, abstract2ids
 from vocab import Vocab
 import config
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 class PairDataset(object):
@@ -41,7 +43,7 @@ class PairDataset(object):
         self.filename = filename
         self.pairs = []
 
-        with open(filename, 'rt', encoding='utf-8') as f:
+        with open(curPath + filename, 'rt', encoding='utf-8') as f:
             next(f)
             for i, line in enumerate(f):
                 # Split the source and reference by the <sep> tag.

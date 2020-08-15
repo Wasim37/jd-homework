@@ -23,14 +23,15 @@ from torch.nn.utils import clip_grad_norm_
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
-
 from dataset import PairDataset
 from model import PGN
 import config
 from evaluate import evaluate
 from dataset import collate_fn, SampleDataset
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 def train(dataset, val_dataset, v, start_epoch=0):
