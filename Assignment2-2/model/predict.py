@@ -157,12 +157,17 @@ class Predict():
         # Filter forbidden tokens.
         if len(beam.tokens) == 1:
             forbidden_ids = [
-
+                self.vocab[u"这"],
+                self.vocab[u"此"],
+                self.vocab[u"采用"],
+                self.vocab[u"，"],
+                self.vocab[u"。"],
             ]
             log_probs[forbidden_ids] = -float('inf')
         # EOS token penalty. Follow the definition in
         # https://opennmt.net/OpenNMT/translation/beam_search/.
-        log_probs[self.vocab.EOS] *=
+        log_probs[self.vocab.EOS] *= \
+            config.gamma * x.size()[1] / len(beam.tokens)
 
         log_probs[self.vocab.UNK] = -float('inf')
         # Get top k tokens and the corresponding logprob.

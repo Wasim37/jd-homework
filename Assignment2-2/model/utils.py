@@ -171,7 +171,17 @@ def abstract2ids(abstract_words, vocab, source_oovs):
     ###########################################
     ids = []
     unk_id = vocab.UNK
-
+    for w in abstract_words:
+        i = vocab[w]
+        if i == unk_id:  # If w is an OOV word
+            if w in source_oovs:  # If w is an in-source OOV
+                # Map to its temporary source OOV number
+                vocab_idx = vocab.size() + source_oovs.index(w)
+                ids.append(vocab_idx)
+            else:  # If w is an out-of-source OOV
+                ids.append(unk_id)  # Map to the UNK token id
+        else:
+            ids.append(i)
     return ids
 
 
@@ -214,6 +224,18 @@ class Beam(object):
         #          TODO: module 3 task 1          #
         ###########################################
         len_Y = len(self.tokens)
+        # Lenth normalization
+        ln = (5+len_Y)**config.alpha / (5+1)**config.alpha
+        cn = config.beta * torch.sum(  # Coverage normalization
+            torch.log(
+                config.eps +
+                torch.where(
+                    self.coverage_vector < 1.0,
+                    self.coverage_vector,
+                    torch.ones((1, self.coverage_vector.shape[1])).to(torch.device(config.DEVICE))
+                )
+            )
+        )
 
         score = sum(self.log_probs) / ln + cn
         return score

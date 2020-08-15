@@ -67,7 +67,7 @@ class PairDataset(object):
                 self.pairs.append((src, tgt))
         print("%d pairs." % len(self.pairs))
 
-    def build_vocab(self, embed_file: str = None) -> Vocab:
+    def build_vocab(self, embed_file: str = None):
         """Build the vocabulary for the data set.
 
         Args:
@@ -115,7 +115,7 @@ class SampleDataset(Dataset):
             'x': [self.vocab.SOS] + x + [self.vocab.EOS],
             'OOV': oov,
             'len_OOV': len(oov),
-            'y':
+            'y': [self.vocab.SOS] + abstract2ids(self.trg_sents[index], self.vocab, oov) + [self.vocab.EOS],
             'x_len': len(self.src_sents[index]),
             'y_len': len(self.trg_sents[index])
         }
@@ -156,4 +156,3 @@ def collate_fn(batch):
     x_len = torch.tensor(data_batch["x_len"])
     y_len = torch.tensor(data_batch["y_len"])
     return x_padded, y_padded, x_len, y_len, OOV, len_OOV
-
