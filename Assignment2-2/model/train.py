@@ -54,7 +54,7 @@ def train(dataset, val_dataset, v, start_epoch=0):
         print('Fine-tuning mode.')
         for name, params in model.named_parameters():
             if name != 'attention.wc.weight':
-                params.requires_grad=False    
+                params.requires_grad = False
     # forward
     print("loading data")
     train_data = SampleDataset(dataset.pairs, v)
@@ -63,9 +63,10 @@ def train(dataset, val_dataset, v, start_epoch=0):
     print("initializing optimizer")
 
     # Define the optimizer.
-    optimizer = optim.Adam(model.parameters(),
-                              lr=config.learning_rate,
-                              )
+    optimizer = optim.Adam(
+        model.parameters(),
+        lr=config.learning_rate,
+    )
     train_dataloader = DataLoader(dataset=train_data,
                                   batch_size=config.batch_size,
                                   shuffle=True,
@@ -77,7 +78,7 @@ def train(dataset, val_dataset, v, start_epoch=0):
             val_losses = pickle.load(f)
 
 #     torch.cuda.empty_cache()
-    # SummaryWriter: Log writer used for TensorboardX visualization.
+# SummaryWriter: Log writer used for TensorboardX visualization.
     writer = SummaryWriter(config.log_path)
     # tqdm: A tool for drawing progress bars during training.
     with tqdm(total=config.epochs) as epoch_progress:

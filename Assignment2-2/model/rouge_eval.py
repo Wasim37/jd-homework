@@ -25,7 +25,6 @@ sys.path.append(sys.path.append(abs_path))
 curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
-
 class RougeEval():
     def __init__(self, path):
         self.path = path

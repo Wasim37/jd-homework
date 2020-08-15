@@ -11,6 +11,9 @@
 
 from collections import Counter
 import numpy as np
+import os
+
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 class Vocab(object):
@@ -41,7 +44,7 @@ class Vocab(object):
     def load_embeddings(self, file_path: str, dtype=np.float32) -> int:
         num_embeddings = 0
         vocab_size = len(self)
-        with open(file_path, 'rb') as f:
+        with open(curPath + file_path, 'rb') as f:
             for line in f:
                 line = line.split()
                 word = line[0].decode('utf-8')

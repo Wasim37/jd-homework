@@ -17,11 +17,19 @@ import torch
 hidden_size: int = 512
 dec_hidden_size: Optional[int] = 512
 embed_size: int = 300
+
+# 通过以下配置可以训练以下三类模型：
+# 1. PGN，令 pointer = True 即可。
+# 2. PGN (with coverage)，令 pointer = True 以及 coverage = True
+# 3. PGN (fine-tuned with coverage)，令 pointer = True ， coverage = True 以及 fine_tune = True
 pointer = True
+coverage = True
+fine_tune = False
 
 # Data
 max_vocab_size = 20000
-embed_file: Optional[str] = None  # use pre-trained embeddings
+# embed_file: Optional[str] = '../files/sgns.target.word-ngram.1-2.dynwin5.thr10.neg5.dim300.iter5'  # use pre-trained embeddings
+embed_file: Optional[str] = None
 data_path: str = '../files/train.txt'
 val_data_path: Optional[str] = '../files/dev.txt'
 test_data_path: Optional[str] = '../files/test.txt'
@@ -48,10 +56,8 @@ lr_decay = 0.0
 initial_accumulator_value = 0.1
 epochs = 8
 batch_size = 8
-coverage = True
-fine_tune = True
 max_grad_norm = 2.0
-is_cuda = True
+is_cuda = False
 DEVICE = torch.device("cuda" if is_cuda else "cpu")
 LAMBDA = 1
 
