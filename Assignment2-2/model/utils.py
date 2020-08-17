@@ -124,6 +124,9 @@ def outputids2words(id_list, source_oovs, vocab):
 
 def source2ids(source_words, vocab):
     """Map the source words to their ids and return a list of OOVs in the source.
+    当训练好模型要对测试集进行测试时，测试集中的样本往往会包含OOV tokens。
+    本函数需要你将在词典中的 token 映射到相应的index，对于oov tokens则需要记录下来并返回。
+
     Args:
         source_words: list of words (strings)
         vocab: Vocabulary object
@@ -157,6 +160,8 @@ def source2ids(source_words, vocab):
 def abstract2ids(abstract_words, vocab, source_oovs):
     """Map tokens in the abstract (reference) to ids.
        OOV tokens in the source will be remained.
+       由于PGN可以生成在source出现过的OOV tokens，所以这次我们对reference的token ids需要换一种映射方式，
+       即将在source出现过的OOV tokens也记录下来并给个临时的id，而不是直接替换为"<UNK>" token，以便在训练阶段准确的计算损失。
 
     Args:
         abstract_words (list): Tokens in the reference.
@@ -274,7 +279,7 @@ def replace_oovs(in_tensor, vocab):
 
     Returns:
         Tensor: The tensor after replacement.
-    """    
+    """
     oov_token = torch.full(in_tensor.shape, vocab.UNK).long().to(config.DEVICE)
     out_tensor = torch.where(in_tensor > len(vocab) - 1, oov_token, in_tensor)
     return out_tensor

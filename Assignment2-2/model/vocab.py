@@ -31,6 +31,7 @@ class Vocab(object):
 
     def add_words(self, words):
         """Add a new token to the vocab and do mapping between word and index.
+        向词典加入新词，完成对word2index、index2word和word2count三个变量的更新
 
         Args:
             words (list): The list of tokens to be added.

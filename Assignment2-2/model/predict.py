@@ -154,7 +154,7 @@ class Predict():
         ###########################################
         #          TODO: module 3 task 2          #
         ###########################################
-        # Filter forbidden tokens.
+        # Filter forbidden tokens. 过滤禁用词汇
         if len(beam.tokens) == 1:
             forbidden_ids = [
                 self.vocab[u"这"],

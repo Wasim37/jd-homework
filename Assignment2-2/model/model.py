@@ -37,7 +37,7 @@ class Encoder(nn.Module):
         self.hidden_size = hidden_size
         self.lstm = nn.LSTM(embed_size,
                             hidden_size,
-                            bidirectional=True,
+                            bidirectional=True,  # BiLSTM
                             dropout=rnn_drop,
                             batch_first=True)
 
@@ -68,13 +68,13 @@ class Attention(nn.Module):
         # Define feed-forward layers.
         self.Wh = nn.Linear(2*hidden_units, 2*hidden_units, bias=False)
         self.Ws = nn.Linear(2*hidden_units, 2*hidden_units)
+        self.v = nn.Linear(2*hidden_units, 1, bias=False)
 
         ###########################################
         #          TODO: module 2 task 2.1        #
         ###########################################
         # wc for coverage feature
         self.wc = nn.Linear(1, 2*hidden_units, bias=False)
-        self.v = nn.Linear(2*hidden_units, 1, bias=False)
 
 #     @timer('attention')
     def forward(self,
@@ -167,9 +167,8 @@ class Decoder(nn.Module):
         self.DEVICE = torch.device('cuda') if is_cuda else torch.device('cpu')
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
-
+        # 单向LSTM层
         self.lstm = nn.LSTM(embed_size, hidden_size, batch_first=True)
-
         self.W1 = nn.Linear(self.hidden_size * 3, self.hidden_size)
         self.W2 = nn.Linear(self.hidden_size, vocab_size)
 
@@ -209,12 +208,10 @@ class Decoder(nn.Module):
         # concatenate context vector and decoder state
         # (batch_size, 3*hidden_units)
         decoder_output = decoder_output.view(-1, config.hidden_size)
-        concat_vector = torch.cat(
-            [decoder_output,
-             context_vector],
-            dim=-1)
+        concat_vector = torch.cat([decoder_output, context_vector], dim=-1)
 
         # calculate vocabulary distribution
+        # W1、W2和softmax，对应论文中的公式4
         # (batch_size, hidden_units)
         FF1_out = self.W1(concat_vector)
         # (batch_size, vocab_size)
@@ -314,6 +311,12 @@ class PGN(nn.Module):
     def get_final_distribution(self, x, p_gen, p_vocab, attention_weights,
                                max_oov):
         """Calculate the final distribution for the model.
+        pointer是根据attention分布，从source中挑选最佳的token作为输出; generator是根据P_vocab分布，从字典中挑选最佳的token作为输出。
+        但是Attention的分布和P_vocab的分布的长度和对应位置代表的token是不一样的，所以在计算 final distribution 的时候应该如何对应上呢?
+
+        这里的推荐的方式是，先对 P_vocab 进行扩展，将 source 中的 oov 添 加到 P_vocab 的尾部，
+        得到 P_vocab_extend 这样 attention weights 中的每⼀个 token 都能在 P_vocab_extend 中找到对应的位置，
+        然后将对应的 attention weights 叠加到扩展后的 P_vocab_extend 中的对 应位置，得到 finaldistribution。
 
         Args:
             x: (batch_size, seq_len)
