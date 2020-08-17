@@ -1,0 +1,31 @@
+user10000469@jupyter-user10000469-2dserver3708:~/notespace/model$ python3 train.py
+Epoch 0:  training loss:3.964785726633939 validation loss:3.5657366107940676
+Epoch 1:  training loss:3.302985088153319 validation loss:3.430358334732056
+Epoch 2:  training loss:3.012378102866086 validation loss:3.419938883590698
+Epoch 3:  training loss:2.7672210063500837 validation loss:3.482912979888916
+Epoch 4:  training loss:2.543725674347444 validation loss:3.580734729385376
+Epoch 5:  training loss:2.342527538798072 validation loss:3.6962831424713136
+Epoch 6:  training loss:2.1687375232306394 validation loss:3.84576979637146
+Epoch 7:  training loss:2.0196322285478767 validation loss:4.000316996765137
+
+
+ser10000469@jupyter-user10000469-2dserver3708:~/notespace/model$ python3 rouge_eval.py
+rouge1:  {'f': 0.2447488664574899, 'p': 0.3247486290344969, 'r': 0.2015132759240438}
+rouge2:  {'f': 0.047085553397356525, 'p': 0.06234250283983856, 'r': 0.03891577878627682}
+rougeL:  {'f': 0.15853867659583096, 'p': 0.22493607674945412, 'r': 0.12608364916245707}
+
+
+user10000469@jupyter-user10000469-2dserver3708:~/notespace/model$ python3 predict.py
+greedy:  氨纶 的 弹性 良好 ， 柔软 舒适 ， 不会 刺激 宝宝 的 皮肤 ， 氨纶 的 弹性 良好 ， 不 紧绷 ， 不会 让 孩子 感到 束缚 感 ， 氨纶 的 弹性 良好 ， 不 紧绷 ， 不会 束缚 孩子 腰部 。
+beam:  氨纶 混纺 面料 ， 触感 柔软 细腻 ， 具有 良好 的 透气性 ， 穿着 舒适 不 闷热 ， 弹力 适中 ， 不会 勒 着 宝宝 娇嫩 的 双手 ， 让 宝宝 穿着 更 舒适 。
+ref:  厚薄 适中 ， 适合 四季 穿着 ， 吸湿 排汗 ， 防风 保暖 ， 氨纶 材质 ， 其 弹性 会 拉紧 面料 ， 制成 的 面料 会 更加 细腻 ， 而 宝贝 穿着 自然 也 更 舒适 。
+
+user10000469@jupyter-user10000469-2dserver3708:~/notespace/model$ python3 predict.py
+greedy:  采用 优质 的 头层 牛皮 ， 手感 柔软 细腻 ， 具有 良好 的 柔韧性 ， 佩戴 舒适 不 紧绷 。 简约 的 黑色 设计 ， 时尚 百搭 。
+beam:  采用 优质 的 头层 牛皮 制成 ， 手感 细腻 柔软 ， 具有 良好 的 柔韧性 ， 具有 良好 的 柔韧性 ， 佩戴 起来 舒适 不 闷热 。
+ref:  此款 腰带 正面 的 主要 材质 是 牛 皮革 ， 手感 柔软光滑 ， 背面 是 超纤 材质 ， 细腻 耐磨 佩戴 更加 舒适 。 其 表面 毛孔 清晰 自然 ， 色泽 饱满 富有 弹性 、 柔软 耐磨 耐脏 耐 弯曲 ， 长时间 使用 不 损坏 。
+
+user10000469@jupyter-user10000469-2dserver3708:~/notespace/model$ python3 predict.py
+greedy:  连衣裙 采用 了 经典 的 圆领 设计 ， 修饰 颈部 线条 ， 衬托 的 脸型 。 收腰 的 设计 ， 勾勒 出 纤细 的 腰身 ， 勾勒 出 迷人 的 身姿 。
+beam:  这 款 连衣裙 采用 了 经典 的 圆领 设计 ， 修饰 了 颈部 线条 ， 衬托 精致 小脸 。 收腰 的 设计 ， 勾勒 出 纤细 的 腰身 ， 勾勒 出 迷人 的 身材 曲线 。
+ref:  让 夏季 穿 搭 感觉 更 别致 ， 纯色 连衣裙 ， 采用 棉 面料 打造 ， 对 皮肤 没有 任何 刺激 ， 给 你 带来 一丝丝 夏季 凉爽 的 微风 ， 绑带 显 活力 俏皮 ， 立领 设计 ， 既 保留 了 干练 又 增添 了 阻挡寒风 的 实力 ， 随性 休闲 。
