@@ -23,7 +23,7 @@ embed_size: int = 300
 # 2. PGN (with coverage)，令 pointer = True 以及 coverage = True
 # 3. PGN (fine-tuned with coverage)，令 pointer = True ， coverage = True 以及 fine_tune = True
 pointer = True
-coverage = True
+coverage = False
 fine_tune = False
 
 # Data

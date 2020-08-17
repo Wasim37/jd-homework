@@ -80,8 +80,7 @@ class PairDataset(object):
         """
         # word frequency
         word_counts = Counter()
-        count_words(word_counts,
-                    [src + tgr for src, tgr in self.pairs])
+        count_words(word_counts, [src + tgr for src, tgr in self.pairs])
         vocab = Vocab()
         # Filter the vocabulary by keeping only the top k tokens in terms of
         # word frequncy in the data set, where k is the maximum vocab size set

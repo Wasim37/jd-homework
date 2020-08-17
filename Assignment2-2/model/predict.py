@@ -30,7 +30,7 @@ curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 class Predict():
     @timer(module='initalize predicter')
     def __init__(self):
-        self.DEVICE = torch.DEVICE
+        self.DEVICE = torch.device("cuda" if config.is_cuda else "cpu")
 
         dataset = PairDataset(config.data_path,
                               max_src_len=config.max_src_len,
