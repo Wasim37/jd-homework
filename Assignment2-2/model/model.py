@@ -141,6 +141,7 @@ class Attention(nn.Module):
         attention_weights = F.softmax(score, dim=1).squeeze(2)
         attention_weights = attention_weights * x_padding_masks
         # Normalize attention weights after excluding padded positions.
+        # 此处的标准化不一定需要，因为前面已经经过softmax归一化处理了
         normalization_factor = attention_weights.sum(1, keepdim=True)
         attention_weights = attention_weights / normalization_factor
         # torch.bmm() 与 torch.matmul() 区别 https://blog.csdn.net/foneone/article/details/103876519

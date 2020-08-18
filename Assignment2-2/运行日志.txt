@@ -92,6 +92,9 @@ Epoch 3:  training loss:3.5628397029963406 validation loss:4.355452236456749
 Epoch 4:  training loss:3.5627221422195436 validation loss:4.3552320553706245
 Epoch 5:  training loss:3.5625938849882646 validation loss:4.3571330171365
 Epoch 6:  training loss:3.562515436215834  validation loss:4.35633045893449
+Epoch 7:  training loss:3.56248537830873 validation loss:4.356128183312905
+Epoch 8:  training loss:3.562387493870475 validation loss:4.355036536470438
+Epoch 9:  training loss:3.5623198968280447 validation loss:4.35580515785095
 
 
 
