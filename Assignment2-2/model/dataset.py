@@ -71,7 +71,7 @@ class PairDataset(object):
         """Build the vocabulary for the data set.
         根据 config.max_vocab_size 控制数据集词典的大小
         建议使用 python 的 collection 模块中的 Counter 来做，这个数据类型跟dict很像，但有两个好处：
-        1. 加⼊新的key时不需要判断是否存在，会⾃动将其对应的值初始化为0。
+        1. 加入新的key时不需要判断是否存在，会⾃动将其对应的值初始化为0。
         2. 可以通过most_common函数来获取数量最多的k个key。
         Counter的用法详见 https://docs.python.org/2/library/collections.html。
 

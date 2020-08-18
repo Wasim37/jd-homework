@@ -118,7 +118,7 @@ class Attention(nn.Module):
         s_t = s_t.expand_as(encoder_output).contiguous()
 
         # calculate attention scores
-        # 论文公式 Equation(11).
+        # 论文公式11
         # Wh h_* (batch_size, seq_length, 2*hidden_units)
         encoder_features = self.Wh(encoder_output.contiguous())
         # Ws s_t (batch_size, seq_length, 2*hidden_units)
@@ -131,6 +131,7 @@ class Attention(nn.Module):
         ###########################################
         # Add coverage feature.
         if config.coverage:
+            # 论文公式10
             coverage_features = self.wc(coverage_vector.unsqueeze(2))  # wc c
             att_inputs = att_inputs + coverage_features
 
@@ -405,7 +406,9 @@ class PGN(nn.Module):
         coverage_vector = torch.zeros(x.size()).to(self.DEVICE)
         # Calculate loss for every step.
         step_losses = []
-        # 论文公式 equation (10).
+
+        # 论文公式10中的coverage_vector更新是在attention阶段
+        # 此处for循环0~t-1，即维护先前所有解码的时间步长的注意力分布总和
         for t in range(y.shape[1]-1):
 
             # Do teacher forcing.
@@ -433,7 +436,9 @@ class PGN(nn.Module):
             # Get the probabilities predict by the model for target tokens.
             if not config.pointer:
                 y_t = replace_oovs(y_t, self.v)
+
             # https://blog.csdn.net/cpluss/article/details/90260550
+            # gather，根据index来索引input特定位置的数值
             target_probs = torch.gather(final_dist, 1, y_t.unsqueeze(1))
             target_probs = target_probs.squeeze(1)
 
@@ -444,8 +449,11 @@ class PGN(nn.Module):
 
             if config.coverage:
                 # Add coverage loss.
+                # 论文公式12
                 ct_min = torch.min(attention_weights, coverage_vector)
                 cov_loss = torch.sum(ct_min, dim=1)
+                # 论文公式13
+                # cov_loss 添加惩罚项，抑制重复词汇出现的几率
                 loss = loss + config.LAMBDA * cov_loss
 
             mask = mask.float()
