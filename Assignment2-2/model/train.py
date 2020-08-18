@@ -77,10 +77,11 @@ def train(dataset, val_dataset, v, start_epoch=0):
         with open(config.losses_path, 'rb') as f:
             val_losses = pickle.load(f)
 
-#     torch.cuda.empty_cache()
-# SummaryWriter: Log writer used for TensorboardX visualization.
+    #     torch.cuda.empty_cache()
+    # SummaryWriter: Log writer used for TensorboardX visualization.
     writer = SummaryWriter(config.log_path)
     # tqdm: A tool for drawing progress bars during training.
+    # 详细介绍Python进度条tqdm的使用 https://blog.csdn.net/kdongyi/article/details/101547216
     with tqdm(total=config.epochs) as epoch_progress:
         for epoch in range(start_epoch, config.epochs):
             batch_losses = []  # Get loss of each batch.
@@ -113,10 +114,12 @@ def train(dataset, val_dataset, v, start_epoch=0):
 
                     # Output and record epoch loss every 100 batches.
                     if (batch % 100) == 0:
+                        # 设置进度条左边显示的信息
                         batch_progress.set_description(f'Epoch {epoch}')
+                        # 设置进度条右边显示的信息
                         batch_progress.set_postfix(Batch=batch,
                                                    Loss=loss.item())
-                        batch_progress.update()
+                        batch_progress.update()  # 更新进度条
                         # Write loss for tensorboard.
                         writer.add_scalar(f'Average loss for epoch {epoch}',
                                           np.mean(batch_losses),
@@ -135,6 +138,8 @@ def train(dataset, val_dataset, v, start_epoch=0):
 
             # Update minimum evaluating loss.
             if (avg_val_loss < val_losses):
+                # 此处保存完整模型，只保存模型参数使用：torch.save(model..encoder.state_dict(), config.encoder_save_name)
+                # 两种模型保存方式：https://www.jianshu.com/p/6ba95579082c
                 torch.save(model.encoder, config.encoder_save_name)
                 torch.save(model.decoder, config.decoder_save_name)
                 torch.save(model.attention, config.attention_save_name)

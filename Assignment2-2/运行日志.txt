@@ -11,7 +11,7 @@ Epoch 4: training loss:2.5292034436139192 validation loss:3.523524146813613
 Epoch 5: training loss:2.3421160951094193 validation loss:3.6446718180026765
 Epoch 6: training loss:2.178770269393921 validation loss:3.7735544939835868
 Epoch 7: training loss:2.0416961255940524 validation loss:3.916442552056068
-pointer = True¡¢coverage = False¡¢fine_tune = False
+
 
 ser10000469@jupyter-user10000469-2dserver3708:~/notespace/model$ python3 rouge_eval.py
 rouge1:  {'f': 0.2447488664574899, 'p': 0.3247486290344969, 'r': 0.2015132759240438}
@@ -80,4 +80,48 @@ beam:  ÀÙË¿ ÃæÁÏ £¬ ÈáÈí ÊæÊÊ £¬ Ç×·ô Í¸Æø ¡£ ÎÞ ¸ÖÈ¦ µÄ Éè¼Æ £¬ ÈÃ Äã ´©×Å ÎÞ Ê
 ref:  ÊæÊÊ ÎÞ ¸ÖÈ¦ ÎÄÐØ £¬ Ç×·ô Ï¸Äå µÄ Èí ÀÙË¿ £¬ ÓÐ×Å ºÜ ºÃ µÄ Í¸ÆøÐÔ ¼ò½à ¾«ÖÂ £¬ ¸ø ÈË ÄªÃû µÄ ¸ß¼¶ ¸Ð £¬ ËÄÅÅ ËÄ¿Û ÓÐÐ§ ÓÐÊÕ ¸± Èé ¼ÓÉÏ ÀÙË¿ ±ß µÄ µã×º £¬ ÈÃ Õâ¿î ÎÄÐØ ¸ü¼Ó µÄ ÓÐ Éè¼Æ ¸Ð £¬ ´©×Å ÐÔ¸Ð ÓÐ Å®ÈËÎ¶ £¬ ÎÞ ¸ÖÈ¦ Éè¼Æ £¬ ´©×Å ÎÞÊø ¡£¡¢
 
 
+####################################################################
+#         pointer = True¡¢coverage = True¡¢fine_tune = True       #
+####################################################################
+
+user10000469@jupyter-user10000469-2dserver3708:~/notespace/model$ python3 train.py
+Epoch 0:  training loss:3.5637240834236144 validation loss:4.35527384128326
+Epoch 1:  training loss:3.5631955435492775 validation loss:4.355839569217119
+Epoch 2:  training loss:3.5628712926344437 validation loss:4.355748562476574
+Epoch 3:  training loss:3.5628397029963406 validation loss:4.355452236456749
+Epoch 4:  training loss:3.5627221422195436 validation loss:4.3552320553706245
+Epoch 5:  training loss:3.5625938849882646 validation loss:4.3571330171365
+Epoch 6:  training loss:3.562515436215834  validation loss:4.35633045893449
+
+
+
+ser10000469@jupyter-user10000469-2dserver3708:~/notespace/model$ python3 rouge_eval.py
+rouge1:  {'f': 0.2539679336646092, 'p': 0.29760683622722944, 'r': 0.22755793386811263}
+rouge2:  {'f': 0.04159549546988031, 'p': 0.04883272657227425, 'r': 0.03724449893932103}
+rougeL:  {'f': 0.15159328298619731, 'p': 0.19441439827856305, 'r': 0.12807265189003056}
+
+
+user10000469@jupyter-user10000469-2dserver3708:~/notespace/model$ python3 predict.py
+source:  Å®Í¯ Á¬ÒÂÈ¹ Çï¶¬¼¾ ÐÂÆ· ±ùÑ© ÆæÔµ ¶ùÍ¯ ¼ÓÈÞ ³¤Ðä ¹«Ö÷ È¹ Æ·ÅÆÍ¯×° °®É¯ ³¤Ðä È¹×Ó ÒÂ·þ Ð¡Å®º¢ Ê¥µ®½Ú ÑÝ³ö Àñ·þ ´ºÇï À¶É« È¹×Ó ÅûÉ´ »Ê¹Ú Ä§ÕÈ 110Âë ½¨Òé ¸ß ×óÓÒ ¹«Ö÷ È¹ £¬ ¼ÓÈÞ ¼Óºñ º® ±£Å¯ £¬ ÖÊ¸Ð É´È¹ £¬ ÒøÏß ´îÅä °®ÐÄ £¬ ÁÁÆ¬ µã×º £¬ Åû·ç ¿É²ðÐ¶ £¬ Éý¼¶°æ £¬ Ñü²¿ Éè¼Æ £¬ Å¦¿Û Éè¼Æ £¬ ¸ßÁì Éè¼Æ £¬ ÃæÁÏ ÐÅ £¬ Ä£ÌØ Õ¹Ê¾ £¬ Í¼°¸ Éè¼Æ £¬ ¼ÓÈÞ ¼Óºñ ³¤ÈÞÃÞ £¬ ²úÆ· ÐÅÏ¢ £¬ °®ÐÄ Ë®×ê µÄ µã×º £¬ Í¹ £¬²ÉÓÃ ¼ÓÈÞ ¼Óºñ ÃæÁÏ £¬ ÈáÈí É´È¹ °Ú £¬ ÒøÉ« ÁÁÆ¬ Ñü´ø ¼ÓÉÏ £¬ ¸ü ¶àÑù»¯ µÄ Õ¹Ê¾ £¬ ±¦±¦ µÄ ÃÀÀö £¬ Æø £¬ ²» µô ÁÁÆ¬ £¬ £¬ ÖÊ¸Ð É´È¹ ¼ÓÉÏ ÁÁÆ¬ £¬ À¶É« £¬ Í¼°¸ Ó¡»¨ £¬ ·ÛÉ« £¬ ¸üÏÔ ÖÊ¸Ð £¬ ÊæÊÊ Í¸ £¬ ¿É²ðÐ¶ Åû·ç £¬ £¬ µÄ µã×º £¬ Î¨ÃÀ »ª £¬ ÏÔ ÒÂ·þ µÄ Æ·ÖÊ £¬ £¬ Çï¶¬ ÐÂ¿î ±ùÑ© ÆæÔµ Á¬ÒÂÈ¹ £¬ ÒÂ ³¤ £¬ ÊÊºÏ Éí¸ß £¬ ±ùÑ© ÆæÔµ À¶ £¬ À¶É« ¡¢ ·Û £¬ ÂëÊý £¬ ÐØÎ§ £¬ ±ùÑ© ÆæÔµ ·Û £¬ ¸ßÁì Éè¼Æ ¸ü ±£Å¯ £¬ ¼Óºñ ¼ÓÈÞÃæÁÏ ¼ÓÉÏ £¬ ±ùÑ© ÆæÔµ Ö÷Ìâ ¹«Ö÷ Í¼ £¬ ÈáÈíÐÔ Ç¿ ÊæÊÊ Ç×·ô ¾­¾Ã ÄÍ £¬ Éè¼Æ £¬ ¸ü ÊæÊÊ £¬ °¸ Éè¼Æ £¬ ´ó·½ £¬ ¸ßÁì Éè¼Æ ±£Å¯ £¬ °¸ Éè¼Æ £¬ Ï¸½Ú Õ¹Ê¾ £¬ Éè¼Æ £¬ ÊæÊÊ £¬ ±ùÑ© ÆæÔµ ¹«Ö÷ Í¼ £¬ ¼Æ £¬ ¼È ÃÀ¹Û £¬ ÓÖ ·½±ã¿ì½Ý £¬Á÷ÐÐÔªËØ Æ´½Ó ·ç¸ñ ÊçÅ®·ç Í¼°¸ ¿¨Í¨¶¯Âþ ²ÄÖÊ³É·Ö ¾Ûõ¥ÏËÎ¬ ÊÊÓÃÄêÁä 9-12Ëê ÃæÁÏ ÃÞ»ì·Ä È¹ÐÍ °ÙñÞÈ¹ ¼Û¸ñ 0-99 Ðä³¤ ³¤Ðä ·ÖÀà ÆäËü ÊÊÓÃ¼¾½Ú ¶¬¼¾ ÊÇ·ñÓÐÑü´ø ÎÞÑü´ø °²È«µÈ¼¶ BÀà ÉÏÊÐÊ±¼ä 2019ÄêÇï¼¾
+greedy:  <UNK> µÄ Á¬ÒÂÈ¹ £¬ ²ÉÓÃ ÁË ÁÁÆ¬ µÄ µã×º £¬ ÈÃ ÒÂ·þ ¸ü¼Ó µÄ Ê±ÉÐ £¬ Í¬Ê± Ò² ÄÜ ÕÃÏÔ ³ö º¢×Ó µÄ Í¯Õæ »îÁ¦ ¡£
+beam:  ¿É°® µÄ ÁÁÆ¬ Í¼°¸ Éè¼Æ £¬ ³äÂú ÁË ÌðÃÀ µÄ ÉÙÅ® ÆøÏ¢ £¬ ÈÃ º¢×Ó ´© ÆðÀ´ ¸ü ÓÐ ³¯Æø ¸Ð ¡£ ¿íËÉ µÄ °æÐÍ Éè¼Æ £¬ ²» Ìô Éí²Ä £¬ ÊÊºÏ ²»Í¬ ÌåÐÍ µÄ ÈË ´©×Å £¬ ²» ÌôÈË ´© ¡£
+ref:  Õâ ¿î Á¬ÒÂÈ¹ £¬ ÕûÌå µÄ Éè¼Æ ÔöÌí ²ã´Î¸Ð ¿´ÆðÀ´ Ê®·Ö ÓÅÑÅ ÄØ £¬ ²ÉÓÃ ÓÅÖÊ µÄ ¾Ûõ¥ÏËÎ¬ ÃæÁÏ £¬ ÖÊµØ ÈáÈí ÊæÊÊ £¬ ²» µôÉ« ²» ÆðÇò £¬ ¶ÀÌØ µÄ Äó ñÞÈ¹ °Ú Éè¼Æ £¬ ÕÃÏÔ ³ö Å®º¢×Ó ÌðÃÀ ÓÅÑÅ µÄ Ò»Ãæ £¬ ÈÃ±¦±´ Æ¯Æ¯ÁÁÁÁ µÄ ¶È¹ý ÏÄÌì
+
+user10000469@jupyter-user10000469-2dserver3708:~/notespace/model$ python3 predict.py
+source:  ÄÐ×° ¶¼ÊÐ ÌØ¹¤ Á¬Ã± ²å ¼çÐä ÔË¶¯ ÎÀÒÂ ºÚÉ« Ö´ÐÐ ±ê×¼ £¬ ²úµØ : ¹ã¶«Ê¡ ¹ãÖÝÊÐ £¬ Æ·Ãû : ÎÀÒÂ £¬ ( Ö±½Ó ½Ó´¥ Æ¤·ô Àà £¬ °²È« Àà±ð : £¬ ÃæÁÏ : 70% ÃÞ £¬ ³É·Ý : £¬ ÑÕÉ« : »ÒÉ« £¬ ¸ü ÓÐ ÔË¶¯¸Ð £¬ ÃÅ½ó À­Á´ £¬ £¬ 30% ¾Û±½ ÏËÎ¬ £¬ µõÅÆ ½éÉÜ £¬ Áì¿Ú ¡¢ ÏÂ°Ú ¡¢ Ðä¿Ú ²ÉÓÃ ÂÞÎÆ Éè¼Æ £¬ ·À·ç ½ôÖÂ £¬ Ï´Ë® ¿È ±êÊ¶ ×¢ÊÍ £¬ ²»¿É ÓÚ Ï´ºñ¶È ³£¹æ ²ÄÖÊ ÆäËü ÐäÐÍ ³£¹æÐä ÃæÁÏ²ÄÖÊ ÃÞ ÁìÐÍ Ô²Áì Á÷ÐÐÔªËØ ÆäËü ¿îÊ½ ¿ªÉÀ ÉÏÊÐÊ±¼ä 2018Äê´º¼¾ Í¼°¸ ÆäËü °æÐÍ ±ê×¼ÐÍ Ðä³¤ ³¤Ðä »ù´¡·ç¸ñ Çà´ºÁ÷ÐÐ ÊÊÓÃÈËÈº ÇàÄê ÊÊÓÃ³¡¾° ÆäËü ·ç¸ñ Çà´ºÐÝÏÐ
+greedy:  ÎÀÒÂ ²ÉÓÃ Á¬Ã± µÄ Éè¼Æ £¬ ¿ÉÒÔ ºÜ ºÃ µÄ ·À·ç ±£Å¯ £¬ Í¬Ê± Ò² ÄÜ Îª Äã µÄ Í·²¿ ´øÀ´ ·À·ç ±£Å¯ µÄ Ð§¹û ¡£ ¿íËÉ µÄ °æÐÍ Éè¼Æ £¬ °üÈÝÐÔ Ç¿ £¬ ÊÊºÏ ¸ü¶à ÉíÐÍ ´©×Å ¡£
+beam:  ÎÀÒÂ ²ÉÓÃ Á¬Ã± µÄ Éè¼Æ £¬ ¿ÉÒÔ ºÜ ºÃ µÄ ÌùºÏ ¾±²¿ £¬ ·À·ç ±£Å¯ ¡£ ¿íËÉ µÄ °æÐÍ Éè¼Æ £¬ °üÈÝÐÔ Ç¿ £¬ ÊÊºÏ ¸ü¶à ÉíÐÍ ´©×Å ¡£ Á¬Ã± µÄ Éè¼Æ £¬ ·À·ç ±£Å¯ £¬ ÇáËÉ ´© ³ö ÐÝÏÐ ³±·¶ ¡£
+ref:  Á¬Ã± Éè¼Æ ÅäºÏ Ïð½î ³éÉþ £¬ Îª Ë§Æø ÎÀÒÂ Æ½Ìí ¶¯¸Ð ÆøÏ¢ £¬ ¿íËÉ Á¢Ìå µÄ °æÐÍ ¼ô²Ã ¼ÓÉÏ ²àÃÅ ½ó ×² É«Ö¯ ´ø ¹¤ÒÕ £¬ Õ¹ÏÖ ×¿¶û ²»Í¬ µÄ Éè¼Æ Æ·Î¶ Óë Çà´º ¸öÐÔ ¡£ ²å ¼çÐä Éè¼Æ ÓÅ»¯ ±Û°ò £¬ ´©×Å ÇáËÉ ¡£µ¯ÐÔ Ðä °Ú ÊÕÊø Áé»î ´îÅä ÀûÂä 
+
+user10000469@jupyter-user10000469-2dserver3708:~/notespace/model$ python3 predict.py
+source:  ÏÄÍÞ Ö®Ðã ÄÚÒÂ Å® ÎÄÐØ ÎÞ ¸ÖÈ¦ ¼òÔ¼ ÀÙË¿ ÐÔ¸Ð ¾ÛÂ£ µ÷ÕûÐÍ ÊÕ¸±Èé ÐØÕÖ ÐÓÉ« ºñ±­ Éè¼Æ µÄ ½¾°Á £¬ ²ÉÓÃ Q µ¯ KE Ä§Á¦ ½º £¬ ´ïµ½ Ê³Æ·ÎÀÉú ±ê×¼ £¬ Í¸Æø ·ä³² ¶´¶´ ¹è½º £¬ ÊæÊÊ ÎÞ ¸ÖÈ¦ £¬ Á½ÖÖ ±­ÐÍ Á¿Éí ´òÔì £¬ KE Ä§Á¦ ½º ÕÖ±­ £¬ ÄÚÒÂ µÄ Ï¸½Ú ÏÄÍÞ ´Ó²» ½« ¾Í £¬ ÐÔ¸Ð ¾ÛÂ£ ÎÂÈá ÓÅÑÅ £¬ ËÄÅÅ ËÄ¿Û £¬ ¿É ¸ù¾Ý ÌåÐÍ ºÍ ÉúÀí ÖÜÆÚ ×ÔÓÉ µ÷½Ú £¬ Ë¿»¬ Ç×·ô ±­Ãæ £¬ ÈáÈí ÀÙË¿ £¬ ÐÔ¸Ð ¾ÛÂ£ £¬ Ê±ÉÐ ÓÅÑÅ £¬ ¼Ó¿í ¼ç´ø £¬ ¿É²ðÐ¶ µ÷½Ú £¬ 9 ×ÖÐÎ ¹Ò¿Û £¬ ´©×Å ¸ü ÎÈ¶¨ £¬ ÎÞ ¸ÖÈ¦ ÈáÃÀ ÀÙË¿ ¾ÛÂ£ ÎÄÐØ £¬ ÈÎÒâ Å¤Çú À­Éì ²» ±äÐÎ £¬ ÔöÇ¿ ÄÚÒÂ Ê¹ÓÃÊÙÃü £¬ ¸ø Äã ÊæÊÊ ÓÖ ¡° ÓÐ ÁÏ ¡± µÄ ÌåÑé £¬ ÐÔ¸Ð ÀÙË¿ Å®ÄÚ¿ã £¬ ÐÓÉ« ÕýÃæ £¬ Ï¸½ÚÕ¹Ê¾ £¬ Ä£ÌØ Õ¹Ê¾ £¬ ¸ù¾Ý ²»Í¬ ÈËÈº ´òÔì ²»Í¬ ÕÖ±­ ºñ¶È £¬ Ö»Îª Äú µÄ ¸üºÃ ÌåÑé £¬ Ö» Îª Âú×ã Äã ¶Ô ÄÚÒÂ ÌôÌÞ µÄ ±ê×¼ £¬ ÊôÓÚ Äã µÄ Ð¡ ÐÒÔË £¬ ÑÕÉ« Ñ¡Ôñ £¬ ¸üÏÔ Î¨ÃÀ µäÑÅ £¬ ÅäÒÔ ¼¦ÐÄ µÄ Ð¡»¨ ÕäÖé ×°ÊÎ£¬£¬ ·À»¬ ¼ç´ø £¬ Òø»Ò ÕýÃæ £¬ ºÚÉ« ÕýÃæ £¬ ºÚÉ« ±³Ãæ £¬ ¾ÛÂ£ Í¦ÐØ £¬ Òø»Ò ±³Ãæ £¬ Q µ¯ Í¸Ã÷ Èé½º £¬ ÈçÍ¬ Ó¤¶ù ÄÌ×ì °ã °²È« £¬ KE Ä§Á¦ ½º £¬ Ä§Á¦ Í¦ Éè¼Æ £¬ Ô¼ 1cm £¬ Ô¼ 3cm £¬ ¿É»ú Ï´ £¬ ²» ±äÐÎ £¬ ÈáÈíÓÐ¹âÔó¸Ð µÄ ÀÙË¿ Ó¡»¨ ±­Ãæ £¬ £¬ ÊÕ Ò¸ÏÂ Ö¬·¾ £¬ ÐÓÉ« ±³Ãæ £¬ ÈáÈí £¬ ·¨¹ú µÄ ÀÙË¿ ºÍ »¨±ß £¬ ËÄÅÅ ËÄ¿ÛÊÊÓÃ¼¾½Ú ËÄ¼¾ Í¼°¸ ´¿É« ÓÐÎÞ¸ÖÈ¦ ÎÞ¸ÖÈ¦ ¹¦ÄÜ ÉÏÍÐ ÕÖ±­ 3/4ÕÖ±­ ÊÊºÏÐØÐÍ ÏÂ´¹ ·ç¸ñ ÐÔ¸Ð ÕÖ±­ÀïÁÏ¹è½º ²åÆ¬ ÎÞ²åÆ¬ ÃæÁÏ ½õÂÚ ÐØÎ§³ßÂë 80A Ä£±­ºñ¶È ÉÏ±¡ÏÂºñÄ£±­ ÊÊÓÃÈËÈº ÇàÄê ¿îÊ½Ï¸½Ú ÀÙË¿±ß
+greedy:  <UNK> ÀÙË¿ ÀÙË¿ £¬ ±­Ãæ µÄ ÀÙË¿ »¨±ß £¬ ÐÔ¸Ð ²»Ê§ ÐÔ¸Ð £¬ ÈÃ Äã ÇáËÉ ´© ³ö ÀËÂþ Î¨ÃÀ µÄ ·ÕÎ§ ¡£ ÎÞ ¸ÖÈ¦ µÄ Éè¼Æ £¬ ÄÜ¹» ÓÐÐ§ µÄ ³ÐÍÐ ÐØ²¿ £¬ ÈÃ Äã ÇáËÉ ÓµÓÐ ÊæÊÊ µÄ ´©×Å ÌåÑé ¡£
+beam:  Éè¼Æ ¸Ð Ê®×ã £¬ ÈÃ Äã ´© ÆðÀ´ ¸ü¼Ó µÄ ÐÔ¸Ð ¡£ ÎÞ ¸ÖÈ¦ µÄ Éè¼Æ £¬ ¿ÉÒÔ ºÜ ºÃ µÄ ÌùºÏ ÐØ²¿ £¬ ²»»á ²úÉú ÀÕ µÄ Çé¿ö £¬ ÈÃ Äã Ê±¿Ì ±£³Ö ¸ÉË¬ ÊæÊÊ ¡£ ÎÞ ¸ÖÈ¦ Éè¼Æ £¬ ¿ÉÒÔ ºÜ ºÃ µÄ ³ÐÍÐ ÐØ²¿ ¡£
+ref:  ÊæÊÊ ÎÞ ¸ÖÈ¦ ÎÄÐØ £¬ Ç×·ô Ï¸Äå µÄ Èí ÀÙË¿ £¬ ÓÐ×Å ºÜ ºÃ µÄ Í¸ÆøÐÔ ¼ò½à ¾«ÖÂ £¬ ¸ø ÈË ÄªÃû µÄ ¸ß¼¶ ¸Ð £¬ ËÄÅÅ ËÄ¿Û ÓÐÐ§ ÓÐÊÕ ¸± Èé ¼ÓÉÏ ÀÙË¿ ±ß µÄ µã×º £¬ ÈÃ Õâ¿î ÎÄÐØ ¸ü¼Ó µÄ ÓÐ Éè¼Æ ¸Ð £¬ ´©×Å ÐÔ¸Ð ÓÐ Å®ÈËÎ¶ £¬ ÎÞ ¸ÖÈ¦ Éè¼Æ £¬ ´©×Å ÎÞÊø ¡£¡¢
+
+user10000469@jupyter-user10000469-2dserver3708:~/notespace/model$ python3 predict.py
+source:  º£À½ Ö®¼Ò¶ì ÓðÈÞ·þ ÄÐ ¶¬¼¾ ÐÂÆ· ÊæÊÊ ±£Å¯ ÎÞÃ± Á¢Áì ÍâÌ× ºÚÉ« Ï¸½Ú Õ¹Ê¾ £¬ Ï´µÓ Ñø»¤ £¬ ÉÌÆ·ÐÅÏ¢ £¬ ÃæÁÏ Õ¹Ê¾ £¬ Ê±ÉÐ Á¢Áì Éè¼Æ £¬ ÎÂÅ¯ ²±¾± £¬ 1 . ½¨Òé ÖÐÐÔ ÎÂºÍ Ï´µÓ¼Á ¸ÉÏ´ £¬ Ë®ÎÂ ²» ³¬¹ý 40¶È £¬ ÐÝÏÐ¿ã £¬ ´óÒÂ £¬ Ìî³äÎï Ò» : °× ¶ìÈÞ ( º¬ÈÞÁ¿ 90% ) £¬ ÓðÈÞ·þ £¬ ÖÊ¸Ð À­Á´ £¬ £¬ ¶àÉ« Õ¹Ê¾ £¬ ÉÌÆ· Ö¸ £¬ ÊæÊÊ Ðä¿Ú £¬ Ä§Êõ Ìù Éè¼Æ £¬ ¶àÉ« Ñ¡Ôñ £¬ ¸¨Öú µõÅÆ ÇåÎú ³ÊÏÖ £¬ °²ÐÄ ´©×Å £¬ ºÚÉ« ±³ £¬ ºÚÉ« Õý £¬ ÊæÊÊ ±£Å¯ ÃæÁÏ £¬ ÎÂÅ¯ ÓÐÐÍ ´©×Å £¬ Ë³»¬ Ò×À­ £¬ Å£×Ð¿ã £¬ ÃæÁÏ : 88% ½õ ö¤ 12% °± ö¤ ( Í¿²ã ³ýÍâ £¬ À¶»Ò ±³ £¬ 1 . ½¨Òé ÊÖÏ´ »ò ÇáÈá »úÏ´ ; Ë®ÎÂ ²» ³¬¹ý 40 ¶È £¬ £¬ ºÚÉ« G7 £¬ ÈáÈí Ö¸Êý £¬ ÖÐÂÌ H3 £¬ À¶»Ò H4 £¬ À¶»Ò Õý £¬ 2 . ÓÃ ²» ³¬¹ý 30 ¶È µÄ ÎÂË® µ÷ÔÈ ÖÐÐÔ Ï´µÓ¼Á ºó £¬ ¿ã×Ó £¬ ·´Ãæ ³¯Íâ ½þÅÝ 3 ·ÖÖÓ £¬ Ëæ¼´ ÓÃÇå Ë®Æ¯ ¾» £¬ µ¯ÐÔ Ö¸Êý £¬ °æÐÍ Ö¸Êý £¬ 2 . Ë®ÎÂ ¿ØÖÆ ÔÚ 30 ¶È ×óÓÒ £¬ ·´Ãæ ÇåÏ´£¬ ½¨Òé ÉîÇ³ ÒÂ £¬ 2 . Ñ¡ÓÃ ÖÐÐÔ ÎÂºÍ Ï´µÓ¼Á £¬ Ë®ÎÂ ²»³¬ 40 ¶È £¬ £¬ ÅÝ Ê±¼ä Îð ³¬¹ý 5 ·ÖÖÓ £¬ £¬ 2 . °´ÄÚ ·ì ±êÊ¶ Ï´µÓ £¬ ÉîÇ³ ÒÂ·þ ·Ö¿ª Ï´µÓ £¬ 2 . Îª ±£³Ö ÒÂ·þ É«Ôó £¬ ½¨Òé Å£×Ð ÍâÌ× ½þÅÝ Ê±¼ä ²»ÒË£¬ 1 . Ê×´Î ÇåÏ´ ½¨Òé ¼Ó´× ½þÅÝ £¬ ¸ÄÉÆ µôÉ« ÎÊÌâ £¬ 1 . ¾¡Á¿ ÊÖÏ´ ; 30 ¶È ÒÔÏÂ µÄ ÎÂË® µÍÅÝÌî³äÎï °×¶ìÈÞ º¬ÈÞÁ¿ 80-89% ÉÏÊÐÊ±¼ä 2019Äê¶¬¼¾ ÁìÐÍ Á¢Áì Á÷ÐÐÔªËØ ÆäËü ÊÊÓÃÈËÈº ÇàÄê Í¼°¸ ÆäËü ³äÈÞÁ¿ 100g£¨º¬£©-150g£¨²»º¬£© °æÐÍ ±ê×¼ÐÍ ÒÂ³¤ ¶Ì¿î ·ç¸ñ ÐÝÏÐ·ç »ù´¡·ç¸ñ Çà´ºÁ÷ÐÐ ºñ¶È ³£¹æ ²ÄÖÊ ÆäËü
+greedy:  Á¢Áì Éè¼Æ £¬ ÐÞÊÎ ¾±²¿ ÏßÌõ £¬ ÃÀ¹Û´ó·½ ¡£ ¾«Õ¿ µÄ ·ìÏß ¹¤ÒÕ £¬ ×ßÏß Ï¸ÃÜ Á÷³© £¬ ÀÎ¹Ì ÄÍ´© ¡£
+beam:  °ôÇò ·þ µÄ °æÐÍ Éè¼Æ £¬ ºÜ ºÃ µÄ ÐÞÊÎ ÁË Äã µÄ Éí²Ä £¬ ÈÃ Äã ÇáËÉ ´© ³ö Ë§Æø ÐÍ ÄÐ·ç ¡£ Á¢Áì µÄ Éè¼Æ £¬ ÐÞÊÎ ¾±²¿ ÏßÌõ £¬ ÃÀ¹Û´ó·½ ¡£
+ref:  ÄÚÀï °× Ñ¼ÈÞ Ìî³ä £¬ ¼æ¾ß ±£Å¯ÐÔ ºÍ Í¸ÆøÐÔ £¬ ÓÐÐ§ Ëø×¡ ÉíÌå ÎÂ¶È ¡£ Ê±ÉÐ Á¢Áì Éè¼Æ £¬ ÄÜ ÐÞÊÎ ¾±²¿ ÏßÌõ £¬ ¸üÏÔ ÄÐÐÔ Éí×Ë Í¦°Î ¡£ ¸ßÃÜ¶È ¾Ûõ¥ÏËÎ¬ ÃæÁÏ £¬ ÉÏÉí ÇáÓ¯ £¬ ÇÒ ¾ßÓÐ Ò»¶¨ µÄ ·À·ç ÐÔ £¬ ÌáÉý ÁË ÊæÊÊ¶È ¡£
 

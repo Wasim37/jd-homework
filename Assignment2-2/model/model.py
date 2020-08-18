@@ -42,6 +42,7 @@ class Encoder(nn.Module):
                             batch_first=True)
 
 #     @timer('encoder')
+    # forward调用链 https://blog.csdn.net/u011501388/article/details/84062483
     def forward(self, x):
         """Define forward propagation for the endoer.
 
@@ -112,10 +113,12 @@ class Attention(nn.Module):
         # (batch_size, 1, 2*hidden_units)
         s_t = s_t.transpose(0, 1)
         # (batch_size, seq_length, 2*hidden_units)
+        # contiguous 把tensor变成在内存中连续分布的形式
+        # https://blog.csdn.net/Z199448Y/article/details/89384158
         s_t = s_t.expand_as(encoder_output).contiguous()
 
         # calculate attention scores
-        # Equation(11).
+        # 论文公式 Equation(11).
         # Wh h_* (batch_size, seq_length, 2*hidden_units)
         encoder_features = self.Wh(encoder_output.contiguous())
         # Ws s_t (batch_size, seq_length, 2*hidden_units)
@@ -139,6 +142,8 @@ class Attention(nn.Module):
         # Normalize attention weights after excluding padded positions.
         normalization_factor = attention_weights.sum(1, keepdim=True)
         attention_weights = attention_weights / normalization_factor
+        # torch.bmm() 与 torch.matmul() 区别 https://blog.csdn.net/foneone/article/details/103876519
+        # bmm 强制规定维度和大小相同
         # (batch_size, 1, 2*hidden_units)
         context_vector = torch.bmm(attention_weights.unsqueeze(1),
                                    encoder_output)
@@ -167,7 +172,6 @@ class Decoder(nn.Module):
         self.DEVICE = torch.device('cuda') if is_cuda else torch.device('cpu')
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
-        # 单向LSTM层
         self.lstm = nn.LSTM(embed_size, hidden_size, batch_first=True)
         self.W1 = nn.Linear(self.hidden_size * 3, self.hidden_size)
         self.W2 = nn.Linear(self.hidden_size, vocab_size)
@@ -211,7 +215,7 @@ class Decoder(nn.Module):
         concat_vector = torch.cat([decoder_output, context_vector], dim=-1)
 
         # calculate vocabulary distribution
-        # W1、W2和softmax，对应论文中的公式4
+        # 论文公式4
         # (batch_size, hidden_units)
         FF1_out = self.W1(concat_vector)
         # (batch_size, vocab_size)
@@ -295,6 +299,7 @@ class PGN(nn.Module):
 
         if (os.path.exists(curPath + config.encoder_save_name)):
             print('Loading model: ', config.encoder_save_name)
+            # 两种模型的保存与加载方式：https://www.jianshu.com/p/6ba95579082c
             self.encoder = torch.load(curPath + config.encoder_save_name)
             self.decoder = torch.load(curPath + config.decoder_save_name)
             self.attention = torch.load(curPath + config.attention_save_name)
@@ -315,15 +320,20 @@ class PGN(nn.Module):
         但是Attention的分布和P_vocab的分布的长度和对应位置代表的token是不一样的，所以在计算 final distribution 的时候应该如何对应上呢?
 
         这里的推荐的方式是，先对 P_vocab 进行扩展，将 source 中的 oov 添 加到 P_vocab 的尾部，
-        得到 P_vocab_extend 这样 attention weights 中的每⼀个 token 都能在 P_vocab_extend 中找到对应的位置，
-        然后将对应的 attention weights 叠加到扩展后的 P_vocab_extend 中的对 应位置，得到 finaldistribution。
+        得到 P_vocab_extend 这样 attention weights 中的每一个 token 都能在 P_vocab_extend 中找到对应的位置，
+        然后将对应的 attention weights 叠加到扩展后的 P_vocab_extend 中的对应位置，得到 finaldistribution。
+
+        为了做到将 attention weights 这个 tensor 中的值添加到 P_vocab_extend 中对应的位置，
+        你需要使到 torch.Tensor.scatter_add 这个函数，
+        P_vocab_extend 作为添加值的目标 tensor，attention_weights 作为 添加值的来源 tensor，
+        index 化后的 source 可以作为 attention_weights 的添加依据。
 
         Args:
             x: (batch_size, seq_len)
             p_gen: (batch_size, 1)
             p_vocab: (batch_size, vocab_size)
             attention_weights: (batch_size, seq_len)
-            max_oov: (Tensor or int): The maximum sequence length in the batch.
+            max_oov: (Tensor or int): The maximum sequence length in the batch. 单个批次中oov的最大长度
 
         Returns:
             final_distribution (Tensor):
@@ -340,6 +350,7 @@ class PGN(nn.Module):
 
         batch_size = x.size()[0]
         # Clip the probabilities.
+        # 将输入input张量每个元素的夹紧到区间 [min,max][min,max]，并返回结果到一个新张量
         p_gen = torch.clamp(p_gen, 0.001, 0.999)
         # Get the weighted probabilities.
         # Refer to equation (9).
@@ -384,6 +395,8 @@ class PGN(nn.Module):
         #          TODO: module 2 task 4          #
         ###########################################
         x_copy = replace_oovs(x, self.v)
+        # torch.ne 比较每个位置是否相等，不相等返回true
+        # https://blog.csdn.net/m0_37962192/article/details/105308012
         x_padding_masks = torch.ne(x, 0).byte().float()
         encoder_output, encoder_states = self.encoder(x_copy)
         # Reduce encoder hidden states.
@@ -392,6 +405,7 @@ class PGN(nn.Module):
         coverage_vector = torch.zeros(x.size()).to(self.DEVICE)
         # Calculate loss for every step.
         step_losses = []
+        # 论文公式 equation (10).
         for t in range(y.shape[1]-1):
 
             # Do teacher forcing.
@@ -419,6 +433,7 @@ class PGN(nn.Module):
             # Get the probabilities predict by the model for target tokens.
             if not config.pointer:
                 y_t = replace_oovs(y_t, self.v)
+            # https://blog.csdn.net/cpluss/article/details/90260550
             target_probs = torch.gather(final_dist, 1, y_t.unsqueeze(1))
             target_probs = target_probs.squeeze(1)
 

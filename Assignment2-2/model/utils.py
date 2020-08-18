@@ -125,7 +125,7 @@ def outputids2words(id_list, source_oovs, vocab):
 def source2ids(source_words, vocab):
     """Map the source words to their ids and return a list of OOVs in the source.
     当训练好模型要对测试集进行测试时，测试集中的样本往往会包含OOV tokens。
-    本函数需要你将在词典中的 token 映射到相应的index，对于oov tokens则需要记录下来并返回。
+    本函数需要将词典中的 token 映射到相应的index，对于oov tokens，需要记录下来并返回。
 
     Args:
         source_words: list of words (strings)

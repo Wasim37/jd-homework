@@ -44,7 +44,7 @@ class PairDataset(object):
         self.pairs = []
 
         with open(curPath + filename, 'rt', encoding='utf-8') as f:
-            next(f)
+            # next(f) 会浪费一行数据，没什么用应该，此处注释点
             for i, line in enumerate(f):
                 # Split the source and reference by the <sep> tag.
                 pair = line.strip().split('<sep>')
