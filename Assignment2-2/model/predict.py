@@ -205,9 +205,6 @@ class Predict():
         # initialize decoder states with encoder forward states
         decoder_states = self.model.reduce_state(encoder_states)
 
-        # initialize the hypothesis with a class Beam instance.
-        attention_weights = torch.zeros((1, x.shape[1])).to(self.DEVICE)
-
         init_beam = Beam([self.vocab.SOS],
                          [0],
                          decoder_states,

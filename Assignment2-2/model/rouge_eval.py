@@ -73,6 +73,7 @@ rouge_eval = RougeEval(config.test_data_path)
 predict = Predict()
 rouge_eval.build_hypos(predict)
 result = rouge_eval.get_average()
+# Rouge简介：https://blog.csdn.net/mch2869253130/article/details/89810974
 print('rouge1: ', result['rouge-1'])
 print('rouge2: ', result['rouge-2'])
 print('rougeL: ', result['rouge-l'])
