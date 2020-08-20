@@ -450,7 +450,7 @@ class PGN(nn.Module):
 
             if config.coverage:
                 # Add coverage loss.
-                # 论文公式12
+                # 论文公式12，min即强迫模型多去关注之前没被注意过的角落
                 ct_min = torch.min(attention_weights, coverage_vector)
                 cov_loss = torch.sum(ct_min, dim=1)
                 # 论文公式13

@@ -160,8 +160,9 @@ def source2ids(source_words, vocab):
 def abstract2ids(abstract_words, vocab, source_oovs):
     """Map tokens in the abstract (reference) to ids.
        OOV tokens in the source will be remained.
-       由于PGN可以生成在source出现过的OOV tokens，所以这次我们对reference的token ids需要换一种映射方式，
+       由于PGN可以生成在source出现过的OOV tokens，所以需要对reference的token ids需要换一种映射方式，
        即将在source出现过的OOV tokens也记录下来并给个临时的id，而不是直接替换为"<UNK>" token，以便在训练阶段准确的计算损失。
+       因为不同的unk代表的含义不同，如果都用统一的id来表示，误差相对更大
 
     Args:
         abstract_words (list): Tokens in the reference.
