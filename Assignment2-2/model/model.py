@@ -118,7 +118,6 @@ class Attention(nn.Module):
         s_t = s_t.expand_as(encoder_output).contiguous()
 
         # calculate attention scores
-        # 论文公式11
         # Wh h_* (batch_size, seq_length, 2*hidden_units)
         encoder_features = self.Wh(encoder_output.contiguous())
         # Ws s_t (batch_size, seq_length, 2*hidden_units)
@@ -131,10 +130,11 @@ class Attention(nn.Module):
         ###########################################
         # Add coverage feature.
         if config.coverage:
-            # 论文公式10
             coverage_features = self.wc(coverage_vector.unsqueeze(2))  # wc c
+            # 论文公式11相对公式1，新增 coverage_features
             att_inputs = att_inputs + coverage_features
 
+        # 论文公式11
         # (batch_size, seq_length, 1)
         score = self.v(torch.tanh(att_inputs))
         # (batch_size, seq_length)
@@ -156,6 +156,7 @@ class Attention(nn.Module):
         #          TODO: module 2 task 2.3        #
         ###########################################
         # Update coverage vector.
+        # 论文公式10。解码的每个时间步，通过attention维护coverage_vector
         if config.coverage:
             coverage_vector = coverage_vector + attention_weights
 
@@ -236,7 +237,8 @@ class Decoder(nn.Module):
         p_gen = None
         if config.pointer:
             # Calculate p_gen.
-            # Refer to equation (8).
+            # Refer to equation (8). 论文公式8
+            # 虽然论文是各项相加，但此处使用的是cat拼接。只是信息累加的方式不同而已
             x_gen = torch.cat([
                 context_vector,
                 s_t.squeeze(0),
@@ -321,12 +323,12 @@ class PGN(nn.Module):
         pointer是根据attention分布，从source中挑选最佳的token作为输出; generator是根据P_vocab分布，从字典中挑选最佳的token作为输出。
         但是Attention的分布和P_vocab的分布的长度和对应位置代表的token是不一样的，所以在计算 final distribution 的时候应该如何对应上呢?
 
-        这里的推荐的方式是，先对 P_vocab 进行扩展，将 source 中的 oov 添 加到 P_vocab 的尾部，
+        这里的推荐方式是，先对 P_vocab 进行扩展，将 source 中的 oov 添 加到 P_vocab 的尾部，
         得到 P_vocab_extend 这样 attention weights 中的每一个 token 都能在 P_vocab_extend 中找到对应的位置，
         然后将对应的 attention weights 叠加到扩展后的 P_vocab_extend 中的对应位置，得到 finaldistribution。
 
         为了做到将 attention weights 这个 tensor 中的值添加到 P_vocab_extend 中对应的位置，
-        你需要使到 torch.Tensor.scatter_add 这个函数，
+        需要使到 torch.Tensor.scatter_add 这个函数，
         P_vocab_extend 作为添加值的目标 tensor，attention_weights 作为 添加值的来源 tensor，
         index 化后的 source 可以作为 attention_weights 的添加依据。
 
@@ -355,7 +357,7 @@ class PGN(nn.Module):
         # 将输入input张量每个元素的夹紧到区间 [min,max][min,max]，并返回结果到一个新张量
         p_gen = torch.clamp(p_gen, 0.001, 0.999)
         # Get the weighted probabilities.
-        # Refer to equation (9).
+        # Refer to equation (9). 参考论文公式9
         p_vocab_weighted = p_gen * p_vocab
         # (batch_size, seq_len)
         attention_weighted = (1 - p_gen) * attention_weights
@@ -367,7 +369,8 @@ class PGN(nn.Module):
         p_vocab_extended = torch.cat([p_vocab_weighted, extension], dim=1)
 
         # Add the attention weights to the corresponding vocab positions.
-        # Refer to equation (9).
+        # Refer to equation (9). 参考论文公式9
+        # scatter_add图表示例：https://www.cnblogs.com/dogecheng/p/11938009.html
         final_distribution = \
             p_vocab_extended.scatter_add_(dim=1,
                                           index=x,
