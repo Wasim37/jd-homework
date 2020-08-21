@@ -74,6 +74,9 @@ class Embedding(metaclass=SingletonMetaclass):
         @return: None
         '''
         logger.info('train tfidf')
+        ###########################################
+        #          TODO: module 1 task 1.1        #
+        ###########################################
         count_vect = TfidfVectorizer(stop_words=self.stopWords,
                                      max_df=0.4,
                                      min_df=0.001,
@@ -82,6 +85,9 @@ class Embedding(metaclass=SingletonMetaclass):
         logger.info('train word2vec')
 
         self.data['text'] = self.data["text"].apply(lambda x: x.split(' '))
+        ###########################################
+        #          TODO: module 1 task 1.2        #
+        ###########################################
         self.w2v = models.Word2Vec(min_count=2,
                                    window=5,
                                    size=300,
@@ -100,6 +106,9 @@ class Embedding(metaclass=SingletonMetaclass):
 
         logger.info('train fast')
         # 训练fast的词向量
+        ###########################################
+        #          TODO: module 1 task 1.3        #
+        ###########################################
         self.fast = models.FastText(
             self.data["text"],
             size=300,  # 向量维度
@@ -112,6 +121,9 @@ class Embedding(metaclass=SingletonMetaclass):
             max_vocab_size=50000)
 
         logger.info('train lda')
+        ###########################################
+        #          TODO: module 1 task 1.4        #
+        ###########################################
         self.id2word = gensim.corpora.Dictionary(self.data.text)
         corpus = [self.id2word.doc2bow(text) for text in self.data.text]
         self.LDAmodel = LdaMulticore(corpus=corpus,
@@ -123,6 +135,10 @@ class Embedding(metaclass=SingletonMetaclass):
                                      alpha='asymmetric')
 
         logger.info('train autoencoder')
+
+        ###########################################
+        #          TODO: module 1 task 1.5        #
+        ###########################################
         self.ae.train(self.data)
 
     def saver(self):

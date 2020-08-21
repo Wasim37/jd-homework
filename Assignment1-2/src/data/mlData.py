@@ -52,14 +52,23 @@ class MLData(object):
         self.train["text"] = self.train['title'] + self.train['desc']
         self.dev["text"] = self.dev['title'] + self.dev['desc']
         # 分词
+        ###########################################
+        #          TODO: module 2 task 1.1        #
+        ###########################################
         self.train["queryCut"] = self.train["text"].apply(query_cut)
         self.dev["queryCut"] = self.dev["text"].apply(query_cut)
         # 过滤停止词
+        ###########################################
+        #          TODO: module 2 task 1.2        #
+        ###########################################
         self.train["queryCutRMStopWord"] = self.train["queryCut"].apply(
             lambda x: [word for word in x if word not in self.em.stopWords])
         self.dev["queryCutRMStopWord"] = self.dev["queryCut"].apply(
             lambda x: [word for word in x if word not in self.em.stopWords])
         # 生成label 与id的对应关系， 并保存到文件中， 如果存在这个文件则直接加载
+        ###########################################
+        #          TODO: module 2 task 1.3        #
+        ###########################################
         if os.path.exists(config.root_path + '/data/label2id.json'):
             labelNameToIndex = json.load(
                 open(config.root_path + '/data/label2id.json', encoding='utf-8'))

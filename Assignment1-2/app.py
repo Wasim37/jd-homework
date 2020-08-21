@@ -33,6 +33,9 @@ def gen_ans():
     @param {type}
     @return: json格式， 其中包含标签和对应概率
     '''
+    ###########################################
+    #          TODO: module 5 task 1.2        #
+    ###########################################
     result = {}
     title = request.form['title']
     desc = request.form['desc']    with sess.as_default():

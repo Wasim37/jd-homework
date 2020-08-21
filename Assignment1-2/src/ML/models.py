@@ -55,6 +55,9 @@ class Models(object):
         @return: No return
         '''
         # 加载图像处理模型， resnet, resnext, wide resnet， 如果支持cuda, 则将模型加载到cuda中
+        ###########################################
+        #          TODO: module 2 task 2.1        #
+        ###########################################
         self.res_model = torchvision.models.resnet152(
             pretrained=True)  # res model for modal feature [1* 1000]
         self.res_model = self.res_model.to(config.device)
@@ -107,6 +110,9 @@ class Models(object):
 
         logger.info("generate embedding feature ")
         # 获取tfidf 特征， word2vec 特征， word2vec不进行任何聚合
+        ###########################################
+        #          TODO: module 3 task 1.1        #
+        ###########################################
         train_tfidf, train = get_embedding_feature(self.ml_data.train,
                                                    self.ml_data.em.tfidf,
                                                    self.ml_data.em.w2v)
@@ -146,6 +152,9 @@ class Models(object):
             if x + '.jpg' in cover else '')
 
         # 根据封面获取封面的embedding
+        ###########################################
+        #          TODO: module 3 task 1.2        #
+        ###########################################
         train['res_embedding'] = train['cover'].progress_apply(
             lambda x: get_img_embedding(x, self.res_model))
         test['res_embedding'] = test['cover'].progress_apply(
@@ -162,6 +171,9 @@ class Models(object):
             lambda x: get_img_embedding(x, self.wide_model))
 
         logger.info("generate bert feature ")
+        ###########################################
+        #          TODO: module 3 task 1.3        #
+        ###########################################
         train['bert_embedding'] = train['text'].progress_apply(
             lambda x: get_pretrain_embedding(x, self.bert_tonkenizer, self.bert
                                              ))
@@ -170,6 +182,9 @@ class Models(object):
                                              ))
 
         logger.info("generate lda feature ")
+        ###########################################
+        #          TODO: module 3 task 1.4        #
+        ###########################################
         # 生成bag of word格式数据
         train['bow'] = train['queryCutRMStopWord'].apply(
             lambda x: self.ml_data.em.lda.id2word.doc2bow(x))
@@ -235,6 +250,9 @@ class Models(object):
         )
         model_name = None
         # 是否使用不平衡数据处理方式，上采样， 下采样， ensemble
+        ###########################################
+        #          TODO: module 4 task 1.1        #
+        ###########################################
         if imbalance_method == 'over_sampling':
             logger.info("Use SMOTE deal with unbalance data ")
             self.X_train, self.y_train = SMOTE().fit_resample(
@@ -259,6 +277,9 @@ class Models(object):
         logger.info('search best param')
         # 使用set_params 将搜索到的最优参数设置为模型的参数
         if imbalance_method != 'ensemble':
+            ###########################################
+            #          TODO: module 4 task 1.2        #
+            ###########################################
             # param = self.param_search(search_method=search_method)
             # param['params']['num_leaves'] = int(param['params']['num_leaves'])
             # param['params']['max_depth'] = int(param['params']['max_depth'])
@@ -270,6 +291,9 @@ class Models(object):
         logger.info('fit model ')
         # 训练， 并输出模型的结果
         self.model.fit(self.X_train, self.y_train)
+        ###########################################
+        #          TODO: module 4 task 1.3        #
+        ###########################################
         Test_predict_label = self.model.predict(self.X_test)
         Train_predict_label = self.model.predict(self.X_train)
         per, acc, recall, f1 = get_score(self.y_train, self.y_test,
@@ -286,6 +310,9 @@ class Models(object):
         self.save(model_name)
 
     def process(self, title, desc):
+        ###########################################
+        #          TODO: module 5 task 1.1        #
+        ###########################################
         # 处理数据, 生成模型预测所需要的特征
         df = pd.DataFrame([[title, desc]], columns=['title', 'desc'])
         df['text'] = df['title'] + df['desc']
@@ -345,6 +372,9 @@ class Models(object):
         desc: input
         @return: label
         '''
+        ###########################################
+        #          TODO: module 5 task 1.1        #
+        ###########################################
         inputs = self.process(title, desc)
         label = self.ix2label[self.model.predict(inputs)[0]]
         proba = np.max(self.model.predict_proba(inputs))
@@ -357,6 +387,9 @@ class Models(object):
         model_name, file name for saving
         @return: None
         '''
+        ###########################################
+        #          TODO: module 4 task 1.4        #
+        ###########################################
         joblib.dump(self.model, root_path + '/model/ml_model/' + model_name)
 
     def load(self, path):
@@ -366,4 +399,7 @@ class Models(object):
         path: model path
         @return:None
         '''
+        ###########################################
+        #          TODO: module 4 task 1.4        #
+        ###########################################
         self.model = joblib.load(path)

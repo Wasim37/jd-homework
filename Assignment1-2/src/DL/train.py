@@ -94,6 +94,9 @@ if __name__ == '__main__':
         tokenizer = None
 
     logger.info('Making dataset & dataloader...')
+    ###########################################
+    #          TODO: module 6 task 1.1        #
+    ###########################################
     train_dataset = MyDataset(config.train_file,
                               dictionary,
                               args.max_length,

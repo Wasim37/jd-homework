@@ -66,6 +66,9 @@ def train(config, model, train_iter, dev_iter, test_iter):
             0.0
         }]
         # optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
+        ###########################################
+        #          TODO: module 6 task 1.2        #
+        ###########################################
         optimizer = AdamW(optimizer_grouped_parameters,
                           lr=config.learning_rate,
                           eps=config.eps)
@@ -88,6 +91,9 @@ def train(config, model, train_iter, dev_iter, test_iter):
             labels = labels.to(config.device)
             mask = mask.to(config.device)
             tokens = tokens.to(config.device)
+            ###########################################
+            #          TODO: module 6 task 1.2        #
+            ###########################################
             outputs = model((trains, mask, tokens))
             model.zero_grad()
             loss = F.cross_entropy(outputs, labels)

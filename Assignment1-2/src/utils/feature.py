@@ -41,6 +41,9 @@ def get_autoencoder_feature(data, max_features, max_len, model,
                        tokenizer=tokenizer,
                        shuffle=True)
     # 使用autoencoder 的encoder 进行预测
+    ###########################################
+    #          TODO: module 3 task 1.5        #
+    ###########################################
     data_ae = pd.DataFrame(model.predict(X, batch_size=64, verbose=1).max(axis=1),
                            columns=['ae' + str(i) for i in range(max_len)])
     return data_ae
@@ -57,6 +60,9 @@ def get_lda_features(lda_model, document):
     @return: lda feature
     '''
     # 基于bag of word 格式数据获取lda的特征
+    ###########################################
+    #          TODO: module 3 task 1.4        #
+    ###########################################
     topic_importances = lda_model.get_document_topics(document,
                                                       minimum_probability=0)
     topic_importances = np.array(topic_importances)
@@ -73,6 +79,9 @@ def get_pretrain_embedding(text, tokenizer, model):
     @return: bert embedding ndarray
     '''
     # 通过bert tokenizer 来处理数据， 然后使用bert model 获取bert embedding
+    ###########################################
+    #          TODO: module 3 task 1.3        #
+    ###########################################
     text_dict = tokenizer.encode_plus(
         text,  # Sentence to encode.
         add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
@@ -117,6 +126,9 @@ def get_img_embedding(cover, model):
     '''
     # 处理图片数据， 传入的不是图片则 生成（1， 1000）的0向量
     transforms = get_transforms()
+    ###########################################
+    #          TODO: module 3 task 1.2        #
+    ###########################################
     if str(cover)[-3:] != 'jpg':
         return np.zeros((1, 1000))[0]
     image = Image.open(cover).convert("RGB")
@@ -208,6 +220,9 @@ def get_basic_feature(df):
     @return:
     df, dataframe
     '''
+    ###########################################
+    #          TODO: module 3 task 1.1        #
+    ###########################################
     # 将title 和 desc 拼接
     df['text'] = df['title'] + df['desc']
     # 分词

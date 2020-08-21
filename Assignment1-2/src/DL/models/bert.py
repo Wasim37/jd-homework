@@ -23,6 +23,9 @@ class Model(nn.Module):
         self.fc = nn.Linear(config.hidden_size, config.num_classes)
 
     def forward(self, x):
+        ###########################################
+        #          TODO: module 6 task 1.3        #
+        ###########################################
         context = x[0]  # 输入的句子
         mask = x[
             1]  # 对padding部分进行mask，和句子一个size，padding部分用0表示，如：[1, 1, 1, 1, 0, 0]
