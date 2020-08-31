@@ -11,15 +11,14 @@
 """
 import pathlib
 import sys
-
-abs_path = pathlib.Path(__file__).parent
-sys.path.append('../model')
+import os
 
 from predict import Predict
 from data_utils import write_samples
 
-
-
+abs_path = pathlib.Path(__file__).parent
+sys.path.append('../model')
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 def semi_supervised(samples_path, write_path, beam_search):
@@ -33,6 +32,23 @@ def semi_supervised(samples_path, write_path, beam_search):
     ###########################################
     #          TODO: module 3 task 1          #
     ###########################################
+    pred = Predict()
+    print('vocab_size:', len(pred.vocab))
+    count = 0
+    semi = []
+
+    with open(samples_path, 'r') as f:
+        for picked in f:
+            count += 1
+            source, ref = picked.strip().strip('<sep>')
+            prediction = pred.predict(ref.split(), beam_search=beam_search)
+            semi.append(prediction + ' <sep> ' + ref)
+
+            if count % 100 == 0:
+                print(count)
+                write_samples(semi, write_path, 'a')
+                semi = []
+
 
 if __name__ == '__main__':
     samples_path = 'output/train.txt'

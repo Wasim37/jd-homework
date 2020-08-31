@@ -16,14 +16,14 @@ import time
 import heapq
 import random
 import sys
+import os
 import pathlib
-
 import torch
+import config
 
 abs_path = pathlib.Path(__file__).parent.absolute()
 sys.path.append(sys.path.append(abs_path))
-
-import config
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 def timer(module):
@@ -269,7 +269,7 @@ def replace_oovs(in_tensor, vocab):
 
     Returns:
         Tensor: The tensor after replacement.
-    """    
+    """
     oov_token = torch.full(in_tensor.shape, vocab.UNK).long().to(config.DEVICE)
     out_tensor = torch.where(in_tensor > len(vocab) - 1, oov_token, in_tensor)
     return out_tensor
@@ -284,15 +284,19 @@ class ScheduledSampler():
         """According to a certain probability to choose whether to execute teacher_forcing
 
         Args:
-            phase (int): probability level  if phase = 0, 100% teacher_forcing ,phase = self.phases - 1, 0% teacher_forcing 
+            phase (int): probability level  if phase = 0, 100% teacher_forcing ,phase = self.phases - 1, 0% teacher_forcing
 
         Returns:
-            bool: teacher_forcing or not 
+            bool: teacher_forcing or not
         """
         ###########################################
         #          TODO: module 5 task 1          #
         ###########################################
-
+        sampling_prob = random.random()
+        if sampling_prob >= self.scheduled_probs[phase]:
+            return True
+        else:
+            return False
 
 
 def config_info(config):
@@ -303,8 +307,7 @@ def config_info(config):
     Returns:
         string: config information
     """
-    info = 'model_name = {}, pointer = {}, coverage = {}, fine_tune = {}, scheduled_sampling = {}, weight_tying = {},' +\
-          'source = {}  '
-    return (info.format(config.model_name, config.pointer, config.coverage, config.fine_tune, config.scheduled_sampling,
-                      config.weight_tying, config.source))
-
+    info = 'model_name = {}, pointer = {}, coverage = {}, fine_tune = {}, scheduled_sampling = {}, weight_tying = {},' + 'source = {}  '
+    return (info.format(config.model_name, config.pointer, config.coverage,
+                        config.fine_tune, config.scheduled_sampling,
+                        config.weight_tying, config.source))

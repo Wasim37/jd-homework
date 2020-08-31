@@ -17,12 +17,13 @@ import pathlib
 from rouge import Rouge
 import jieba
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
-
 from predict import Predict
 from utils import timer
 import config
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 class RougeEval():

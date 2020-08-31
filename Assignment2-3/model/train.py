@@ -24,9 +24,6 @@ from torch.nn.utils import clip_grad_norm_
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
-
 from dataset import PairDataset
 from model import PGN
 import config
@@ -34,6 +31,9 @@ from evaluate import evaluate
 from dataset import collate_fn, SampleDataset
 from utils import ScheduledSampler, config_info
 
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 def train(dataset, val_dataset, v, start_epoch=0):
@@ -56,7 +56,7 @@ def train(dataset, val_dataset, v, start_epoch=0):
         print('Fine-tuning mode.')
         for name, params in model.named_parameters():
             if name != 'attention.wc.weight':
-                params.requires_grad=False    
+                params.requires_grad = False
     # forward
     print("loading data")
     train_data = SampleDataset(dataset.pairs, v)
@@ -78,13 +78,16 @@ def train(dataset, val_dataset, v, start_epoch=0):
             val_losses = pickle.load(f)
 
 #     torch.cuda.empty_cache()
-    # SummaryWriter: Log writer used for TensorboardX visualization.
+# SummaryWriter: Log writer used for TensorboardX visualization.
     writer = SummaryWriter(config.log_path)
     # tqdm: A tool for drawing progress bars during training.
     # scheduled_sampler : A tool for choosing teacher_forcing or not
     ###########################################
     #          TODO: module 5 task 3          #
     ###########################################
+    num_epochs = len(range(start_epoch, config.epochs))
+    scheduled_sampler = ScheduledSampler(num_epochs)
+
     if config.scheduled_sampling:
         print('scheduled_sampling mode.')
     #  teacher_forcing = True
@@ -98,6 +101,11 @@ def train(dataset, val_dataset, v, start_epoch=0):
             ###########################################
             #          TODO: module 5 task 3          #
             ###########################################
+            if config.scheduled_sampling:
+                teacher_forcing = scheduled_sampler.teacher_forcing(epoch - start_epoch)
+            else:
+                teacher_forcing = True
+
             print('teacher_forcing = {}'.format(teacher_forcing))
             with tqdm(total=num_batches//100) as batch_progress:
                 for batch, data in enumerate(tqdm(train_dataloader)):
@@ -115,6 +123,14 @@ def train(dataset, val_dataset, v, start_epoch=0):
                     ###########################################
                     #          TODO: module 5 task 3          #
                     ###########################################
+                    loss = model(x,
+                                 x_len,
+                                 y,
+                                 len_oovs,
+                                 batch=batch,
+                                 num_batches=num_batches,
+                                 teacher_forcing=teacher_forcing)
+
                     batch_losses.append(loss.item())
                     loss.backward()  # Backpropagation.
 

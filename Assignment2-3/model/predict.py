@@ -18,13 +18,14 @@ import pathlib
 import torch
 import jieba
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
-
 import config
 from model import PGN
 from dataset import PairDataset
 from utils import source2ids, outputids2words, Beam, timer, add2heap, replace_oovs
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 class Predict():

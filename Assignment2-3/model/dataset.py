@@ -20,11 +20,13 @@ from typing import Callable
 import torch
 from torch.utils.data import Dataset
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
 from utils import simple_tokenizer, count_words, sort_batch_by_len, source2ids, abstract2ids
 from vocab import Vocab
 import config
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 class PairDataset(object):
@@ -66,7 +68,7 @@ class PairDataset(object):
                 self.pairs.append((src, tgt))
         print("%d pairs." % len(self.pairs))
 
-    def build_vocab(self, embed_file: str = None) -> Vocab:
+    def build_vocab(self, embed_file: str = None):
         """Build the vocabulary for the data set.
 
         Args:
@@ -154,4 +156,3 @@ def collate_fn(batch):
     x_len = torch.tensor(data_batch["x_len"])
     y_len = torch.tensor(data_batch["y_len"])
     return x_padded, y_padded, x_len, y_len, OOV, len_OOV
-

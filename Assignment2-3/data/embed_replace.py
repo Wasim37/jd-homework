@@ -48,12 +48,13 @@ class EmbedReplace():
     def extract_keywords(self, dct, tfidf, threshold=0.2, topk=5):
 
         """find high TFIDF socore keywords
+        根据TFIDF确认需要排除的核心词汇
 
         Args:
             dct (Dictionary): gensim.corpora Dictionary  a reference Dictionary
             tfidf (list of tfidf):  model[doc]  [(int, number)]
             threshold (float) : high TFIDF socore must be greater than the threshold
-            topk(int): num of highest TFIDF socore 
+            topk(int): num of highest TFIDF socore
         Returns:
             (list): A list of keywords
         """
@@ -61,9 +62,12 @@ class EmbedReplace():
         ###########################################
         #          TODO: module 1 task 1          #
         ###########################################
+        tfidf = sorted(tfidf, key=lambda x: x[1], reverse=True)
+        return list(islice([dct[w] for w, score in tfidf if score > threshold], topk))
 
     def replace(self, token_list, doc):
-        """replace token by another token which is similar in wordvector 
+        """replace token by another token which is similar in wordvector
+        在 embedding 的词向量空间中寻找语义最接近的词进⾏替换。
 
         Args:
             token_list (list): reference token list
@@ -71,13 +75,25 @@ class EmbedReplace():
         Returns:
             (str):  new reference str
         """
-        
+
         ###########################################
         #          TODO: module 1 task 2          #
         ###########################################
+        keywords = self.extract_keywords(self.dct, self.tfidf_model[doc])
+        num = int(len(token_list) * 0.3)
+        new_tokens = token_list.copy()
+        while num == int(len(token_list) * 0.3):
+            indexes = np.random.choice(len(token_list), num)
+            for index in indexes:
+                token = token_list[index]
+                if isChinese(token) and token not in keywords and token in self.wv:
+                    new_tokens[index] = self.wv.most_similar(positive=token, negative=None, topn=1)[0][0]
+            num -= 1
 
     def generate_samples(self, write_path):
         """generate new samples file
+        替换全部的reference，和对应的source形成新样本
+
         Args:
             write_path (str):  new samples file path
 
@@ -85,6 +101,15 @@ class EmbedReplace():
         ###########################################
         #          TODO: module 1 task 3          #
         ###########################################
+        replaced = []
+        count = 0
+        for sample, token_list, doc in zip(self.samples, self.refs, self.corpus):
+            count += 1
+            if count % 100 == 0:
+                print(count)
+                write_samples(replaced, write_path, 'a')
+                replaced = []
+            replaced.append(sample.split('<sep>')[0] + ' <sep> ' + self.replace(token_list, doc))
 
 
 sample_path = 'output/train.txt'

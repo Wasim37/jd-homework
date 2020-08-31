@@ -19,10 +19,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
 import config
 from utils import timer, replace_oovs
+
+abs_path = pathlib.Path(__file__).parent.absolute()
+sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 class Encoder(nn.Module):
@@ -58,8 +60,11 @@ class Encoder(nn.Module):
         ###########################################
         #          TODO: module 4 task 1          #
         ###########################################
+        if config.weight_tying:
+            embedded = decoder_embedding(x)
+        else:
+            embedded = self.embedding(x)
         output, hidden = self.lstm(embedded)
-
         return output, hidden
 
 
@@ -209,6 +214,10 @@ class Decoder(nn.Module):
         #          TODO: module 4 task 1          #
         ###########################################
         # (batch_size, vocab_size)
+        if config.weight_tring:
+            FF2_out = torch.mm(FF1_out, torch.t(self.embedding.weight))
+        else:
+            FF2_out = self.W2(FF1_out)
         p_vocab = F.softmax(FF2_out, dim=1)
 
         # Concatenate h and c to get s_t and expand the dim of s_t.
@@ -364,7 +373,21 @@ class PGN(nn.Module):
         ###########################################
         #          TODO: module 4 task 1          #
         ###########################################
+        x_copy = replace_oovs(x, self.v)
+        x_padding_masks = torch.ne(x, 0).byte().float()
+        encoer_output, encoder_states = self.encoder(x_copy, self.decoder)
+        decoder_states = self.reduce_state(encoder_states)
+        coverage_vector = torch.zeros(x.size()).to(self.DEVICE)
+        step_losses = []
+        x_t = y[:, 0]
+        for t in range(y.shape[1]-1):
+            if teacher_forcing:
+                x_t = y[:, t]
+            x_t = replace_oovs(x_t, self.v)
 
+            y_t = y[:, t+1]
+            context_vector, attention_weights, coverage_vector = \
+                self.attention(decoder_states, encoder_states, x_padding_masks, coverage_vector)
         ###########################################
         #          TODO: module 5 task 2          #
         ###########################################
