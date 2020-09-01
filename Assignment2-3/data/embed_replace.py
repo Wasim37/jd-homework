@@ -4,8 +4,6 @@
 @Author: lpx
 @Date: 2020-07-13 20:16:37
 @LastEditTime: 2020-07-18 17:28:41
-@LastEditors: Please set LastEditors
-@Description: 
 @FilePath: /JD_project_2/data/embed_replace.py
 @Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
 '''
@@ -21,17 +19,19 @@ import numpy as np
 
 class EmbedReplace():
     def __init__(self, sample_path, wv_path):
+        print("read sample file ...")
         self.samples = read_samples(sample_path)
         self.refs = [sample.split('<sep>')[1].split() for sample in self.samples]
-        self.wv = KeyedVectors.load_word2vec_format(
-            wv_path,
-            binary=False)
+        print("load word_vectors file ...")
+        self.wv = KeyedVectors.load_word2vec_format(wv_path, binary=False)
 
         if os.path.exists('saved/tfidf.model'):
+            print("load tfidf model..")
             self.tfidf_model = TfidfModel.load('saved/tfidf.model')
             self.dct = Dictionary.load('saved/tfidf.dict')
             self.corpus = [self.dct.doc2bow(doc) for doc in self.refs]
         else:
+            print("train tfidf model..")
             self.dct = Dictionary(self.refs)
             self.corpus = [self.dct.doc2bow(doc) for doc in self.refs]
             self.tfidf_model = TfidfModel(self.corpus)
@@ -48,7 +48,9 @@ class EmbedReplace():
     def extract_keywords(self, dct, tfidf, threshold=0.2, topk=5):
 
         """find high TFIDF socore keywords
-        根据TFIDF确认需要排除的核心词汇
+        根据TFIDF确认需要排除的核心词汇.
+        注意：为了防止将体现关键卖点的词给替换掉，导致核心语义丢失，
+        所以通过 tfidf 权重对词表的词进行排序，然后替换排序靠后的词
 
         Args:
             dct (Dictionary): gensim.corpora Dictionary  a reference Dictionary
@@ -89,6 +91,7 @@ class EmbedReplace():
                 if isChinese(token) and token not in keywords and token in self.wv:
                     new_tokens[index] = self.wv.most_similar(positive=token, negative=None, topn=1)[0][0]
             num -= 1
+        return ' '.join(new_tokens)
 
     def generate_samples(self, write_path):
         """generate new samples file
@@ -112,7 +115,7 @@ class EmbedReplace():
             replaced.append(sample.split('<sep>')[0] + ' <sep> ' + self.replace(token_list, doc))
 
 
-sample_path = 'output/train.txt'
+sample_path = '../files/train.txt'
 wv_path = 'word_vectors/merge_sgns_bigram_char300.txt'
 replacer = EmbedReplace(sample_path, wv_path)
 replacer.generate_samples('output/replaced.txt')

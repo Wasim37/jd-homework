@@ -3,9 +3,6 @@
 """
 @Author: frank
 @Date: 2020-08-07 16:43:30
-@LastEditTime: 
-@LastEditors: 
-@Description: 
 @File: semi-supervised.py
 @Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
 """
@@ -51,7 +48,7 @@ def semi_supervised(samples_path, write_path, beam_search):
 
 
 if __name__ == '__main__':
-    samples_path = 'output/train.txt'
+    samples_path = '..file/train.txt'
     write_path_greedy = 'output/semi_greedy.txt'
     write_path_beam = 'output/semi_beam.txt'
     beam_search = False

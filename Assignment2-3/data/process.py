@@ -13,13 +13,14 @@
 import sys
 import os
 import pathlib
-
 import json
 import jieba
 
+from data_utils import write_samples, partition
+
 abs_path = pathlib.Path(__file__).parent.absolute()
 sys.path.append(sys.path.append(abs_path))
-from data_utils import write_samples, partition
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 samples = set()
