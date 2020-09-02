@@ -35,7 +35,6 @@ from dataset import collate_fn, SampleDataset
 from utils import ScheduledSampler, config_info
 
 
-
 def train(dataset, val_dataset, v, start_epoch=0):
     """Train the model, evaluate it and store it.
 
@@ -56,7 +55,8 @@ def train(dataset, val_dataset, v, start_epoch=0):
         print('Fine-tuning mode.')
         for name, params in model.named_parameters():
             if name != 'attention.wc.weight':
-                params.requires_grad=False    
+                params.requires_grad = False
+
     # forward
     print("loading data")
     train_data = SampleDataset(dataset.pairs, v)
@@ -82,7 +82,7 @@ def train(dataset, val_dataset, v, start_epoch=0):
     writer = SummaryWriter(config.log_path)
     # tqdm: A tool for drawing progress bars during training.
     # scheduled_sampler : A tool for choosing teacher_forcing or not
-    num_epochs =  len(range(start_epoch, config.epochs))
+    num_epochs = len(range(start_epoch, config.epochs))
     scheduled_sampler = ScheduledSampler(num_epochs)
     if config.scheduled_sampling:
         print('scheduled_sampling mode.')
