@@ -13,16 +13,18 @@
 import random
 import torch
 import jieba
-import sys
-import pathlib
+# import sys
+# import pathlib
+import os
 
 import config
 from model import Seq2seq
 from dataset import PairDataset
 from utils import source2ids, outputids2words, Beam, timer, add2heap
 
-abs_path = pathlib.Path(__file__).parent.absolute()
-sys.path.append(sys.path.append(abs_path))
+# abs_path = pathlib.Path(__file__).parent.absolute()
+# sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 class Predict():
@@ -40,9 +42,8 @@ class Predict():
         self.model = Seq2seq(self.vocab)
         self.stop_word = list(
             set([
-                self.vocab[x.strip()] for x in
-                open(config.stop_word_file
-                     ).readlines()
+                self.vocab[x.strip()]
+                for x in open(curPath + config.stop_word_file, encoding='utf-8').readlines()
             ]))
         self.model.load_model()
         self.model.to(self.DEVICE)
@@ -69,10 +70,9 @@ class Predict():
 
         # Get encoder output and states.
         encoder_output, encoder_states = self.model.encoder(encoder_input)
-
+        print('encoder_output[:, 0:1, 0:1]', encoder_output[:, 0:1, 0:1])
         # Initialize decoder's hidden states with encoder's hidden states.
         decoder_states = self.model.reduce_state(encoder_states)
-
         # Initialize decoder's input at time step 0 with the SOS token.
         decoder_input_t = torch.ones(1) * self.vocab.SOS
         decoder_input_t = decoder_input_t.to(self.DEVICE, dtype=torch.int64)
@@ -93,6 +93,7 @@ class Predict():
             # to prevent index-out-of-bound error in the decoder.
             decoder_input_t = self.replace_oov(decoder_input_t)
 
+        print(summary)
         return summary
 
 #     @timer('best k')
@@ -135,12 +136,8 @@ class Predict():
         # Filter forbidden tokens
         if len(beam.tokens) == 1:
             forbidden_ids = [
-                self.vocab[u"这"],
-                self.vocab[u"此"],
-                self.vocab[u"采用"],
-                self.vocab[u"，"],
-                self.vocab[u"。"],
-                self.vocab.UNK
+                self.vocab[u"这"], self.vocab[u"此"], self.vocab[u"采用"],
+                self.vocab[u"，"], self.vocab[u"。"], self.vocab.UNK
             ]
 
         # Get top k tokens and the corresponding logprob.
@@ -186,12 +183,8 @@ class Predict():
 
         # initialize the hypothesis with a class Beam instance.
         attention_weights = torch.zeros((1, encoder_input.shape[1])).to(self.DEVICE)
-        init_beam = Beam([self.vocab.SOS],
-                        [0],
-                        decoder_states,
-                        attention_weights,
-                        max_oovs,
-                        encoder_input)
+        init_beam = Beam([self.vocab.SOS], [0], decoder_states,
+                         attention_weights, max_oovs, encoder_input)
 
         # get the beam size and create a list for stroing current candidates
         # and a list for completed hypothesis
@@ -250,8 +243,10 @@ class Predict():
         if isinstance(text, str) and tokenize:
             text = list(jieba.cut(text))
         x, oov = source2ids(text, self.vocab)
+        print('x, oov', x, oov)
         x = torch.tensor(x).to(self.DEVICE)
         max_oovs = len(oov)
+        print('max_oovs', max_oovs)
         x_copy = self.replace_oov(x)
         x_copy = x_copy.unsqueeze(0)
         x_padding_masks = torch.ne(x_copy, 0).byte().float()
@@ -287,12 +282,16 @@ class Predict():
                               input_t)
         return input_t
 
+
 if __name__ == "__main__":
     pred = Predict()
     print('vocab_size: ', len(pred.vocab))
+
     # Randomly pick a sample in test set to predict.
-    with open(config.test_data_path, 'r') as test:
-        picked = random.choice(list(test))
+    with open(curPath + config.test_data_path, 'r', encoding='utf-8') as test:
+        # picked = random.choice(list(test))
+        # picked = list(test)[0]
+        picked = '博睿恩 新品 婴儿 马甲 秋季 纯棉 坎肩 男女 宝宝 打底 背心 儿童 上衣 外出服 麻灰 设计师 说 ， 舒适 面料 ， 耐洗 不 变形 ， ， 按扣 设计 ， 方便 穿脱 ， ， 双层 设计 ， 舒适 保暖 ， 双线 包边 ， ， TIPS : 平铺 手工 测量， 产品 会因 批次 不同 ， 测量 方式 不同 ， 存在， 橡皮 粉 ， 浅薄 ， 衣 长 ， 肩宽 ， 柔软 ， 舒适 ， 胸围 ， 亲肤 ， 透气 ， 麻灰 ， 雾 蓝 ， 细节 展示 ， 背面 ， 在 自己 的 小日子 里 舒适 、 甜蜜 ， 如同 肌肤 间 的 接触 ， 我们 只 为 宝宝 考虑 ， 给 孩子 们 做 舒适 高质量 的 衣服 ， 透气 柔软 ， 给 宝宝 舒适 享受 ， 自然 亲肤 沉静 ， 简简单单 ， 不忘 初心 ， 关于 面料适用性别 通用 上市时间 2018秋季 适用年龄 1-3岁 安全等级 A类 款式 单面款 适用季节 春秋 填充物 其它 衣门襟 单排扣 面料 纯棉 <sep>博睿恩 马甲 ， 适合 1 - 3 岁 宝贝 ， 卡通 立体 玩偶 设计 ， 童趣 可爱 ， 采用 柔软 面料 ， 舒适 透气 ， 温柔 呵护 宝宝 幼嫩 肌肤 ， 双层 设计 ， 保暖 效果 好 ， 双线 包边 工艺制作 ， 衣物 耐洗 不 变形 。'
         source, ref = picked.strip().split('<sep>')
 
     greedy_prediction = pred.predict(source.split(),  beam_search=False)

@@ -23,6 +23,8 @@ import config
 abs_path = pathlib.Path(__file__).parent.absolute()
 sys.path.append(sys.path.append(abs_path))
 
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
+
 
 class Encoder(nn.Module):
     def __init__(self,
@@ -252,11 +254,11 @@ class Seq2seq(nn.Module):
     def load_model(self):
         """Load saved model if there exits one.
         """
-        if (os.path.exists(config.encoder_save_name)):
-            self.encoder = torch.load(config.encoder_save_name)
-            self.decoder = torch.load(config.decoder_save_name)
-            self.attention = torch.load(config.attention_save_name)
-            self.reduce_state = torch.load(config.reduce_state_save_name)
+        if (os.path.exists(curPath + config.encoder_save_name)):
+            self.encoder = torch.load(curPath + config.encoder_save_name, map_location='cpu')
+            self.decoder = torch.load(curPath + config.decoder_save_name, map_location='cpu')
+            self.attention = torch.load(curPath + config.attention_save_name, map_location='cpu')
+            self.reduce_state = torch.load(curPath + config.reduce_state_save_name, map_location='cpu')
 
     def forward(self, x, x_len, y, len_oovs, batch):
         """Define the forward propagation for the seq2seq model.

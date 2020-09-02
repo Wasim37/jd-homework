@@ -18,7 +18,7 @@ embed_size: int = 300
 
 # Data
 max_vocab_size = 20000
-embed_file: Optional[str] = 'D:\\BaiduYunDownload\\sgns.target.word-ngram.1-2.dynwin5.thr10.neg5.dim300.iter5\\sgns.target.word-ngram.1-2.dynwin5.thr10.neg5.dim300.iter5'  # use pre-trained embeddings
+embed_file: Optional[str] = 'F:/git_ml/0 homework/jd-homework/Assignment2-1/files/sgns.target.word-ngram.1-2.dynwin5.thr10.neg5.dim300.iter5'  # use pre-trained embeddings
 data_path: str = '../files/train.txt'
 val_data_path: Optional[str] = '../files/dev.txt'
 test_data_path: Optional[str] = '../files/test.txt'
@@ -64,4 +64,3 @@ beam_size: int = 3
 alpha = 0.2
 beta = 0.2
 gamma = 0.1
-

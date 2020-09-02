@@ -82,8 +82,7 @@ def train(dataset, val_dataset, v, start_epoch=0):
         # Loop for epochs.
         for epoch in range(start_epoch, config.epochs):
             batch_losses = []  # Get loss of each batch.
-            with tqdm(total=len(train_dataloader) // config.batch_size)\
-                    as batch_progress:
+            with tqdm(total=len(train_dataloader) // config.batch_size) as batch_progress:
                 # Lopp for batches.
                 for batch, data in enumerate(tqdm(train_dataloader)):
                     x, y, x_len, y_len, oov, len_oovs = data
@@ -98,7 +97,8 @@ def train(dataset, val_dataset, v, start_epoch=0):
                     #          TODO: module 3 task 1          #
                     ###########################################
                     model.train()
-                    optimizer.zero_grad() # clear graditents
+                    # clear graditents
+                    optimizer.zero_grad()
                     loss = model(x, x_len, y, len_oovs, batch=batch)
                     batch_losses.append(loss.item())
                     loss.backward()

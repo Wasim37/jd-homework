@@ -8,19 +8,20 @@
 @Description: Define the format of data used in the model.
 @FilePath: /JD_project_2/baseline/model/dataset.py
 '''
-import sys
+# import sys
 import os
-import pathlib
+# import pathlib
 from collections import Counter
 from typing import Callable
 
 import torch
 from torch.utils.data import Dataset
 
-curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 from utils import simple_tokenizer, count_words, sort_batch_by_len, source2ids
 from vocab import Vocab
 import config
+
+curPath = os.path.abspath(os.path.dirname(__file__)) + '/'
 
 
 class PairDataset(object):

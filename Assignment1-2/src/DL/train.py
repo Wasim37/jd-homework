@@ -23,11 +23,10 @@ from transformers import BertTokenizer, RobertaTokenizer, XLNetTokenizer
 
 
 parser = argparse.ArgumentParser(description='Chinese Text Classification')
-parser.add_argument(
-    '--model',
-    type=str,
-    required=True,
-    help='choose a model: CNN, RNN, RCNN, RNN_Att, DPCNN, Transformer')
+parser.add_argument('--model',
+                    type=str,
+                    required=True,
+                    help='choose a model: CNN, RNN, RCNN, RNN_Att, DPCNN, Transformer')
 parser.add_argument('--word',
                     default=True,
                     type=bool,

@@ -113,7 +113,7 @@ def outputids2words(id_list, source_oovs, vocab):
             w = vocab.index2word[i]
         except IndexError: #w is oov
             assert_msg = "ERROR ID can't find"
-            assert source_oovs is not Noe, assert_msg
+            assert source_oovs is not None, assert_msg
             source_oov_idx = i - vocab.size()
             try:
                 w = source_oovs[source_oov_idx]
