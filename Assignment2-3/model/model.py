@@ -350,7 +350,7 @@ class PGN(nn.Module):
 
         return final_distribution
 
-#     @timer('model forward')
+    @timer('model forward')
     def forward(self, x, x_len, y, len_oovs, batch, num_batches, teacher_forcing):
         """Define the forward propagation for the seq2seq model.
 
@@ -375,21 +375,75 @@ class PGN(nn.Module):
         ###########################################
         x_copy = replace_oovs(x, self.v)
         x_padding_masks = torch.ne(x, 0).byte().float()
-        encoer_output, encoder_states = self.encoder(x_copy, self.decoder)
+        # Call encoder  forward propagation
+        encoder_output, encoder_states = self.encoder(x_copy, self.decoder.embedding)
+        # Reduce encoder hidden states.
         decoder_states = self.reduce_state(encoder_states)
+        # Initialize coverage vector.
         coverage_vector = torch.zeros(x.size()).to(self.DEVICE)
+        # Calculate loss for every step.
         step_losses = []
+        # use ground true to set x_t as first step data for decoder input
         x_t = y[:, 0]
         for t in range(y.shape[1]-1):
+
+            # use ground true to set x_t ,if teacher_forcing is True
+            ###########################################
+            #          TODO: module 5 task 2          #
+            ###########################################
             if teacher_forcing:
                 x_t = y[:, t]
+
             x_t = replace_oovs(x_t, self.v)
 
             y_t = y[:, t+1]
+            # Get context vector from the attention network.
             context_vector, attention_weights, coverage_vector = \
-                self.attention(decoder_states, encoder_states, x_padding_masks, coverage_vector)
-        ###########################################
-        #          TODO: module 5 task 2          #
-        ###########################################
-        return batch_loss
+                self.attention(decoder_states,
+                               encoder_output,
+                               x_padding_masks,
+                               coverage_vector)
+            # Get vocab distribution and hidden states from the decoder.
+            p_vocab, decoder_states, p_gen = self.decoder(x_t.unsqueeze(1),
+                                                          decoder_states,
+                                                          context_vector)
 
+            final_dist = self.get_final_distribution(x,
+                                                     p_gen,
+                                                     p_vocab,
+                                                     attention_weights,
+                                                     torch.max(len_oovs))
+            # t step predict result as t+1 step input
+            x_t = torch.argmax(final_dist, dim=1).to(self.DEVICE)
+
+            # Get the probabilities predict by the model for target tokens.
+            if not config.pointer:
+                y_t = replace_oovs(y_t, self.v)
+            target_probs = torch.gather(final_dist, 1, y_t.unsqueeze(1))
+            target_probs = target_probs.squeeze(1)
+
+            # Apply a mask such that pad zeros do not affect the loss
+            mask = torch.ne(y_t, 0).byte()
+            # Do smoothing to prevent getting NaN loss because of log(0).
+            loss = -torch.log(target_probs + config.eps)
+
+            if config.coverage:
+                # Add coverage loss.
+                ct_min = torch.min(attention_weights, coverage_vector)
+                cov_loss = torch.sum(ct_min, dim=1)
+                loss = loss + config.LAMBDA * cov_loss
+
+            mask = mask.float()
+            loss = loss * mask
+
+            step_losses.append(loss)
+
+        sample_losses = torch.sum(torch.stack(step_losses, 1), 1)
+        # get the non-padded length of each sequence in the batch
+        seq_len_mask = torch.ne(y, 0).byte().float()
+        batch_seq_len = torch.sum(seq_len_mask, dim=1)
+
+        # get batch loss by dividing the loss of each batch
+        # by the target sequence length and mean
+        batch_loss = torch.mean(sample_losses / batch_seq_len)
+        return batch_loss

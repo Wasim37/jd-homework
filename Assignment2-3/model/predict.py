@@ -75,6 +75,9 @@ class Predict():
         ###########################################
         #          TODO: module 4 task 2          #
         ###########################################
+        # use decoder to generate vocab distribution for the next token
+        encoder_output, encoder_states = self.model.encoder(
+            replace_oovs(x, self.vocab), self.model.decoder.embedding)
 
         # Initialize decoder's hidden states with encoder's hidden states.
         decoder_states = self.model.reduce_state(encoder_states)
@@ -203,6 +206,8 @@ class Predict():
         ###########################################
         #          TODO: module 4 task 2          #
         ###########################################
+        encoder_output, encoder_states = self.model.encoder(
+            replace_oovs(x, self.vocab), self.model.decoder.embedding)
         coverage_vector = torch.zeros((1, x.shape[1])).to(self.DEVICE)
         # initialize decoder states with encoder forward states
         decoder_states = self.model.reduce_state(encoder_states)
@@ -231,13 +236,9 @@ class Predict():
                     completed.append(beam)
                     k -= 1
                     continue
-                for can in self.best_k(beam,
-                                       k,
-                                       encoder_output,
-                                       x_padding_masks,
-                                       x,
-                                       torch.max(len_oovs)
-                                      ):
+                for can in self.best_k(beam, k,
+                                       encoder_output, x_padding_masks, x,
+                                       torch.max(len_oovs)):
                     # Using topk as a heap to keep track of top k candidates.
                     # Using the sequence scores of the hypos to campare
                     # and object ids to break ties.
