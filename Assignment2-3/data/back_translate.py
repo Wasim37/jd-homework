@@ -43,9 +43,9 @@ def translate(q, source, target):
     salt = random.randint(32768, 65536)
     sign = appid + q + str(salt) + secretKey
     sign = hashlib.md5(sign.encode()).hexdigest()
-    myurl = '/api/trans/vip/translate' + '?appid=' + appid + '&q='
-    + urllib.parse.quote(q) + '&from=' + fromLang + '&to=' + toLang
-    + '&salt=' + str(salt) + '&sign' + sign
+    myurl = '/api/trans/vip/translate?appid=' + appid + '&q=' + urllib.parse.quote(
+        q) + '&from=' + fromLang + '&to=' + toLang + '&salt=' + str(
+            salt) + '&sign' + sign
 
     try:
         httpClient = http.client.HTTPSConnection('api.fanyi.baidu.com')
@@ -54,7 +54,6 @@ def translate(q, source, target):
         result_all = respone.read().decode("utf-8")
         result = json.load(result_all)
         return result
-
     except Exception as e:
         print(e)
     finally:
@@ -75,9 +74,9 @@ def back_translate(q):
     #          TODO: module 2 task 2          #
     ###########################################
     en = translate(q, "zh", "en")['trans_result'][0]['dst']
-    time.sleep(1.5)
+    time.sleep(2)
     target = translate(en, "en", "zh")['trans_result'][0]['dst']
-    target.sleep(1.5)
+    target.sleep(2)
     return target
 
 

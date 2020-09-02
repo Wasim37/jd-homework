@@ -214,7 +214,7 @@ class Decoder(nn.Module):
         #          TODO: module 4 task 1          #
         ###########################################
         # (batch_size, vocab_size)
-        if config.weight_tring:
+        if config.weight_tying:
             FF2_out = torch.mm(FF1_out, torch.t(self.embedding.weight))
         else:
             FF2_out = self.W2(FF1_out)

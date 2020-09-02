@@ -11,7 +11,6 @@
 """
 import pathlib
 import sys
-import os
 
 abs_path = pathlib.Path(__file__).parent
 sys.path.append('../model')
@@ -41,6 +40,7 @@ def semi_supervised(samples_path, write_path, beam_search):
             count += 1
             source, ref = picked.strip().split('<sep>')
             prediction = pred.predict(ref.split(), beam_search=beam_search)
+            # 拼接ref的预测结果与ref，形成新的样本
             semi.append(prediction + ' <sep> ' + ref)
 
             if count % 100 == 0:
@@ -50,12 +50,9 @@ def semi_supervised(samples_path, write_path, beam_search):
 
 
 if __name__ == '__main__':
-    samples_path = '../files/train.txt'
+    samples_path = 'output/train.txt'
     write_path_greedy = 'output/semi_greedy.txt'
     write_path_beam = 'output/semi_beam.txt'
-    beam_search = False
-    if beam_search:
-        write_path = write_path_beam
-    else:
-        write_path = write_path_greedy
+    beam_search = True
+    write_path = write_path_beam if beam_search else write_path_greedy
     semi_supervised(samples_path, write_path, beam_search)

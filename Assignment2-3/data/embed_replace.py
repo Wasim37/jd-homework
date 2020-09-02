@@ -64,12 +64,13 @@ class EmbedReplace():
         ###########################################
         #          TODO: module 1 task 1          #
         ###########################################
+        # 降序。sort 是应用在 list 上的方法，sorted 可以对所有可迭代的对象进行排序操作
         tfidf = sorted(tfidf, key=lambda x: x[1], reverse=True)
         return list(islice([dct[w] for w, score in tfidf if score > threshold], topk))
 
     def replace(self, token_list, doc):
         """replace token by another token which is similar in wordvector
-        在 embedding 的词向量空间中寻找语义最接近的词进⾏替换。
+        在 embedding 的词向量空间中寻找语义最接近的词进行替换
 
         Args:
             token_list (list): reference token list
@@ -95,7 +96,7 @@ class EmbedReplace():
 
     def generate_samples(self, write_path):
         """generate new samples file
-        替换全部的reference，和对应的source形成新样本
+        通过替换reference中的词生成新的reference样本
 
         Args:
             write_path (str):  new samples file path
@@ -107,15 +108,18 @@ class EmbedReplace():
         replaced = []
         count = 0
         for sample, token_list, doc in zip(self.samples, self.refs, self.corpus):
+            replaced.append(
+                sample.split('<sep>')[0] + ' <sep> ' +
+                self.replace(token_list, doc))
             count += 1
             if count % 100 == 0:
                 print(count)
                 write_samples(replaced, write_path, 'a')
                 replaced = []
-            replaced.append(sample.split('<sep>')[0] + ' <sep> ' + self.replace(token_list, doc))
 
 
-sample_path = '../files/train.txt'
-wv_path = 'word_vectors/merge_sgns_bigram_char300.txt'
-replacer = EmbedReplace(sample_path, wv_path)
-replacer.generate_samples('output/replaced.txt')
+if __name__ == '__main__':
+    sample_path = 'output/train.txt'
+    wv_path = 'word_vectors/merge_sgns_bigram_char300.txt'
+    replacer = EmbedReplace(sample_path, wv_path)
+    replacer.generate_samples('output/replaced.txt')
