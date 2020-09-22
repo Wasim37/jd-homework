@@ -4,8 +4,8 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Peixin Lin
 Date: 2020-08-10 15:53:39
-LastEditTime: 2020-08-27 22:05:55
-FilePath: /Assignment3-1/retrieval/word2vec.py
+LastEditTime: 2020-08-27 19:37:33
+FilePath: /Assignment3-1_solution/retrieval/word2vec.py
 Desciption: 训练word2vec model。
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
 '''
@@ -24,6 +24,7 @@ sys.path.append('..')
 from config import root_path, train_raw
 from preprocessor import clean, read_file
 import config
+
 
 logging.basicConfig(format="%(levelname)s - %(asctime)s: %(message)s",
                     datefmt="%H:%M:%S",
@@ -45,12 +46,40 @@ def read_data(file_path):
 
 def train_w2v(train, to_file):
     '''
-    @description: 训练word2vec model，并保存
+    @description: 训练word2vec model， 并保存
     @param {type}
     train: 数据集 DataFrame
     to_file: 模型保存路径
     @return: None
     '''
+    sent = [row.split() for row in train['clean_content']]
+    phrases = Phrases(sent, min_count=5, progress_per=10000)
+    bigram = Phraser(phrases)
+    sentences = bigram[sent]
+
+    cores = multiprocessing.cpu_count()
+    w2v_model = Word2Vec(min_count=2,
+                         window=2,
+                         size=300,
+                         sample=6e-5,
+                         alpha=0.03,
+                         min_alpha=0.0007,
+                         negative=15,
+                         workers=cores - 1,
+                         iter=7)
+
+    t = time()
+    w2v_model.build_vocab(sentences)
+    print('Time to build vocab: {} mins'.format(round((time() - t) / 60, 2)))
+
+    t = time()
+    w2v_model.train(sentences,
+                    total_examples=w2v_model.corpus_count,
+                    epochs=15,
+                    report_delay=1)
+    print('Time to train vocab: {} mins'.format(round((time() - t) / 60, 2)))
+
+    w2v_model.save(to_file)
 
 
 if __name__ == "__main__":

@@ -4,8 +4,8 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Peixin Lin
 Date: 2020-08-21 15:16:08
-LastEditTime: 2020-08-27 19:27:50
-FilePath: /Assignment3-1/intention/business.py
+LastEditTime: 2020-08-27 19:37:08
+FilePath: /Assignment3-1_solution/intention/business.py
 Desciption: 建立fasttext 模型， 判断用户输入是否属于业务咨询。
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
 '''
@@ -59,7 +59,30 @@ class Intention(object):
         '''
 
         logging.info('Building keywords.')
+        tokens = []
+        # Filtering words according to POS tags.
 
+        tokens = self.data['custom'].dropna().apply(
+            lambda x: [
+                token for token, pos in pseg.cut(x) if pos in ['n', 'vn', 'nz']
+                ])
+
+        key_words = set(
+            [tk for idx, sample in tokens.iteritems()
+                for tk in sample if len(tk) > 1])
+        logging.info('Key words built.')
+        sku = []
+        with open(sku_path, 'r') as f:
+            next(f)
+            for lines in f:
+                line = lines.strip().split('\t')
+                sku.extend(line[-1].split('/'))
+        key_words |= set(sku)
+        logging.info('Sku words merged.')
+        if to_file is not None:
+            with open(to_file, 'w') as f:
+                for i in key_words:
+                    f.write(i + '\n')
         return key_words
 
     def data_process(self, model_data_file):
@@ -71,7 +94,14 @@ class Intention(object):
         @return:
         '''
         logging.info('Processing data.')
-
+        self.data['is_business'] = self.data['custom'].progress_apply(
+            lambda x: 1 if any(kw in x for kw in self.kw) else 0)
+        with open(model_data_file, 'w') as f:
+            for index, row in tqdm(self.data.iterrows(),
+                                   total=self.data.shape[0]):
+                outline = clean(row['custom']) + "\t__label__" + str(
+                    int(row['is_business'])) + "\n"
+                f.write(outline)
 
     def train(self, model_data_file, model_test_file):
         '''
@@ -82,7 +112,18 @@ class Intention(object):
         @return: fasttext model
         '''
         logging.info('Training classifier.')
-
+        classifier = fasttext.train_supervised(model_data_file,
+                                               label="__label__",
+                                               dim=100,
+                                               epoch=5,
+                                               lr=0.1,
+                                               wordNgrams=2,
+                                               loss='softmax',
+                                               thread=5,
+                                               verbose=True)
+        self.test(classifier, model_test_file)
+        classifier.save_model(self.model_path)
+        logging.info('Model saved.')
         return classifier
 
     def test(self, classifier, model_test_file):
@@ -94,7 +135,16 @@ class Intention(object):
         @return:
         '''
         logging.info('Testing trained model.')
+        test = pd.read_csv(config.test_path).fillna('')
+        test['is_business'] = test['custom'].progress_apply(
+            lambda x: 1 if any(kw in x for kw in self.kw) else 0)
 
+        with open(model_test_file, 'w') as f:
+            for index, row in tqdm(test.iterrows(), total=test.shape[0]):
+                outline = clean(row['custom']) + "\t__label__" + str(
+                    int(row['is_business'])) + "\n"
+                f.write(outline)
+        result = classifier.test(model_test_file)
         # F1 score
         print(result[1] * result[2] * 2 / (result[2] + result[1]))
 
@@ -103,7 +153,7 @@ class Intention(object):
         @description: 预测
         @param {type}
         text： 文本
-        @return: label, score
+        @return:
         '''
         logging.info('Predicting.')
         label, score = self.fast.predict(clean(filter_content(text)))

@@ -82,7 +82,7 @@ def read_file(path, is_train=False):
     '''
     chat = []
 
-    with open(path, 'r') as f:
+    with open(path, 'r', encoding='utf-8') as f:
 
         tmp = []
         sessions = set()
@@ -110,7 +110,7 @@ def read_file(path, is_train=False):
                     content = []
                 chat.extend(tmp)
                 tmp = []
-                session_id, custom_id = session_id_in_doc, custom_id_in_doc
+                session_id, _ = session_id_in_doc, custom_id_in_doc
             else:
                 if is_assistance != is_assistance_in_doc and \
                         is_assistance != '':
