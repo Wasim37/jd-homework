@@ -282,6 +282,9 @@ class ScheduledSampler():
 
     def teacher_forcing(self, phase):
         """According to a certain probability to choose whether to execute teacher_forcing
+        每个 time step 以一个 p 的概率进行 Teacher forcing，以 1-p的概率不进行 Teacher forcing。
+        p 的大小可以随着 batch 或者 epoch衰减，即开始训练的阶段完全使⽤ ground truth 以加快模型收敛，
+        到后面逐渐将 ground truth 替换成模型自己的输出，到训练后期就与预测阶段的输出一致
 
         Args:
             phase (int): probability level  if phase = 0, 100% teacher_forcing ,phase = self.phases - 1, 0% teacher_forcing
