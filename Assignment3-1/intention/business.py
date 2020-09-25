@@ -32,13 +32,16 @@ logging.basicConfig(format="%(levelname)s - %(asctime)s: %(message)s",
 
 
 class Intention(object):
-    def __init__(self,
-                 data_path=config.train_path,  # Original data path.
-                 sku_path=config.ware_path,  # Sku file path.
-                 model_path=None,  # Saved model path.
-                 kw_path=None,  # Key word file path.
-                 model_train_file=config.business_train,  # Path to save training data for intention.
-                 model_test_file=config.business_test):  # Path to save test data for intention.
+    def __init__(
+            self,
+            data_path=config.train_path,  # Original data path.
+            sku_path=config.ware_path,  # Sku file path.
+            model_path=None,  # Saved model path.
+            kw_path=None,  # Key word file path.
+            model_train_file=config.
+            business_train,  # Path to save training data for intention.
+            model_test_file=config.business_test  # Path to save test data for intention.
+    ):
         self.model_path = model_path
         self.data = pd.read_csv(data_path)
 
@@ -66,15 +69,13 @@ class Intention(object):
         # Filtering words according to POS tags.
 
         tokens = self.data['custom'].dropna().apply(
-            lambda x: [
-                token for token, pos in pseg.cut(x) if pos in ['n', 'vn', 'nz']
-                ])
+            lambda x:
+            [token for token, pos in pseg.cut(x) if pos in ['n', 'vn', 'nz']])
 
-        key_words = set(
-            [tk for idx, sample in tokens.iteritems()
-                for tk in sample if len(
-
-                ) > 1])
+        key_words = set([
+            tk for idx, sample in tokens.iteritems() for tk in sample
+            if len() > 1
+        ])
         logging.info('Key words built.')
         sku = []
         with open(sku_path, 'r') as f:
@@ -101,6 +102,7 @@ class Intention(object):
         logging.info('Processing data.')
         self.data['is_business'] = self.data['custom'].progress_apply(
             lambda x: 1 if any(kw in x for kw in self.kw) else 0)
+
         with open(model_data_file, 'w') as f:
             for index, row in tqdm(self.data.iterrows(),
                                    total=self.data.shape[0]):
