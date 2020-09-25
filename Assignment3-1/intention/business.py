@@ -6,7 +6,7 @@ LastEditors: Peixin Lin
 Date: 2020-08-21 15:16:08
 LastEditTime: 2020-08-27 19:37:08
 FilePath: /Assignment3-1_solution/intention/business.py
-Desciption: 建立fasttext 模型， 判断用户输入是否属于业务咨询。
+Desciption: 意图识别的模块。建立fasttext模型，判断用户输入是否属于业务咨询。
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
 '''
 
@@ -51,7 +51,10 @@ class Intention(object):
 
     def build_keyword(self, sku_path, to_file):
         '''
-        @description: 构建业务咨询相关关键词，并保存
+        @description: 构建业务咨询数据的关键词，并保存。
+                      关键词的来源有两个，
+                      1. train.csv中的名词（可使用jieba切词并作词性标注）
+                      2. ware.txt中的sku词汇
         @param {type}
         sku_path： JD sku 文件路径
         to_file： 关键词保存路径
@@ -69,7 +72,9 @@ class Intention(object):
 
         key_words = set(
             [tk for idx, sample in tokens.iteritems()
-                for tk in sample if len(tk) > 1])
+                for tk in sample if len(
+
+                ) > 1])
         logging.info('Key words built.')
         sku = []
         with open(sku_path, 'r') as f:
@@ -87,8 +92,8 @@ class Intention(object):
 
     def data_process(self, model_data_file):
         '''
-        @description: 判断咨询中是否包含业务关键词， 如果包含label为1， 否则为0
-                      并处理成fasttext 需要的数据格式
+        @description: 对数据集进行标注，生成训练fasttext需要的数据格式
+                      判断咨询中是否包含业务关键词， 如果包含label为1（表示业务相关查询）， 否则为0
         @param {type}
         model_data_file： 模型训练数据保存路径
         @return:
@@ -105,7 +110,7 @@ class Intention(object):
 
     def train(self, model_data_file, model_test_file):
         '''
-        @description: 读取模型训练数据训练， 并保存
+        @description: 读取训练数据训练， 并保存fasttext模型
         @param {type}
         model_data_file： 模型训练数据位置
         model_test_file： 模型验证文件位置
@@ -128,7 +133,7 @@ class Intention(object):
 
     def test(self, classifier, model_test_file):
         '''
-        @description: 验证模型
+        @description: 在test.csv上验证模型并计算F1score
         @param {type}
         classifier： model
         model_test_file： 测试数据路径
@@ -162,8 +167,8 @@ class Intention(object):
 
 if __name__ == "__main__":
     it = Intention(config.train_path,
-                 config.ware_path,
-                 model_path=config.ft_path,
-                 kw_path=config.keyword_path)
+                   config.ware_path,
+                   model_path=config.ft_path,
+                   kw_path=config.keyword_path)
     print(it.predict('怎么申请价保呢？'))
     print(it.predict('你好'))

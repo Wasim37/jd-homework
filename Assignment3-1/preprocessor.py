@@ -178,6 +178,7 @@ def generate_data(filepath, save=True, to_file=None, pair=False):
     data = data.reset_index()
     data['index'] = data['index'].apply(lambda x: x - 1
                                         if x % 2 == 1 else x)
+    # Pandas透视表（pivot_table）详解 https://www.cnblogs.com/onemorepoint/p/8425300.html
     data = data.pivot_table(index=['index', 'session_id'],
                             columns='role',
                             values='content',

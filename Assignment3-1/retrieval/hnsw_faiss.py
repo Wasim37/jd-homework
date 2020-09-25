@@ -172,5 +172,5 @@ if __name__ == "__main__":
     test = '我要转人工'
     print(hnsw.search(test, k=10))
     eval_vecs = np.stack(hnsw.data['custom_vec'].values).reshape(-1, 300)
-    eval_vecs.astype('float32')
+    eval_vecs = eval_vecs.astype('float32')
     hnsw.evaluate(eval_vecs[:1000])
