@@ -59,13 +59,15 @@ class HNSW(object):
             model_path=None,
             data_path=None,
     ):
+        logging.info("load w2v...")
         self.w2v_model = KeyedVectors.load(w2v_path)
+        logging.info("load data...")
         self.data = self.load_data(data_path)
         if model_path and os.path.exists(model_path):
-            # 加载
+            logging.info("load hnsw...")
             self.index = self.load_hnsw(model_path)
         elif data_path:
-            # 训练
+            logging.info("train hnsw...")
             self.index = self.build_hnsw(model_path,
                                          ef=ef,
                                          m=M)
@@ -96,7 +98,7 @@ class HNSW(object):
         @param {type} text: The query.
         @return {type} None
         '''
-        logging.info('Evaluating.')
+        logging.info('Evaluating...')
         nq, d = vecs.shape
         t0 = time.time()
         # D: distance
