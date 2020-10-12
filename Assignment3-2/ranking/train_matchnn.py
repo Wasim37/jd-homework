@@ -22,6 +22,7 @@ import sys
 sys.path.append('..')
 from config import is_cuda, root_path, max_sequence_length
 
+
 seed = 9
 torch.manual_seed(seed)
 if is_cuda:
@@ -120,7 +121,23 @@ def main(train_file,
         # Update the optimizer's learning rate with the scheduler
         scheduler.step(epoch_accuracy)
         # Early stopping on validation accuracy
-        if epc
+        if epoch_accuracy < best_score:
+            patience_counter += 1
+        else:
+            best_score = epoch_accuracy
+            patience_counter = 0
+            torch.save({
+                "epoch": epoch,
+                "model": model.state_dict(),
+                "best_score": best_score,
+                "epoch_count": epochs_count,
+                "train_losses": train_losses,
+                "valid_losses": valid_losses
+            }, os.path.join(target_dir, "best.pat.tar"))
+        if patience_counter >= patience:
+            print("-> Early stopping: patience limit reached, stopping....")
+            break
+
 
 if __name__ == "__main__":
     main(os.path.join(root_path, 'data/ranking/train.tsv'),
