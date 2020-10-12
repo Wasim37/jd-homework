@@ -52,7 +52,37 @@ class TextSimilarity(object):
             ratio: The length of LCS divided by the length of
                 the shorter one among two input strings.
         """
+        # 得到一个二维数组，类似用dp[lena+1][lenb+1], 并且初始化为0
+        lengths = [[0 for j in range(len(str_b) + 1)]
+                   for i in range(len(str_a) + 1)]
 
+        # enumerate(a)函数：得到下吧i和a[i]
+        for i, x in enumerate(str_a):
+            for j, y in enumerate(str_b):
+                if x == y:
+                    lengths[i + 1][j + 1] = lengths[i][j] + 1
+                else:
+                    lengths[i + 1][j + 1] = max(lengths[i + 1][j],
+                                                lengths[i][j + 1])
+
+        result = ""
+        x, y = len(str_a), len(str_b)
+        while x != 0 and y != 0:
+            # 证明最后一个字符肯定没有用到
+            if lengths[x][y] == lengths[x-1][y]:
+                x -= 1
+            elif lengths[x][y] == lengths[x][y-1]:
+                y -= 1
+            else:  # 用到的从后向前的当前一个字符
+                # 后面语句为真，类似于if(a[x-1]==b[y-1]), 执行后条件下的语句
+                assert str_a[x - 1] == str_b[y-1]
+                # 注意：这是一个从后向前的过程
+                result = str_a[x-1] + result
+                x -= 1
+                y -= 1
+
+        longestdist = lengths[len(str_a)[len(str_b)]]
+        ratio = longestdist / min(len(str_a), len(str_b))
         return ratio
 
     def editDistance(self, str1, str2):
@@ -62,7 +92,23 @@ class TextSimilarity(object):
             ratio: Minimum edit distance divided by the length sum
                 of two input strings.
         """
+        m = len(str1)
+        n = len(str2)
+        lensum = float(m + n)
+        d = [[0] * (n+1) for _ in range(m+1)]
+        for i in range(m + 1):
+            d[i][0] = i
+        for j in range(n+1):
+            d[0][j] = j
 
+        for j in range(1, n+1):
+            for i in range(1, m+1):
+                if str1[i-1] == str[j - 1]:
+                    d[i][j] = d[i-1][j-1]
+                else:
+                    d[i][j] = min(d[i-1][j], d[i][j-1], d[i-1][j-1]) + 1
+        dist = d[-1][-1]
+        ratio = (lensum - dist) / lensum
         return ratio
 
     @classmethod
@@ -84,23 +130,31 @@ class TextSimilarity(object):
         Jaccard相似性系数
         计算sa和sb的相似度 len（sa & sb）/ len（sa | sb）
         '''
-
-        return jaccard_sim
+        seta = self.tokenize(str_a)[1]
+        setb = self.tokenize(str_b)[1]
+        sa_sb = 1.0 * len(seta & setb) / len(seta | setb)
+        return sa_sb
 
     @staticmethod
     def cos_sim(a, b):
-
-        return cos_sim
+        a = np.array(a)
+        b = np.array(b)
+        return np.sum(a * b) / (np.sqrt(np.sum(a**2)) * np.sqrt(np.sum(b**2)))
 
     @staticmethod
     def eucl_sim(a, b):
-
-        return eucl_sim
+        a = np.array(a)
+        b = np.array(b)
+        return 1 / (1 + np.sqrt((np.sum(a-b)**2)))
 
     @staticmethod
     def pearson_sim(a, b):
+        a = np.array(a)
+        b = np.array(b)
 
-        return pearson_sim
+        a = a - np.average(a)
+        b = b - np.average(b)
+        return np.sum(a * b) / (np.sqrt(np.sum(a**2)) * np.sqrt(np.sum(b**2)))
 
     def tokenSimilarity(self, str_a, str_b, method='w2v', sim='cos'):
         '''
