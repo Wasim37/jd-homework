@@ -56,7 +56,9 @@ class BM25(object):
         return math.log(len(count_list)) / (1 + self.n_containing(word, count_list))
 
     def get_idf(self):
-        
+        self.data['question2'] = self.data['question2'].apply(lambda x: " ".join(jieba.cut(x)))
+        idf = Counter([y for x in self.data['question2'].tolist() for y in x.split()])
+        idf = {k: self.cal_idf(k, self.data['question2'].tolist() for k, v in idf.items()}
         return idf, avgdl
 
     def saver(self, save_path):
@@ -68,7 +70,22 @@ class BM25(object):
         self.avgdl = joblib.load(save_path + 'bm25_avgdl.bin')
 
     def bm_25(self, q, d, k1=1.2, k2=200, b=0.75):
-        
+        stop_flag = ['x', 'c', 'u', 'd', 'p', 't', 'uj', 'm', 'f', 'r']
+        words = pseg.cut(q)
+        fi = {}
+        qfi = {}
+        for word, flag in words:
+            if flag not in stop_flag and word not in self.stopwords:
+                fi[word] = d.count(word)
+                qfi[word] = q.count(word)
+        K = k1 * (1 - b + b * (len(d)/self.avgdl))  # 计算K值
+        ri = {}
+        for key in fi:
+            ri[key] = fi[key] * (k1+1) * qfi[key] * (k2+1) / ((fi[key] + k) * (qfi[key] + k2)) # 计算R值
+
+        score = 0
+        for key in ri:
+            score += self.idf.get(key, 20.0) * ri[key]
         return score
 
 

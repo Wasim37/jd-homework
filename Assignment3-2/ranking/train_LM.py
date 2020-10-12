@@ -71,7 +71,31 @@ class Trainer(object):
                                    self.corpus)
 
     def train(self):
-        
+        logging.info(' train tfidf model ... ')
+        self.tfidf = models.TfidfModel(self.corpus, normalize=True)
+        logging.info(' train word2vec model ... ')
+        self.w2v = models.Word2Vec(min_count=2,
+                                   window=2,
+                                   size=300,
+                                   sample=6e-5,
+                                   alpha=0.03,
+                                   min_alpha=0.0007,
+                                   negative=15,
+                                   workers=4,
+                                   iter=7)
+        self.w2v.train(self.data,
+                       total_examples=self.w2v.corpus_count,
+                       epochs=15,
+                       report_delay=1)
+        logging.info(' train fasttext model ... ')
+        self.fast = models.FastText(self.data,
+                                    size=300,
+                                    window=3,
+                                    min_count=1,
+                                    iter=10,
+                                    min_n=3,
+                                    max_n=6,
+                                    word_ngrams=2)
 
     def saver(self):
         logging.info(' save tfidf model ...')
