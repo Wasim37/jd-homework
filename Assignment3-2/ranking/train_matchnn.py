@@ -44,3 +44,4 @@ if __name__ == "__main__":
          os.path.join(root_path, 'data/ranking/dev.tsv'),
          os.path.join(root_path, "model/ranking/"))
 
+    

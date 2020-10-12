@@ -45,7 +45,8 @@ class BertModelTrain(nn.Module):
             param.requires_grad = True  # 每个参数都要 求梯度
 
     def forward(self, batch_seqs, batch_seq_masks, batch_seq_segments, labels):
-
+        loss, logits = self.bert(input_ids=batch_seqs, attention_mask=batch_seq_masks, token_type_ids=batch_seq_segments, labels=labels)
+        probabilities = nn.functional.softmax(logits, dim=-1)
         return loss, logits, probabilities
 
 
@@ -60,7 +61,8 @@ class BertModelPredict(nn.Module):
         self.device = torch.device("cuda") if is_cuda else torch.device("cpu")
 
     def forward(self, batch_seqs, batch_seq_masks, batch_seq_segments):
-
+        logits = self.bert(input_ids=batch_seqs, attention_mask=batch_seq_masks, token_type_ids=batch_seq_segments)[0]
+        probabilities = nn.functional.softmax(logits, dim=-1)
         return logits, probabilities
 
 
@@ -94,5 +96,18 @@ class MatchingNN(object):
                                               self.max_sequence_length)
 
     def predict(self, q1, q2):
+        result = [self.dataPro.trunate_and_pad(self.bert_tokenizer.tokenize(q1), self.bert_tokenizer.tokenize(q2))]
+        seqs = torch.Tensor([i[0] for i in result]).type(torch.long)
+        seq_masks = torch.Tensor([i[0] for i in result]).type(torch.long)
+        seq_segments = torch.Tensor([i[0] for i in result]).type(torch.long)
 
+        if self.is_cuda:
+            seqs = seqs.to(self.device)
+            seq_masks = seq_masks.to(self.device)
+            seq_segments = seq_segments.to(self.device)
+
+        with torch.no_grad():
+            res = self.model(seqs, seq_masks, seq_segments)[-1].cpu().detach().numpy()
+            label = res.argmax()
+            score = res.tolist()[0][label]
         return label, score
