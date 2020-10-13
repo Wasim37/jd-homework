@@ -19,6 +19,11 @@ dev_raw = os.path.join(root_path, 'data/开发集.txt')
 test_raw = os.path.join(root_path, 'data/测试集.txt')
 ware_path = os.path.join(root_path, 'data/ware.txt')
 
+atec_nlp_sim_train = os.path.join(root_path, 'data/ranking_datasets/atec_nlp_sim_train.csv')
+atec_nlp_sim_train_add = os.path.join(root_path, 'data/ranking_datasets/atec_nlp_sim_train_add.csv')
+task3_train = os.path.join(root_path, 'data/ranking_datasets/task3_train.txt')
+
+
 sep = '[SEP]'
 
 ''' Data '''
