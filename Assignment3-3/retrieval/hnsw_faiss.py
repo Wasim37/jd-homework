@@ -7,6 +7,9 @@ Date: 2020-08-21 17:25:40
 LastEditTime: 2020-08-27 22:11:38
 FilePath: /Assignment3-1_solution/retrieval/hnsw_faiss.py
 Desciption: 使用Faiss训练hnsw模型。
+1、Faiss（Facebook AI Similarity Search）：https://engineering.fb.com/data-infrastructure/faiss-a-library-for-efficient-similarity-search/
+2、Github repo: https://github.com/facebookresearch/faiss/tree/13a2d4ef8fcb4aa8b92718ef4b9cc211033e7318
+3、HNSW demos: https://github.com/facebookresearch/faiss/blob/13a2d4ef8fcb4aa8b92718ef4b9cc211033e7318/benchs/bench_hnsw.py
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
 '''
 
@@ -87,6 +90,8 @@ class HNSW(object):
     def evaluate(self, vecs):
         '''
         @description: 评估模型。
+                      评估的方式：可以直接以索引中的向量作为query，
+                      搜索最近的1个candidate，根据结果是否为⾃身来得到recall@1.
         @param {type} text: The query.
         @return {type} None
         '''

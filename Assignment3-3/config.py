@@ -23,6 +23,8 @@ atec_nlp_sim_train = os.path.join(root_path, 'data/ranking_datasets/atec_nlp_sim
 atec_nlp_sim_train_add = os.path.join(root_path, 'data/ranking_datasets/atec_nlp_sim_train_add.csv')
 task3_train = os.path.join(root_path, 'data/ranking_datasets/task3_train.txt')
 
+max_sequence_length = 512
+
 
 sep = '[SEP]'
 

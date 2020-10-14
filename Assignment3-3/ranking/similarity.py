@@ -14,15 +14,14 @@ import logging
 import sys
 import os
 
+sys.path.append('..')
+
 import jieba.posseg as pseg
 import numpy as np
 from gensim import corpora, models
-
 from config import root_path
 from retrieval.hnsw_faiss import wam
 from ranking.bm25 import BM25
-
-sys.path.append('..')
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
                     level=logging.INFO)

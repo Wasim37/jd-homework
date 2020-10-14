@@ -10,6 +10,7 @@ import sys
 import os
 import random
 import pandas as pd
+import csv
 
 curPath = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(os.path.split(curPath)[0])
@@ -25,29 +26,41 @@ def generate_data(to_file):
     '''
     logging.info("开始读取数据...")
     df_list = []
-    with open(atec_nlp_sim_train, 'r', encoding='utf8') as f:
+    with open(atec_nlp_sim_train, 'r', encoding='UTF-8') as f:
         for lines in f:
+            line_list = []
             line = lines.strip().split('\t')
             if len(line) != 4:
                 continue
             else:
-                df_list.append(line[1] + '\t' + line[2] + '\t' + line[3])
+                line_list.append(line[1])
+                line_list.append(line[2])
+                line_list.append(line[3])
+                df_list.append(line_list)
 
-    with open(atec_nlp_sim_train_add, 'r', encoding='utf8') as f:
+    with open(atec_nlp_sim_train_add, 'r', encoding='UTF-8') as f:
         for lines in f:
+            line_list = []
             line = lines.strip().split('\t')
             if len(line) != 4:
                 continue
             else:
-                df_list.append(line[1] + '\t' + line[2] + '\t' + line[3])
+                line_list.append(line[1])
+                line_list.append(line[2])
+                line_list.append(line[3])
+                df_list.append(line_list)
 
-    with open(task3_train, 'r', encoding='utf8') as f:
+    with open(task3_train, 'r', encoding='UTF-8') as f:
         for lines in f:
+            line_list = []
             line = lines.strip().split('\t')
             if len(line) != 3:
                 continue
             else:
-                df_list.append(line[0] + '\t' + line[1] + '\t' + line[2])
+                line_list.append(line[0])
+                line_list.append(line[1])
+                line_list.append(line[2])
+                df_list.append(line_list)
 
     logging.info("开始拆分数据...")
     random.shuffle(df_list)
@@ -59,9 +72,9 @@ def generate_data(to_file):
     test_list = df_list[train_offset + dev_offset:]
 
     logging.info("开始存储数据：train.size:{}, test.size:{}, dev.size:{}...".format(len(train_list), len(test_list), len(dev_list)))
-    pd.DataFrame(train_list).to_csv(to_file + '/train.csv', index=False, header=False)
-    pd.DataFrame(test_list).to_csv(to_file + '/test.csv', index=False, header=False)
-    pd.DataFrame(dev_list).to_csv(to_file + '/dev.csv', index=False, header=False)
+    pd.DataFrame(train_list).to_csv(to_file + '/train.tsv', index=False, header=False, encoding="utf-8", quoting=csv.QUOTE_NONE, sep='\t')
+    pd.DataFrame(test_list).to_csv(to_file + '/test.tsv', index=False, header=False, encoding="utf-8", quoting=csv.QUOTE_NONE, sep='\t')
+    pd.DataFrame(dev_list).to_csv(to_file + '/dev.tsv', index=False, header=False, encoding="utf-8", quoting=csv.QUOTE_NONE, sep='\t')
 
 
 if __name__ == "__main__":

@@ -41,31 +41,37 @@ class Intention(object):
                  model_test_file=config.business_test):  # Path to save test data for intention.
         self.model_path = model_path
         self.data = pd.read_csv(data_path)
-        
+
         if model_path and os.path.exists(model_path):
             self.fast = fasttext.load_model(model_path)
         else:
             self.kw = self.build_keyword(sku_path, to_file=kw_path)
             self.data_process(model_train_file)  # Create
             self.fast = self.train(model_train_file, model_test_file)
-            
 
     def build_keyword(self, sku_path, to_file):
         '''
-        @description: 构建业务咨询相关关键词，并保存
+        @description: 构建业务咨询数据的关键词，并保存。
+                      关键词的来源有两个，
+                      1. train.csv中的名词（可使用jieba切词并作词性标注）
+                      2. ware.txt中的sku词汇
         @param {type}
         sku_path： JD sku 文件路径
         to_file： 关键词保存路径
         @return: 关键词list
         '''
-        
+
         logging.info('Building keywords.')
         tokens = []
         # Filtering words according to POS tags.
 
-        tokens = self.data['custom'].dropna().apply(lambda x: [token for token, pos in pseg.cut(x) if pos in ['n', 'vn', 'nz']])
-        
-        key_words = set([tk for idx, sample in tokens.iteritems() for tk in sample if len(tk) > 1])
+        tokens = self.data['custom'].dropna().apply(
+            lambda x:
+            [token for token, pos in pseg.cut(x) if pos in ['n', 'vn', 'nz']])
+        key_words = set([
+            tk for idx, sample in tokens.iteritems() for tk in sample
+            if len(tk) > 1
+        ])
         logging.info('Key words built.')
         sku = []
         with open(sku_path, 'r') as f:
@@ -83,8 +89,8 @@ class Intention(object):
 
     def data_process(self, model_data_file):
         '''
-        @description: 判断咨询中是否包含业务关键词， 如果包含label为1， 否则为0
-                      并处理成fasttext 需要的数据格式
+        @description: 对数据集进行标注，生成训练fasttext需要的数据格式
+                      判断咨询中是否包含业务关键词， 如果包含label为1（表示业务相关查询）， 否则为0
         @param {type}
         model_data_file： 模型训练数据保存路径
         @return:
@@ -92,6 +98,7 @@ class Intention(object):
         logging.info('Processing data.')
         self.data['is_business'] = self.data['custom'].progress_apply(
             lambda x: 1 if any(kw in x for kw in self.kw) else 0)
+
         with open(model_data_file, 'w') as f:
             for index, row in tqdm(self.data.iterrows(),
                                    total=self.data.shape[0]):
@@ -101,7 +108,7 @@ class Intention(object):
 
     def train(self, model_data_file, model_test_file):
         '''
-        @description: 读取模型训练数据训练， 并保存
+        @description: 读取模型训练数据训练， 并保存fasttext模型
         @param {type}
         model_data_file： 模型训练数据位置
         model_test_file： 模型验证文件位置
@@ -124,7 +131,7 @@ class Intention(object):
 
     def test(self, classifier, model_test_file):
         '''
-        @description: 验证模型
+        @description: 在test.csv上验证模型并计算F1score
         @param {type}
         classifier： model
         model_test_file： 测试数据路径

@@ -81,7 +81,7 @@ def read_file(path, is_train=False):
     '''
     chat = []
 
-    with open(path, 'r') as f:
+    with open(path, 'r', encoding='utf-8') as f:
 
         tmp = []
         sessions = set()
