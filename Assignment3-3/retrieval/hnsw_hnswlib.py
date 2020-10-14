@@ -20,8 +20,8 @@ import numpy as np
 import pandas as pd
 from gensim.models import KeyedVectors
 
-from util.preprocessor import clean
-from config import root_path, ef_construction
+from utils.preprocessor import clean
+from config import root_path, ef_construction, M
 import config
 
 
