@@ -20,7 +20,9 @@ import numpy as np
 import pandas as pd
 from gensim.models import KeyedVectors
 
-from retrieval.preprocessor import clean
+from util.preprocessor import clean
+from config import root_path, ef_construction
+import config
 
 
 logging.basicConfig(format="%(levelname)s - %(asctime)s: %(message)s",
@@ -138,7 +140,7 @@ class HNSW(object):
 
 
 if __name__ == "__main__":
-    hnsw = HNSW(config.w2v_path),
-                config.train_path, config.ef_construction, config.M)
+    hnsw = HNSW(config.w2v_path, config.train_path, config.ef_construction, config.M)
+
     test = '我要转人工'
     print(hnsw.search(test, k=10))

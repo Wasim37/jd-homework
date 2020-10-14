@@ -130,7 +130,7 @@ class HNSW(object):
         print('dtype: ', vecs.dtype)
         index.add(vecs)  # add vectors to the index
         print("total: ", index.ntotal)
-        self.evaluate(vecs[:10000])
+        # self.evaluate(vecs[:10000])
         faiss.write_index(index, to_file)
         return index
 
