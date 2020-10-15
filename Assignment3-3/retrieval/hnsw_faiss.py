@@ -96,6 +96,7 @@ class HNSW(object):
         @return {type} None
         '''
         logging.info('Evaluating.')
+        vecs = vecs.astype('float32')
         nq, d = vecs.shape
         t0 = time.time()
         D, I = self.index.search(vecs, 1)
@@ -156,6 +157,7 @@ class HNSW(object):
         '''
         logging.info(f'Searching for {text}.')
         test_vec = wam(clean(text), self.w2v_model)
+        test_vec = test_vec.astype('float32')
         # vecs is a n2-by-d matrix with query vectors
         k = 4                          # we want 4 similar vectors
         D, I = self.index.search(test_vec, k)
@@ -177,5 +179,4 @@ if __name__ == "__main__":
     test = '我要转人工'
     print(hnsw.search(test, k=10))
     eval_vecs = np.stack(hnsw.data['custom_vec'].values).reshape(-1, 300)
-    eval_vecs = eval_vecs.astype('float32')
     hnsw.evaluate(eval_vecs[:1000])

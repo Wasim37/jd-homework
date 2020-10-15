@@ -22,16 +22,20 @@ import numpy as np
 import pandas as pd
 import joblib
 
-
 sys.path.append('..')
 
 from config import root_path
 
 
 class BM25(object):
-    def __init__(self, do_train=True, save_path=os.path.join(root_path, 'model/ranking/')):
+    def __init__(self,
+                 do_train=True,
+                 save_path=os.path.join(root_path, 'model/ranking/')):
         if do_train:
-            self.data = pd.read_csv(os.path.join(root_path, 'data/ranking/train.tsv'), sep='\t', header=None,
+            self.data = pd.read_csv(os.path.join(root_path,
+                                                 'data/ranking/train.tsv'),
+                                    sep='\t',
+                                    header=None,
                                     quoting=csv.QUOTE_NONE,
                                     names=['question1', 'question2', 'target'])
             self.idf, self.avgdl = self.get_idf()
@@ -53,13 +57,20 @@ class BM25(object):
         return sum(1 for count in count_list if word in count)
 
     def cal_idf(self, word, count_list):
-        return math.log(len(count_list)) / (1 + self.n_containing(word, count_list))
+        return math.log(
+            len(count_list)) / (1 + self.n_containing(word, count_list))
 
     def get_idf(self):
-        self.data['question2'] = self.data['question2'].apply(lambda x: " ".join(jieba.cut(x)))
-        idf = Counter([y for x in self.data['question2'].tolist() for y in x.split()])
-        idf = {k: self.cal_idf(k, self.data['question2'].tolist()) for k, v in idf.items()}
-        avgdl = np.array([len(x.split()) for x in self.data['question2'].tolist()]).mean()
+        self.data['question2'] = self.data['question2'].apply(
+            lambda x: " ".join(jieba.cut(x)))
+        idf = Counter(
+            [y for x in self.data['question2'].tolist() for y in x.split()])
+        idf = {
+            k: self.cal_idf(k, self.data['question2'].tolist())
+            for k, v in idf.items()
+        }
+        avgdl = np.array(
+            [len(x.split()) for x in self.data['question2'].tolist()]).mean()
         return idf, avgdl
 
     def saver(self, save_path):
@@ -82,7 +93,8 @@ class BM25(object):
         K = k1 * (1 - b + b * (len(d) / self.avgdl))  # 计算K值
         ri = {}
         for key in fi:
-            ri[key] = fi[key] * (k1+1) * qfi[key] * (k2+1) / ((fi[key] + K) * (qfi[key] + k2))  # 计算R
+            ri[key] = fi[key] * (k1 + 1) * qfi[key] * (k2 + 1) / (
+                (fi[key] + K) * (qfi[key] + k2))  # 计算R
 
         score = 0
         for key in ri:

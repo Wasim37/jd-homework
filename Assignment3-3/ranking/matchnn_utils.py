@@ -19,7 +19,7 @@ from sklearn.metrics import roc_auc_score
 def generate_sent_masks(enc_hiddens, source_lengths):
     """ Generate sentence masks for encoder hidden states.
     @param enc_hiddens (Tensor): encodings of shape (b, src_len, h), where b = batch size,
-                                 src_len = max source length, h = hidden size. 
+                                 src_len = max source length, h = hidden size.
     @param source_lengths (List[int]): List of actual lengths for each of the sentences in the batch.len = batch size
     @returns enc_masks (Tensor): Tensor of sentence masks of shape (b, src_len),
                                 where src_len = max source length, b = batch size.

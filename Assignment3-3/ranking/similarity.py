@@ -32,6 +32,7 @@ class TextSimilarity(object):
         logging.info('load dictionary')
         self.dictionary = corpora.Dictionary.load(os.path.join(root_path,
                                                   'model/ranking/ranking.dict'))
+                                                  
         logging.info('load corpus')
         self.corpus = corpora.MmCorpus(os.path.join(root_path, 'model/ranking/ranking.mm'))
         logging.info('load tfidf')

@@ -54,11 +54,10 @@ class DataPrecessForSentence(Dataset):
                          sep='\t',
                          header=None,
                          names=['question1', 'question2', 'label'],
-                         quoting=csv.QUOTE_NONE
-                        )
-#         df = df[df['question1'].isin(
-#             np.random.choice(df['question1'].unique(),
-#                              int(0.3 * df['question1'].unique().shape[0])))]
+                         quoting=csv.QUOTE_NONE)
+        #         df = df[df['question1'].isin(
+        #             np.random.choice(df['question1'].unique(),
+        #                              int(0.3 * df['question1'].unique().shape[0])))]
 
         df["question1"] = df["question1"].apply(lambda x: "".join(x.split()))
         df["question2"] = df["question2"].apply(lambda x: "".join(x.split()))

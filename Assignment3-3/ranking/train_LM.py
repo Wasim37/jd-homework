@@ -37,7 +37,7 @@ class Trainer(object):
 
     def data_reader(self, path):
         samples = []
-        with open(path, 'r') as f:
+        with open(path, 'r', encoding='utf-8') as f:
             for line in f:
                 try:
                     q1, q2, label = line.split('\t')
@@ -53,17 +53,19 @@ class Trainer(object):
         @param {type}
         @return:
         '''
-        logging.info(" loading data.... ")
+        logging.info("loading data.... ")
         self.data = [[
             word for word in jieba.cut(sentence) if word not in self.stopwords
         ] for sentence in self.data]
+        # defaultdict: 当字典里的key不存在但被查找时，返回的不是keyError而是一个默认值
         self.freq = defaultdict(int)
         for sentence in self.data:
             for word in sentence:
                 self.freq[word] += 1
         self.data = [[word for word in sentence if self.freq[word] > 1]
                      for sentence in self.data]
-        logging.info(' building dictionary....')
+
+        logging.info('building dictionary....')
         self.dictionary = corpora.Dictionary(self.data)
         self.dictionary.save(os.path.join(root_path, 'model/ranking/ranking.dict'))
         self.corpus = [self.dictionary.doc2bow(text) for text in self.data]
@@ -71,9 +73,10 @@ class Trainer(object):
                                    self.corpus)
 
     def train(self):
-        logging.info(' train tfidf model ...')
+        logging.info('train tfidf model ...')
         self.tfidf = models.TfidfModel(self.corpus, normalize=True)
-        logging.info(' train word2vec model...')
+
+        logging.info('train word2vec model...')
         self.w2v = models.Word2Vec(min_count=2,
                                    window=2,
                                    size=300,
@@ -88,7 +91,8 @@ class Trainer(object):
                        total_examples=self.w2v.corpus_count,
                        epochs=15,
                        report_delay=1)
-        logging.info(' train fasttext model ...')
+
+        logging.info('train fasttext model ...')
         self.fast = models.FastText(self.data,
                                     size=300,
                                     window=3,
@@ -99,11 +103,11 @@ class Trainer(object):
                                     word_ngrams=2)
 
     def saver(self):
-        logging.info(' save tfidf model ...')
+        logging.info('save tfidf model ...')
         self.tfidf.save(os.path.join(root_path, 'model/ranking/tfidf'))
-        logging.info(' save word2vec model ...')
+        logging.info('save word2vec model ...')
         self.w2v.save(os.path.join(root_path, 'model/ranking/w2v'))
-        logging.info(' save fasttext model ...')
+        logging.info('save fasttext model ...')
         self.fast.save(os.path.join(root_path, 'model/ranking/fast'))
 
 

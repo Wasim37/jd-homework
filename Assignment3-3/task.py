@@ -64,5 +64,5 @@ def rank():
 
 
 if __name__ == "__main__":
-    retrieve(5)
+    retrieve(4)
     rank()
