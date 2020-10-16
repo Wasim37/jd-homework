@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-09-11 15:32:57
+LastEditTime: 2020-10-16 10:47:39
 FilePath: /Assignment3-2_solution/ranking/similarity.py
 Desciption: Definition of manual features.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -32,7 +32,7 @@ class TextSimilarity(object):
         logging.info('load dictionary')
         self.dictionary = corpora.Dictionary.load(os.path.join(root_path,
                                                   'model/ranking/ranking.dict'))
-                                                  
+
         logging.info('load corpus')
         self.corpus = corpora.MmCorpus(os.path.join(root_path, 'model/ranking/ranking.mm'))
         logging.info('load tfidf')
@@ -44,7 +44,7 @@ class TextSimilarity(object):
         logging.info('load fasttext')
         self.fasttext = models.FastText.load(os.path.join(root_path, 'model/ranking/fast'))
 
-    # get LCS(longest common subsquence),DP
+    # get LCS(longest common subsquence), DP
     def lcs(self, str_a, str_b):
         """Longest common substring
 
@@ -52,38 +52,18 @@ class TextSimilarity(object):
             ratio: The length of LCS divided by the length of
                 the shorter one among two input strings.
         """
-        # 得到一个二维的数组，类似用dp[lena+1][lenb+1],并且初始化为0
-        lengths = [[0 for j in range(len(str_b) + 1)]
-                   for i in range(len(str_a) + 1)]
-
-        # enumerate(a)函数： 得到下标i和a[i]
-        for i, x in enumerate(str_a):
-            for j, y in enumerate(str_b):
-                if x == y:
-                    lengths[i + 1][j + 1] = lengths[i][j] + 1
+        m, n = len(str_a), len(str_b)
+        # 构建 DP table 和 base case
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        # 进行状态转移
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if str_a[i - 1] == str_b[j - 1]:
+                    # 找到一个 lcs 中的字符
+                    dp[i][j] = dp[i - 1][j - 1] + 1
                 else:
-                    lengths[i + 1][j + 1] = max(lengths[i + 1][j],
-                                                lengths[i][j + 1])
-
-        # 到这里已经得到最长的子序列的长度，下面从这个矩阵中就是得到最长子序列
-        result = ""
-        x, y = len(str_a), len(str_b)
-        while x != 0 and y != 0:
-            # 证明最后一个字符肯定没有用到
-            if lengths[x][y] == lengths[x - 1][y]:
-                x -= 1
-            elif lengths[x][y] == lengths[x][y - 1]:
-                y -= 1
-            else:  # 用到的从后向前的当前一个字符
-                assert str_a[x - 1] == str_b[
-                    y - 1]  # 后面语句为真，类似于if(a[x-1]==b[y-1]),执行后条件下的语句
-                result = str_a[x - 1] + result  # 注意这一句，这是一个从后向前的过程
-                x -= 1
-                y -= 1
-
-        longestdist = lengths[len(str_a)][len(str_b)]
-        ratio = longestdist / min(len(str_a), len(str_b))
-        return ratio
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+        return dp[m][n] / min(m, n)
 
     def editDistance(self, str1, str2):
         """Edit distance
@@ -95,7 +75,7 @@ class TextSimilarity(object):
         m = len(str1)
         n = len(str2)
         lensum = float(m + n)
-        d = [[0]*(n+1) for _ in range(m+1)]
+        d = [[0] * (n + 1) for _ in range(m + 1)]
         for i in range(m + 1):
             d[i][0] = i
         for j in range(n + 1):

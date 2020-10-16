@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:53
-LastEditTime: 2020-09-11 14:19:41
+LastEditTime: 2020-10-16 09:59:11
 FilePath: /Assignment3-2_solution/ranking/bm25.py
 Desciption: Train a bm25 model.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -69,6 +69,7 @@ class BM25(object):
             k: self.cal_idf(k, self.data['question2'].tolist())
             for k, v in idf.items()
         }
+        # avgdl: 文档D中所有文档的平均长度
         avgdl = np.array(
             [len(x.split()) for x in self.data['question2'].tolist()]).mean()
         return idf, avgdl
@@ -82,6 +83,19 @@ class BM25(object):
         self.avgdl = joblib.load(save_path + 'bm25_avgdl.bin')
 
     def bm_25(self, q, d, k1=1.2, k2=200, b=0.75):
+        """ BM25相关性得分计算, 参考 https://www.jianshu.com/p/1e498888f505
+
+        Args:
+            q ([type]): [description]
+            d ([type]): [description]
+            k1 (float, optional): 调节因子，根据经验设置. Defaults to 1.2.
+            k2 (int, optional): 调节因子，根据经验设置. Defaults to 200.
+            b (float, optional): 调节因子，根据经验设置. Defaults to 0.75.
+
+        Returns:
+            [type]: [description]
+        """
+        # 停用词性 [标点符号、连词、助词、副词、介词、时语素、‘的’、数词、方位词、代词]
         stop_flag = ['x', 'c', 'u', 'd', 'p', 't', 'uj', 'm', 'f', 'r']
         words = pseg.cut(q)  # 切分查询式
         fi = {}
@@ -90,11 +104,13 @@ class BM25(object):
             if flag not in stop_flag and word not in self.stopwords:
                 fi[word] = d.count(word)
                 qfi[word] = q.count(word)
-        K = k1 * (1 - b + b * (len(d) / self.avgdl))  # 计算K值
+        # 计算K值. len(d): 文档d的长度, avgdl: 文档d的平均长度
+        K = k1 * (1 - b + b * (len(d) / self.avgdl))
         ri = {}
         for key in fi:
+            # 计算R
             ri[key] = fi[key] * (k1 + 1) * qfi[key] * (k2 + 1) / (
-                (fi[key] + K) * (qfi[key] + k2))  # 计算R
+                (fi[key] + K) * (qfi[key] + k2))
 
         score = 0
         for key in ri:

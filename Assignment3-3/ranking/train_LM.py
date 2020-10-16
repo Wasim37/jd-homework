@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-09-11 14:29:30
+LastEditTime: 2020-10-16 10:10:10
 FilePath: /Assignment3-2_solution/ranking/train_LM.py
 Desciption: Train tfidf, w2v, fasttext models.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -48,11 +48,8 @@ class Trainer(object):
         return samples
 
     def preprocessor(self):
-        '''
-        @description: 分词， 并生成计算tfidf 所需要的数据
-        @param {type}
-        @return:
-        '''
+        """分词， 并生成计算tfidf 所需要的数据
+        """
         logging.info("loading data.... ")
         self.data = [[
             word for word in jieba.cut(sentence) if word not in self.stopwords

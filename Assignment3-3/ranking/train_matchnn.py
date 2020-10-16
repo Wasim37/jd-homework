@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-09-11 14:35:15
+LastEditTime: 2020-10-16 10:28:32
 FilePath: /Assignment3-2_solution/ranking/train_matchnn.py
 Desciption: Train a matching network.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -37,14 +37,28 @@ def main(train_file,
          patience=3,
          max_grad_norm=10.0,
          checkpoint=None):
+    """训练一个BERT模型对输入的两个问题做序列相似度的匹配，得到相似度分数
+
+    Args:
+        train_file ([type]): [description]
+        dev_file ([type]): [description]
+        target_dir ([type]): [description]
+        epochs (int, optional): [description]. Defaults to 10.
+        batch_size (int, optional): [description]. Defaults to 32.
+        lr ([type], optional): [description]. Defaults to 2e-05.
+        patience (int, optional): [description]. Defaults to 3.
+        max_grad_norm (float, optional): [description]. Defaults to 10.0.
+        checkpoint ([type], optional): [description]. Defaults to None.
+    """
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+    device = torch.device("cuda") if is_cuda else torch.device("cpu")
+
     bert_tokenizer = BertTokenizer.from_pretrained(os.path.join(root_path,
                                                    'lib/bert/vocab.txt'),
                                                    do_lower_case=True)
-    device = torch.device("cuda") if is_cuda else torch.device("cpu")
     print(20 * "=", " Preparing for training ", 20 * "=")
-    # 保存模型的路径
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
+
     # -------------------- Data loading ------------------- #
     print("\t* Loading training data...")
     train_data = DataPrecessForSentence(bert_tokenizer, train_file)
@@ -52,23 +66,21 @@ def main(train_file,
     print("\t* Loading validation data...")
     dev_data = DataPrecessForSentence(bert_tokenizer, dev_file)
     dev_loader = DataLoader(dev_data, shuffle=True, batch_size=batch_size)
+
     # -------------------- Model definition ------------------- #
     print("\t* Building model...")
     model = BertModelTrain().to(device)
+
     # -------------------- Preparation for training  ------------------- #
     # 待优化的参数
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
     optimizer_grouped_parameters = [{
-        'params':
-        [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
-        'weight_decay':
-        0.01
+        'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
+        'weight_decay': 0.01
     }, {
-        'params':
-        [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
-        'weight_decay':
-        0.0
+        'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
+        'weight_decay': 0.0
     }]
     optimizer = AdamW(optimizer_grouped_parameters, lr=lr)
 
@@ -87,8 +99,7 @@ def main(train_file,
         checkpoint = torch.load(checkpoint)
         start_epoch = checkpoint["epoch"] + 1
         best_score = checkpoint["best_score"]
-        print("\t* Training will continue on existing model from epoch {}...".
-              format(start_epoch))
+        print("\t* Training will continue on existing model from epoch {}...".format(start_epoch))
         model.load_state_dict(checkpoint["model"])
         optimizer.load_state_dict(checkpoint["optimizer"])
         epochs_count = checkpoint["epochs_count"]
@@ -99,9 +110,9 @@ def main(train_file,
     print(
         "\t* Validation loss before training: {:.4f}, accuracy: {:.4f}%, auc: {:.4f}"
         .format(valid_loss, (valid_accuracy * 100), auc))
+
     # -------------------- Training epochs ------------------- #
-    print("\n", 20 * "=", "Training Bert model on device: {}".format(device),
-          20 * "=")
+    print("\n", 20 * "=", "Training Bert model on device: {}".format(device), 20 * "=")
     patience_counter = 0
     for epoch in range(start_epoch, epochs + 1):
         epochs_count.append(epoch)
@@ -145,4 +156,3 @@ if __name__ == "__main__":
     main(os.path.join(root_path, 'data/ranking/train.tsv'),
          os.path.join(root_path, 'data/ranking/dev.tsv'),
          os.path.join(root_path, "model/ranking/"))
-

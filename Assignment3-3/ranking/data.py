@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-09-11 14:16:34
+LastEditTime: 2020-10-16 10:25:27
 FilePath: /Assignment3-2_solution/ranking/data.py
 Desciption: Data processing for ranking module.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -102,8 +102,7 @@ class DataPrecessForSentence(Dataset):
             tokens_seq_2 = tokens_seq_2[0:(self.max_seq_len - 3) // 2]
         # 分别在首尾拼接特殊符号
         seq = ['[CLS]'] + tokens_seq_1 + ['[SEP]'] + tokens_seq_2 + ['[SEP]']
-        seq_segment = [0] * (len(tokens_seq_1) +
-                             2) + [1] * (len(tokens_seq_2) + 1)
+        seq_segment = [0] * (len(tokens_seq_1) + 2) + [1] * (len(tokens_seq_2) + 1)
         # ID化
         seq = self.bert_tokenizer.convert_tokens_to_ids(seq)
         # 根据max_seq_len与seq的长度产生填充序列
