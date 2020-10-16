@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-10-16 16:08:16
+LastEditTime: 2020-10-16 16:30:31
 FilePath: /Assignment3-2_solution/ranking/train_matchnn.py
 Desciption: Train a matching network.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -59,7 +59,7 @@ def main(train_file,
                                                    do_lower_case=True)
     print(20 * "=", " Preparing for training ", 20 * "=")
 
-    # -------------------- Data loading ------------------- #
+    # 加载数据
     print("\t* Loading training data...")
     train_data = DataPrecessForSentence(bert_tokenizer, train_file)
     train_loader = DataLoader(train_data, shuffle=True, batch_size=batch_size)
@@ -67,12 +67,10 @@ def main(train_file,
     dev_data = DataPrecessForSentence(bert_tokenizer, dev_file)
     dev_loader = DataLoader(dev_data, shuffle=True, batch_size=batch_size)
 
-    # -------------------- Model definition ------------------- #
+    # 定义模型
     print("\t* Building model...")
     model = BertModelTrain().to(device)
-
-    # -------------------- Preparation for training  ------------------- #
-    # 待优化的参数
+    # 返回model的所有参数的(name, tensor)的键值对，并更改网络参数，进行 fine-tuning
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
     optimizer_grouped_parameters = [{
@@ -82,6 +80,7 @@ def main(train_file,
         'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
         'weight_decay': 0.0
     }]
+    # AdamW是实现了权重衰减的优化器
     optimizer = AdamW(optimizer_grouped_parameters, lr=lr)
     # 学习率调整：https://blog.csdn.net/weixin_40100431/article/details/84311430
     # mode: 可选择‘min’或者‘max’，min表示当监控量停止下降的时候，学习率将减小，max表示当监控量停止上升的时候，学习率将减小。默认值为‘min’
@@ -110,11 +109,10 @@ def main(train_file,
         valid_losses = checkpoint["valid_losses"]
     # Compute loss and accuracy before starting (or resuming) training.
     _, valid_loss, valid_accuracy, auc = validate(model, dev_loader)
-    print(
-        "\t* Validation loss before training: {:.4f}, accuracy: {:.4f}%, auc: {:.4f}"
-        .format(valid_loss, (valid_accuracy * 100), auc))
+    print("\t* Validation loss before training: {:.4f}, accuracy: {:.4f}%, auc: {:.4f}"
+          .format(valid_loss, (valid_accuracy * 100), auc))
 
-    # -------------------- Training epochs ------------------- #
+    # 开始训练 ...
     print("\n", 20 * "=", "Training Bert model on device: {}".format(device), 20 * "=")
     patience_counter = 0
     for epoch in range(start_epoch, epochs + 1):
@@ -129,9 +127,8 @@ def main(train_file,
         print("* Validation for epoch {}:".format(epoch))
         epoch_time, epoch_loss, epoch_accuracy, epoch_auc = validate(model, dev_loader)
         valid_losses.append(epoch_loss)
-        print(
-            "-> Valid. time: {:.4f}s, loss: {:.4f}, accuracy: {:.4f}%, auc: {:.4f}\n"
-            .format(epoch_time, epoch_loss, (epoch_accuracy * 100), epoch_auc))
+        print("-> Valid. time: {:.4f}s, loss: {:.4f}, accuracy: {:.4f}%, auc: {:.4f}\n"
+              .format(epoch_time, epoch_loss, (epoch_accuracy * 100), epoch_auc))
         
         # Update the optimizer's learning rate with the scheduler.
         scheduler.step(epoch_accuracy)
