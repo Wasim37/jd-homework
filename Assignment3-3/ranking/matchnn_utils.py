@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-09-11 14:37:21
+LastEditTime: 2020-10-16 15:30:54
 FilePath: /Assignment3-2_solution/ranking/matchnn_utils.py
 Desciption: Helper functions for training the matching network.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -223,7 +223,7 @@ def train(model, dataloader, optimizer, epoch_number, max_gradient_norm):
         running_loss += loss.item()
         correct_preds += correct_predictions(probabilities, labels)
         description = "Avg. batch proc. time: {:.4f}s, loss: {:.4f}"\
-                      .format(batch_time_avg/(batch_index+1), running_loss/(batch_index+1))
+                      .format(batch_time_avg / (batch_index + 1), running_loss / (batch_index + 1))
         tqdm_batch_iterator.set_description(description)
     epoch_time = time.time() - epoch_start
     epoch_loss = running_loss / len(dataloader)

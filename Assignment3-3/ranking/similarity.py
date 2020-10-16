@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-10-16 11:07:00
+LastEditTime: 2020-10-16 15:18:06
 FilePath: /Assignment3-2_solution/ranking/similarity.py
 Desciption: Definition of manual features.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -46,6 +46,7 @@ class TextSimilarity(object):
 
     def lcs(self, str_a, str_b):
         """最长公共子序列 Longest common substring
+           参考: https://mp.weixin.qq.com/s/SUJ35XDpTn5OKU7hud-tPw
 
         Returns:
             ratio: The length of LCS divided by the length of
@@ -63,9 +64,10 @@ class TextSimilarity(object):
                 else:
                     dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
         return dp[m][n] / min(m, n)
-    
+
     def editDistance(self, str1, str2):
         """Edit distance
+           参考: https://mp.weixin.qq.com/s/4CrUawZtiD9ZQohKBgAx4Q
 
         Returns:
             ratio: Minimum edit distance divided by the length sum
@@ -85,9 +87,8 @@ class TextSimilarity(object):
                 if str1[i - 1] == str2[j - 1]:
                     d[i][j] = d[i - 1][j - 1]
                 else:
-                    d[i][j] = min(d[i - 1][j], d[i][j - 1],
-                                  d[i - 1][j - 1]) + 1
-
+                    d[i][j] = min(d[i - 1][j], d[i][j - 1], d[i - 1][j - 1]) + 1
+                    
         dist = d[-1][-1]
         ratio = (lensum - dist) / lensum
         return ratio
@@ -110,6 +111,8 @@ class TextSimilarity(object):
         '''
         Jaccard相似性系数
         计算sa和sb的相似度 len（sa & sb）/ len（sa | sb）
+        jaccard值越大说明相似度越高
+        参考：https://blog.csdn.net/u012836354/article/details/79103099
         '''
         seta = self.tokenize(str_a)[1]
         setb = self.tokenize(str_b)[1]
@@ -123,6 +126,10 @@ class TextSimilarity(object):
 
     @staticmethod
     def eucl_sim(a, b):
+        """Euclidean distance 欧氏距离计算
+           距离越大，差异越大
+           欧氏距离受不同单位刻度的影响，取值范围会很大，一般需要归一化
+        """
         a = np.array(a)
         b = np.array(b)
         return 1 / (1 + np.sqrt((np.sum(a - b)**2)))

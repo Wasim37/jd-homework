@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-08-21 17:25:40
-LastEditTime: 2020-10-16 12:43:02
+LastEditTime: 2020-10-16 15:48:20
 FilePath: /Assignment3-1_solution/retrieval/hnsw_faiss.py
 Desciption: 使用Faiss训练hnsw模型。
 1、Faiss（Facebook AI Similarity Search）：https://engineering.fb.com/data-infrastructure/faiss-a-library-for-efficient-similarity-search/
@@ -100,6 +100,7 @@ class HNSW(object):
         vecs = vecs.astype('float32')
         nq, d = vecs.shape
         t0 = time.time()
+        # D 相似度矩阵， I向量索引位置
         D, I = self.index.search(vecs, 1)
         t1 = time.time()
 
@@ -160,9 +161,11 @@ class HNSW(object):
         test_vec = wam(clean(text), self.w2v_model)
         test_vec = test_vec.astype('float32')
         # vecs is a n2-by-d matrix with query vectors
-        k = 4                          # we want 4 similar vectors
+        #  we want 4 similar vectors
+        k = 4
+        # D 相似度矩阵， I向量索引位置
         D, I = self.index.search(test_vec, k)
-        print(I)
+        print("index.search, I:", I)
 
         return pd.concat(
             (self.data.iloc[I[0]]['custom'].reset_index(),
