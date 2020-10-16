@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-10-16 10:47:39
+LastEditTime: 2020-10-16 11:07:00
 FilePath: /Assignment3-2_solution/ranking/similarity.py
 Desciption: Definition of manual features.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -29,10 +29,10 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
 
 class TextSimilarity(object):
     def __init__(self):
+        """构建各种相似度特征
+        """
         logging.info('load dictionary')
-        self.dictionary = corpora.Dictionary.load(os.path.join(root_path,
-                                                  'model/ranking/ranking.dict'))
-
+        self.dictionary = corpora.Dictionary.load(os.path.join(root_path, 'model/ranking/ranking.dict'))
         logging.info('load corpus')
         self.corpus = corpora.MmCorpus(os.path.join(root_path, 'model/ranking/ranking.mm'))
         logging.info('load tfidf')
@@ -44,9 +44,8 @@ class TextSimilarity(object):
         logging.info('load fasttext')
         self.fasttext = models.FastText.load(os.path.join(root_path, 'model/ranking/fast'))
 
-    # get LCS(longest common subsquence), DP
     def lcs(self, str_a, str_b):
-        """Longest common substring
+        """最长公共子序列 Longest common substring
 
         Returns:
             ratio: The length of LCS divided by the length of
@@ -64,7 +63,7 @@ class TextSimilarity(object):
                 else:
                     dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
         return dp[m][n] / min(m, n)
-
+    
     def editDistance(self, str1, str2):
         """Edit distance
 
@@ -91,7 +90,6 @@ class TextSimilarity(object):
 
         dist = d[-1][-1]
         ratio = (lensum - dist) / lensum
-
         return ratio
 
     @classmethod
@@ -115,8 +113,7 @@ class TextSimilarity(object):
         '''
         seta = self.tokenize(str_a)[1]
         setb = self.tokenize(str_b)[1]
-        sa_sb = 1.0 * len(seta & setb) / len(seta | setb)
-        return sa_sb
+        return 1.0 * len(seta & setb) / len(seta | setb)
 
     @staticmethod
     def cos_sim(a, b):

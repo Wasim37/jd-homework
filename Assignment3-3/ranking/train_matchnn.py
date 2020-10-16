@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-10-16 10:28:32
+LastEditTime: 2020-10-16 11:09:47
 FilePath: /Assignment3-2_solution/ranking/train_matchnn.py
 Desciption: Train a matching network.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -124,14 +124,15 @@ def main(train_file,
         print("-> Training time: {:.4f}s, loss = {:.4f}, accuracy: {:.4f}%".
               format(epoch_time, epoch_loss, (epoch_accuracy * 100)))
         print("* Validation for epoch {}:".format(epoch))
-        epoch_time, epoch_loss, epoch_accuracy, epoch_auc = validate(
-            model, dev_loader)
+        epoch_time, epoch_loss, epoch_accuracy, epoch_auc = validate(model, dev_loader)
         valid_losses.append(epoch_loss)
         print(
             "-> Valid. time: {:.4f}s, loss: {:.4f}, accuracy: {:.4f}%, auc: {:.4f}\n"
             .format(epoch_time, epoch_loss, (epoch_accuracy * 100), epoch_auc))
+        
         # Update the optimizer's learning rate with the scheduler.
         scheduler.step(epoch_accuracy)
+        
         # Early stopping on validation accuracy.
         if epoch_accuracy < best_score:
             patience_counter += 1

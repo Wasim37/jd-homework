@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-08-21 17:25:40
-LastEditTime: 2020-08-27 22:11:38
+LastEditTime: 2020-10-16 12:43:02
 FilePath: /Assignment3-1_solution/retrieval/hnsw_faiss.py
 Desciption: 使用Faiss训练hnsw模型。
 1、Faiss（Facebook AI Similarity Search）：https://engineering.fb.com/data-infrastructure/faiss-a-library-for-efficient-similarity-search/
@@ -51,13 +51,14 @@ def wam(sentence, w2v_model):
 
 
 class HNSW(object):
-    def __init__(self,
-                 w2v_path,
-                 ef=config.ef_construction,
-                 M=config.M,
-                 model_path=None,
-                 data_path=None,
-                ):
+    def __init__(
+        self,
+        w2v_path,
+        ef=config.ef_construction,
+        M=config.M,
+        model_path=None,
+        data_path=None,
+    ):
         self.w2v_model = KeyedVectors.load(w2v_path)
         self.data = self.load_data(data_path)
         if model_path and os.path.exists(model_path):

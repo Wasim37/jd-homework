@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-09-11 15:38:38
+LastEditTime: 2020-10-16 12:52:26
 FilePath: /Assignment3-2_solution/ranking/ranker.py
 Desciption: Generating features and train a LightGBM ranker.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -54,33 +54,40 @@ params = {'boosting_type': 'gbdt',
 
 
 class RANK(object):
-    def __init__(self, do_train=True,  model_path=os.path.join(root_path, 'model/ranking/lightgbm')):
+    def __init__(self,
+                 do_train=True,
+                 model_path=os.path.join(root_path, 'model/ranking/lightgbm')):
+        """提取各类特征后训练LightGBM，保存，并用来预测
+
+        Args:
+            do_train (bool, optional): True 训练, False 预测. Defaults to True.
+            model_path ([type], optional): 模型存储路径. Defaults to os.path.join(root_path, 'model/ranking/lightgbm').
+        """
         self.ts = TextSimilarity()
         self.matchingNN = MatchingNN()
         if do_train:
             logging.info('Training mode')
-            self.train = pd.read_csv(
-                os.path.join(root_path, 'data/ranking/train.tsv'),
-                sep='\t',
-                header=None,
-                nrows=10000,
-                quoting=csv.QUOTE_NONE,
-                names=['question1', 'question2', 'label'])
+            self.train = pd.read_csv(os.path.join(root_path, 'data/ranking/train.tsv'),
+                                     sep='\t',
+                                     header=None,
+                                     nrows=10000,
+                                     quoting=csv.QUOTE_NONE,
+                                     names=['question1', 'question2', 'label'])
 
             self.data = self.generate_feature(self.train)
             self.columns = [
-                i for i in self.train.columns if 'question' not in i]
+                i for i in self.train.columns if 'question' not in i
+            ]
 
             self.trainer()
             self.save(model_path)
         else:
             logging.info('Predicting mode')
-            self.test = pd.read_csv(
-                os.path.join(root_path, 'data/ranking/test.tsv'),
-                sep='\t',
-                header=None,
-                quoting=csv.QUOTE_NONE,
-                names=['question1', 'question2', 'label'])
+            self.test = pd.read_csv(os.path.join(root_path, 'data/ranking/test.tsv'),
+                                    sep='\t',
+                                    header=None,
+                                    quoting=csv.QUOTE_NONE,
+                                    names=['question1', 'question2', 'label'])
             self.testdata = self.generate_feature(self.test)
             self.gbm = joblib.load(model_path)
             self.predict(self.testdata)
@@ -100,52 +107,54 @@ class RANK(object):
                 axis=1))], axis=1)
         logging.info('Generating deeep-matching features.')
         data['matching_score'] = data.apply(
-            lambda row: self.matchingNN.predict(
-                row['question1'],
-                row['question2'])[1], axis=1)
+            lambda row: self.matchingNN.predict(row['question1'], row[
+                'question2'])[1],
+            axis=1)
         return data
 
     def trainer(self):
+        """训练lightgbm模型
+           https://lightgbm.readthedocs.io/en/latest/Python-Intro.html
+        """
         logging.info('Training lightgbm model.')
         self.gbm = lgb.LGBMRanker(metric='auc')
-        columns = [i for i in self.data.columns if i not in [
-            'question1',
-            'question2',
-            'label']]
-        X_train, X_test, y_train, y_test = train_test_split(
-            self.data[columns],
-            self.data['label'],
-            test_size=0.3,
-            random_state=42)
+        columns = [
+            i for i in self.data.columns
+            if i not in ['question1', 'question2', 'label']
+        ]
+        X_train, X_test, y_train, y_test = train_test_split(self.data[columns],
+                                                            self.data['label'],
+                                                            test_size=0.3,
+                                                            random_state=42)
         query_train = [X_train.shape[0]]
         query_val = [X_test.shape[0]]
-        self.gbm.fit(X_train, y_train, group=query_train,
-                     eval_set=[(X_test, y_test)], eval_group=[query_val],
-                     eval_at=[5, 10, 20], early_stopping_rounds=50)
+        # https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMRanker.html?highlight=fit#lightgbm.LGBMRanker.fit
+        # eval_at：The evaluation positions of the specified metric.
+        self.gbm.fit(X_train,
+                     y_train,
+                     group=query_train,
+                     eval_set=[(X_test, y_test)],
+                     eval_group=[query_val],
+                     eval_at=[5, 10, 20],
+                     early_stopping_rounds=50)
 
     def save(self, model_path):
         logging.info('Saving lightgbm model.')
         joblib.dump(self.gbm, model_path)
 
     def predict(self, data: pd.DataFrame):
-        """Doing prediction.
-
-        Args:
-            data (pd.DataFrame): the output of self.generate_feature
-
+        """预测
+        
         Returns:
             list: The scores of all query-candidate pairs.
         """
-        columns = [i for i in data.columns if i not in [
-            'question1',
-            'question2',
-            'label']]
-
+        columns = [
+            i for i in data.columns
+            if i not in ['question1', 'question2', 'label']
+        ]
         result = self.gbm.predict(data[columns])
-
         return result
 
 
 if __name__ == "__main__":
     rank = RANK(do_train=True)
-

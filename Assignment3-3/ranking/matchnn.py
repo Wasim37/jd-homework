@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-09-11 14:40:54
+LastEditTime: 2020-10-16 12:50:39
 FilePath: /Assignment3-2_solution/ranking/matchnn.py
 Desciption: Definition of matching network using BERT.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -65,8 +65,8 @@ class BertModelPredict(nn.Module):
 
     def forward(self, batch_seqs, batch_seq_masks, batch_seq_segments):
         logits = self.bert(input_ids=batch_seqs,
-                                 attention_mask=batch_seq_masks,
-                                 token_type_ids=batch_seq_segments)[0]
+                           attention_mask=batch_seq_masks,
+                           token_type_ids=batch_seq_segments)[0]
         probabilities = nn.functional.softmax(logits, dim=-1)
         return logits, probabilities
 
@@ -85,8 +85,7 @@ class MatchingNN(object):
         self.data_path = data_path
         self.max_sequence_length = max_sequence_length
         self.is_cuda = is_cuda
-        self.device = torch.device('cuda') if self.is_cuda else torch.device(
-            'cpu')
+        self.device = torch.device('cuda') if self.is_cuda else torch.device('cpu')
         self.load_model()
 
     def load_model(self):
@@ -115,10 +114,7 @@ class MatchingNN(object):
             seq_segments = seq_segments.to(self.device)
 
         with torch.no_grad():
-            res = self.model(seqs, seq_masks,
-                             seq_segments)[-1].cpu().detach().numpy()
-
+            res = self.model(seqs, seq_masks, seq_segments)[-1].cpu().detach().numpy()
             label = res.argmax()
-
             score = res.tolist()[0][label]
             return label, score
