@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-10-16 11:09:47
+LastEditTime: 2020-10-16 16:08:16
 FilePath: /Assignment3-2_solution/ranking/train_matchnn.py
 Desciption: Train a matching network.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -83,7 +83,10 @@ def main(train_file,
         'weight_decay': 0.0
     }]
     optimizer = AdamW(optimizer_grouped_parameters, lr=lr)
-
+    # 学习率调整：https://blog.csdn.net/weixin_40100431/article/details/84311430
+    # mode: 可选择‘min’或者‘max’，min表示当监控量停止下降的时候，学习率将减小，max表示当监控量停止上升的时候，学习率将减小。默认值为‘min’
+    # factor: 学习率每次降低多少，new_lr = old_lr * factor
+    # patience: 容忍网路的性能不提升的次数，高于这个次数就降低学习率
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,
                                                            mode="max",
                                                            factor=0.85,
@@ -136,6 +139,9 @@ def main(train_file,
         # Early stopping on validation accuracy.
         if epoch_accuracy < best_score:
             patience_counter += 1
+            if patience_counter >= patience:
+                print("-> Early stopping: patience limit reached, stopping...")
+                break
         else:
             best_score = epoch_accuracy
             patience_counter = 0
@@ -148,9 +154,6 @@ def main(train_file,
                     "train_losses": train_losses,
                     "valid_losses": valid_losses
                 }, os.path.join(target_dir, "best.pth.tar"))
-        if patience_counter >= patience:
-            print("-> Early stopping: patience limit reached, stopping...")
-            break
 
 
 if __name__ == "__main__":
