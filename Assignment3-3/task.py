@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-11 14:14:22
-LastEditTime: 2020-10-16 16:51:51
+LastEditTime: 2020-10-17 21:43:52
 FilePath: /Assignment3-2_solution/task.py
 Desciption: Combine intention module, retrieval module
     and ranking module for task-oriented dialogue.
@@ -20,7 +20,8 @@ import pandas as pd
 
 
 def retrieve(k):
-    """先做意图识别，筛选业务型查询；然后对业务性查询进行召回
+    """先做意图识别，筛选业务型查询；
+       再对业务性查询召回
     """
 
     it = Intention(config.train_path,
@@ -56,7 +57,6 @@ def retrieve(k):
 
 def rank():
     """对result/retrieved.csv中每个query-retrieved pair进行评分
-       并记录在新的column中
     """
     retrieved = pd.read_csv(
         os.path.join(config.root_path, 'result/retrieved.csv'))

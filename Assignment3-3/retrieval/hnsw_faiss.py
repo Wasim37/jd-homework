@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-08-21 17:25:40
-LastEditTime: 2020-10-16 17:29:18
+LastEditTime: 2020-10-17 22:14:57
 FilePath: /Assignment3-1_solution/retrieval/hnsw_faiss.py
 Desciption: 使用Faiss训练hnsw模型。
 1、Faiss（Facebook AI Similarity Search）：https://engineering.fb.com/data-infrastructure/faiss-a-library-for-efficient-similarity-search/
@@ -62,10 +62,10 @@ class HNSW(object):
         self.w2v_model = KeyedVectors.load(w2v_path)
         self.data = self.load_data(data_path)
         if model_path and os.path.exists(model_path):
-            # 加载
+            logging.info('load hnsw model ...')
             self.index = self.load_hnsw(model_path)
         elif data_path:
-            # 训练
+            logging.info('train hnsw model ...')
             self.index = self.build_hnsw(model_path,
                                          ef=ef,
                                          m=M)

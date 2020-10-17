@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-08-10 15:53:39
-LastEditTime: 2020-10-17 21:41:08
+LastEditTime: 2020-10-17 22:15:30
 FilePath: /Assignment3-1_solution/retrieval/hnsw_hnswlib.py
 Desciption: 使用hnswlib训练hnsw模型。
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -58,14 +58,11 @@ class HNSW(object):
 
         self.data = self.data_load(data_path)
         if model_path is not None:
-            # 加载
+            logging.info('load hnsw model ...')
             self.hnsw = self.load_hnsw(model_path)
         else:
-            # 训练
-            self.hnsw = \
-                self.build_hnsw(os.path.join(root_path, 'model/hnsw.bin'),
-                                ef=ef,
-                                m=M)
+            logging.info('train hnsw model ...')
+            self.hnsw = self.build_hnsw(model_path, ef=ef, m=M)
 
     def data_load(self, data_path):
         '''
@@ -140,7 +137,12 @@ class HNSW(object):
 
 
 if __name__ == "__main__":
-    hnsw = HNSW(config.w2v_path, config.train_path, config.ef_construction, config.M)
+    hnsw = HNSW(config.w2v_path, config.train_path, config.ef_construction,
+                config.M, config.hnsw_hnswlib_path)
 
     test = '最近有什么优惠么'
+    print(hnsw.search(test, k=10))
+    test = '退货咨询'
+    print(hnsw.search(test, k=10))
+    test = '什么时候到货'
     print(hnsw.search(test, k=10))

@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-08-21 16:20:49
-LastEditTime: 2020-08-27 19:37:41
+LastEditTime: 2020-10-17 22:10:02
 FilePath: /Assignment3-1_solution/config.py
 Desciption: 配置文件。
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -51,6 +51,7 @@ w2v_path = os.path.join(root_path, "model/retrieval/word2vec")
 ef_construction = 3000  # ef_construction defines a construction time/accuracy trade-off
 M = 64  # M defines tha maximum number of outgoing connections in the graph
 hnsw_path = os.path.join(root_path, 'model/retrieval/hnsw_index')
+hnsw_hnswlib_path = os.path.join(root_path, 'model/retrieval/hnsw.bin')
 
 # 通用配置
 is_cuda = True
