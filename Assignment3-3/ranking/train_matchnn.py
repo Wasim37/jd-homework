@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-10-16 16:30:31
+LastEditTime: 2020-10-16 16:35:47
 FilePath: /Assignment3-2_solution/ranking/train_matchnn.py
 Desciption: Train a matching network.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -102,6 +102,7 @@ def main(train_file,
         start_epoch = checkpoint["epoch"] + 1
         best_score = checkpoint["best_score"]
         print("\t* Training will continue on existing model from epoch {}...".format(start_epoch))
+        # load_state_dict: 将加载的模型参数应用到网络结构中
         model.load_state_dict(checkpoint["model"])
         optimizer.load_state_dict(checkpoint["optimizer"])
         epochs_count = checkpoint["epochs_count"]
@@ -145,7 +146,7 @@ def main(train_file,
             torch.save(
                 {
                     "epoch": epoch,
-                    "model": model.state_dict(),
+                    "model": model.state_dict(),  # 返回model的参数的(name, tensor)的键值对字典，常在保存模型和加载模型时使用
                     "best_score": best_score,
                     "epochs_count": epochs_count,
                     "train_losses": train_losses,

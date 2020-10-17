@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-08-21 17:25:40
-LastEditTime: 2020-10-16 15:48:20
+LastEditTime: 2020-10-16 17:29:18
 FilePath: /Assignment3-1_solution/retrieval/hnsw_faiss.py
 Desciption: 使用Faiss训练hnsw模型。
 1、Faiss（Facebook AI Similarity Search）：https://engineering.fb.com/data-infrastructure/faiss-a-library-for-efficient-similarity-search/
@@ -123,8 +123,10 @@ class HNSW(object):
 
         # Declaring index
         index = faiss.IndexHNSWFlat(dim, m)  # build the index
-        res = faiss.StandardGpuResources()  # use a single GPU
-        faiss.index_cpu_to_gpu(res, 0, index)  # make it a GPU index
+        # 使用单个GPU
+        res = faiss.StandardGpuResources()
+        # 将cpu版的索引转换成gpu版  第二个参数用于指定使用那块GPU设备
+        faiss.index_cpu_to_gpu(res, 0, index)
         index.hnsw.efConstruction = ef
         print("add")
         index.verbose = True  # to see progress

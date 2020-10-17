@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-10-16 12:50:39
+LastEditTime: 2020-10-17 19:27:04
 FilePath: /Assignment3-2_solution/ranking/matchnn.py
 Desciption: Definition of matching network using BERT.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -38,11 +38,12 @@ class BertModelTrain(nn.Module):
     """
     def __init__(self):
         super(BertModelTrain, self).__init__()
-        self.bert = BertForSequenceClassification.from_pretrained(
-            os.path.join(root_path, 'lib/bert/'), num_labels=2)
+        #  hunggingface transformer：https://huggingface.co/transformers/model_doc/bert.html#bertforsequenceclassification
+        self.bert = BertForSequenceClassification.from_pretrained(os.path.join(root_path, 'lib/bert/'), num_labels=2)
         self.device = torch.device("cuda") if is_cuda else torch.device("cpu")
         for param in self.bert.parameters():
-            param.requires_grad = True  # 每个参数都要 求梯度
+            # 每个参数都要求梯度
+            param.requires_grad = True
 
     def forward(self, batch_seqs, batch_seq_masks, batch_seq_segments, labels):
         loss, logits = self.bert(input_ids=batch_seqs,

@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-11 11:44:54
-LastEditTime: 2020-10-16 15:56:36
+LastEditTime: 2020-10-17 19:10:49
 FilePath: /Assignment3-2_solution/ranking/train_LM.py
 Desciption: Train tfidf, w2v, fasttext models.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -70,10 +70,10 @@ class Trainer(object):
                                    self.corpus)
 
     def train(self):
-        logging.info('train tfidf model ...')
+        logging.info('训练tfidf模型...')
         self.tfidf = models.TfidfModel(self.corpus, normalize=True)
 
-        logging.info('train word2vec model ...')
+        logging.info('训练word2vec模型...')
         self.w2v = models.Word2Vec(min_count=2,
                                    window=2,
                                    size=300,
@@ -89,7 +89,7 @@ class Trainer(object):
                        epochs=15,
                        report_delay=1)
 
-        logging.info('train fasttext model ...')
+        logging.info('训练fasttext模型...')
         self.fast = models.FastText(self.data,
                                     size=300,
                                     window=3,

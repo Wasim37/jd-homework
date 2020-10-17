@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-11 14:14:22
-LastEditTime: 2020-10-16 12:39:05
+LastEditTime: 2020-10-16 16:51:51
 FilePath: /Assignment3-2_solution/task.py
 Desciption: Combine intention module, retrieval module
     and ranking module for task-oriented dialogue.
@@ -20,6 +20,8 @@ import pandas as pd
 
 
 def retrieve(k):
+    """先做意图识别，筛选业务型查询；然后对业务性查询进行召回
+    """
 
     it = Intention(config.train_path,
                    config.ware_path,
