@@ -3,8 +3,8 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 11:07:48
-@LastEditTime: 2020-07-26 20:25:17
-@LastEditors: Please set LastEditors
+LastEditTime: 2020-10-17 21:18:14
+LastEditors: Please set LastEditors
 @Description: Helper functions or classes used for the model.
 @FilePath: /JD_project_2/model/utils.py
 @Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -126,6 +126,9 @@ def outputids2words(id_list, source_oovs, vocab):
 
 def source2ids(source_words, vocab):
     """Map the source words to their ids and return a list of OOVs in the source.
+    当训练好模型要对测试集进行测试时，测试集中的样本往往会包含OOV tokens。
+    本函数需要将词典中的 token 映射到相应的index，对于oov tokens，需要记录下来并返回。
+
     Args:
         source_words: list of words (strings)
         vocab: Vocabulary object
@@ -159,6 +162,10 @@ def source2ids(source_words, vocab):
 def abstract2ids(abstract_words, vocab, source_oovs):
     """Map tokens in the abstract (reference) to ids.
        OOV tokens in the source will be remained.
+       由于PGN可以生成在source出现过的OOV tokens，所以需要对reference的token ids需要换一种映射方式，
+       即将在source出现过的OOV tokens也记录下来并给个临时的id，而不是直接替换为"<UNK>" token，以便在训练阶段准确的计算损失。
+       因为不同的unk代表的含义不同，如果都用统一的id来表示，误差相对更大
+
 
     Args:
         abstract_words (list): Tokens in the reference.

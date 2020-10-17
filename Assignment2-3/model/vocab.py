@@ -3,8 +3,8 @@
 '''
 @Author: jby
 @Date: 2020-07-13 14:18:13
-@LastEditTime: 2020-07-26 20:07:26
-@LastEditors: Please set LastEditors
+LastEditTime: 2020-10-17 21:18:35
+LastEditors: Please set LastEditors
 @Description: Define the vocabulary object.
 @FilePath: /JD_project_2/model/vocab.py
 @Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -29,6 +29,7 @@ class Vocab(object):
 
     def add_words(self, words):
         """Add a new token to the vocab and do mapping between word and index.
+        向词典加入新词，完成对word2index、index2word和word2count三个变量的更新
 
         Args:
             words (list): The list of tokens to be added.

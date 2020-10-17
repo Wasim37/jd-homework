@@ -3,8 +3,8 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 11:00:51
-@LastEditTime: 2020-07-26 20:43:55
-@LastEditors: Please set LastEditors
+LastEditTime: 2020-10-17 21:14:06
+LastEditors: Please set LastEditors
 @Description: Generate a summary.
 @FilePath: /JD_project_2/model/predict.py
 @Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -159,11 +159,9 @@ class Predict():
         # Filter forbidden tokens.
         if len(beam.tokens) == 1:
             forbidden_ids = [
-                self.vocab[u"这"],
-                self.vocab[u"此"],
-                self.vocab[u"采用"],
-                self.vocab[u"，"],
-                self.vocab[u"。"],
+                self.vocab[u"台独"],
+                self.vocab[u"吸毒"],
+                self.vocab[u"黄赌毒"]
             ]
             log_probs[forbidden_ids] = -float('inf')
         # EOS token penalty. Follow the definition in

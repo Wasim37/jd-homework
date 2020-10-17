@@ -3,8 +3,8 @@
 '''
 @Author: lpx
 @Date: 2020-07-13 17:56:13
-@LastEditTime: 2020-07-26 20:07:13
-@LastEditors: Please set LastEditors
+LastEditTime: 2020-10-17 21:14:59
+LastEditors: Please set LastEditors
 @Description: Evaluate the model with ROUGE score.
 @FilePath: /JD_project_2/model/rouge_eval.py
 @Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -74,6 +74,7 @@ rouge_eval = RougeEval(config.test_data_path)
 predict = Predict()
 rouge_eval.build_hypos(predict)
 result = rouge_eval.get_average()
+# Rouge简介：https://blog.csdn.net/mch2869253130/article/details/89810974
 print('rouge1: ', result['rouge-1'])
 print('rouge2: ', result['rouge-2'])
 print('rougeL: ', result['rouge-l'])

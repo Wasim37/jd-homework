@@ -3,8 +3,8 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 11:00:51
-@LastEditTime: 2020-07-26 17:36:24
-@LastEditors: Please set LastEditors
+LastEditTime: 2020-10-17 21:04:47
+LastEditors: Please set LastEditors
 @Description: Define configuration parameters.
 @FilePath: /JD_project_2/model/config.py
 @Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -18,10 +18,18 @@ import torch
 hidden_size: int = 512
 dec_hidden_size: Optional[int] = 512
 embed_size: int = 512
+
+# 通过以下配置可以训练以下三类模型：
+# 1. PGN，令 pointer = True 即可。
+# 2. PGN (with coverage)，令 pointer = True 以及 coverage = True
+# 3. PGN (fine-tuned with coverage)，令 pointer = True ， coverage = True 以及 fine_tune = True
 pointer = True
+coverage = False
+fine_tune = False
 
 # Data
 max_vocab_size = 20000
+# embed_file: Optional[str] = '../files/sgns.target.word-ngram.1-2.dynwin5.thr10.neg5.dim300.iter5'  # use pre-trained embeddings
 embed_file: Optional[str] = None  # use pre-trained embeddings
 source = 'train'    # use value: train or  big_samples
 data_path: str = '../files/{}.txt'.format(source)
@@ -50,8 +58,6 @@ lr_decay = 0.0
 initial_accumulator_value = 0.1
 epochs = 8
 batch_size = 32
-coverage = False
-fine_tune = False
 scheduled_sampling = False
 weight_tying = False
 max_grad_norm = 2.0

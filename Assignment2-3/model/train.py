@@ -3,8 +3,8 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 12:31:25
-@LastEditTime: 2020-07-27 20:57:47
-@LastEditors: Please set LastEditors
+LastEditTime: 2020-10-17 21:16:59
+LastEditors: Please set LastEditors
 @Description: Train the model.
 @FilePath: /JD_project_2/model/train.py
 @Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -80,7 +80,6 @@ def train(dataset, val_dataset, v, start_epoch=0):
     # torch.cuda.empty_cache()
     # SummaryWriter: Log writer used for TensorboardX visualization.
     writer = SummaryWriter(config.log_path)
-    # tqdm: A tool for drawing progress bars during training.
     # scheduled_sampler : A tool for choosing teacher_forcing or not
     ###########################################
     #          TODO: module 5 task 3          #
@@ -92,6 +91,8 @@ def train(dataset, val_dataset, v, start_epoch=0):
         print('scheduled_sampling mode.')
     #  teacher_forcing = True
 
+    # tqdm: A tool for drawing progress bars during training.
+    # 详细介绍Python进度条tqdm的使用 https://blog.csdn.net/kdongyi/article/details/101547216
     with tqdm(total=config.epochs) as epoch_progress:
         for epoch in range(start_epoch, config.epochs):
             print(config_info(config))
@@ -107,7 +108,7 @@ def train(dataset, val_dataset, v, start_epoch=0):
                 teacher_forcing = True
 
             print('teacher_forcing = {}'.format(teacher_forcing))
-            with tqdm(total=num_batches//100) as batch_progress:
+            with tqdm(total=num_batches // 100) as batch_progress:
                 for batch, data in enumerate(tqdm(train_dataloader)):
                     x, y, x_len, y_len, oov, len_oovs = data
                     assert not np.any(np.isnan(x.numpy()))
@@ -145,10 +146,12 @@ def train(dataset, val_dataset, v, start_epoch=0):
 
                     # Output and record epoch loss every 100 batches.
                     if (batch % 100) == 0:
+                        # 设置进度条左边显示的信息
                         batch_progress.set_description(f'Epoch {epoch}')
+                        # 设置进度条右边显示的信息
                         batch_progress.set_postfix(Batch=batch,
                                                    Loss=loss.item())
-                        batch_progress.update()
+                        batch_progress.update()  # 更新进度条
                         # Write loss for tensorboard.
                         writer.add_scalar(f'Average loss for epoch {epoch}',
                                           np.mean(batch_losses),
@@ -167,6 +170,8 @@ def train(dataset, val_dataset, v, start_epoch=0):
 
             # Update minimum evaluating loss.
             if (avg_val_loss < val_losses):
+                # 此处保存完整模型，只保存模型参数使用：torch.save(model..encoder.state_dict(), config.encoder_save_name)
+                # 两种模型保存方式：https://www.jianshu.com/p/6ba95579082c
                 torch.save(model.encoder, config.encoder_save_name)
                 torch.save(model.decoder, config.decoder_save_name)
                 torch.save(model.attention, config.attention_save_name)
