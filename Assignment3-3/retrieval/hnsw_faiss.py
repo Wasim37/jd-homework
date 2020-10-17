@@ -182,7 +182,7 @@ if __name__ == "__main__":
                 config.M,
                 config.hnsw_path,
                 config.train_path)
-    test = '我要转人工'
+    test = '最近有什么优惠么'
     print(hnsw.search(test, k=10))
     eval_vecs = np.stack(hnsw.data['custom_vec'].values).reshape(-1, 300)
     hnsw.evaluate(eval_vecs[:1000])

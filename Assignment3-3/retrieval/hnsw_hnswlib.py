@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-08-10 15:53:39
-LastEditTime: 2020-08-27 19:37:19
+LastEditTime: 2020-10-17 21:41:08
 FilePath: /Assignment3-1_solution/retrieval/hnsw_hnswlib.py
 Desciption: 使用hnswlib训练hnsw模型。
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -142,5 +142,5 @@ class HNSW(object):
 if __name__ == "__main__":
     hnsw = HNSW(config.w2v_path, config.train_path, config.ef_construction, config.M)
 
-    test = '我要转人工'
+    test = '最近有什么优惠么'
     print(hnsw.search(test, k=10))
