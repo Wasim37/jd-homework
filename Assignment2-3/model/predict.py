@@ -3,7 +3,7 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 11:00:51
-LastEditTime: 2020-10-17 21:14:06
+LastEditTime: 2020-10-17 21:23:34
 LastEditors: Please set LastEditors
 @Description: Generate a summary.
 @FilePath: /JD_project_2/model/predict.py
@@ -45,8 +45,7 @@ class Predict():
         self.stop_word = list(
             set([
                 self.vocab[x.strip()] for x in
-                open(config.stop_word_file
-                     ).readlines()
+                open(config.stop_word_file, encoding='utf-8').readlines()
             ]))
         self.model.load_model()
         self.model.to(self.DEVICE)
@@ -297,13 +296,13 @@ if __name__ == "__main__":
     pred = Predict()
     print('vocab_size: ', len(pred.vocab))
     # Randomly pick a sample in test set to predict.
-    with open(config.test_data_path, 'r') as test:
+    with open(config.test_data_path, 'r', encoding='utf-8') as test:
         picked = random.choice(list(test))
         source, ref = picked.strip().split('<sep>')
 
     print('source: ', source, '\n')
-    greedy_prediction = pred.predict(source.split(),  beam_search=False)
+    greedy_prediction = pred.predict(source.split(), beam_search=False)
     print('greedy: ', greedy_prediction, '\n')
-    beam_prediction = pred.predict(source.split(),  beam_search=True)
+    beam_prediction = pred.predict(source.split(), beam_search=True)
     print('beam: ', beam_prediction, '\n')
     print('ref: ', ref, '\n')

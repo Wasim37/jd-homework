@@ -3,7 +3,7 @@
 '''
 @Author: lpx
 @Date: 2020-07-13 17:56:13
-LastEditTime: 2020-10-17 21:14:59
+LastEditTime: 2020-10-17 21:24:33
 LastEditors: Please set LastEditors
 @Description: Evaluate the model with ROUGE score.
 @FilePath: /JD_project_2/model/rouge_eval.py
@@ -38,7 +38,7 @@ class RougeEval():
 
     def process(self):
         print('Reading from ', self.path)
-        with open(self.path, 'r') as test:
+        with open(self.path, 'r', encoding='utf-8') as test:
             for line in test:
                 source, ref = line.strip().split('<sep>')
                 ref = ''.join(list(jieba.cut(ref))).replace('。', '.')
