@@ -3,7 +3,7 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 11:00:51
-LastEditTime: 2020-10-17 21:04:47
+LastEditTime: 2020-10-19 16:16:52
 LastEditors: Please set LastEditors
 @Description: Define configuration parameters.
 @FilePath: /JD_project_2/model/config.py
@@ -18,14 +18,6 @@ import torch
 hidden_size: int = 512
 dec_hidden_size: Optional[int] = 512
 embed_size: int = 512
-
-# 通过以下配置可以训练以下三类模型：
-# 1. PGN，令 pointer = True 即可。
-# 2. PGN (with coverage)，令 pointer = True 以及 coverage = True
-# 3. PGN (fine-tuned with coverage)，令 pointer = True ， coverage = True 以及 fine_tune = True
-pointer = True
-coverage = False
-fine_tune = False
 
 # Data
 max_vocab_size = 20000
@@ -58,12 +50,23 @@ lr_decay = 0.0
 initial_accumulator_value = 0.1
 epochs = 8
 batch_size = 32
-scheduled_sampling = False
-weight_tying = False
 max_grad_norm = 2.0
 is_cuda = True
 DEVICE = torch.device("cuda" if is_cuda else "cpu")
 LAMBDA = 1
+
+# 通过以下配置可以训练以下模型：
+# 1. PGN，令 pointer = True（默认 source = 'train'） 即可。
+# 2. PGN (with coverage)，令 pointer = True 以及 coverage = True
+# 3. PGN (fine-tuned with coverage)，令 pointer = True ， coverage = True 以及 fine_tune = True
+# 4. PGN (with Weight tying)，令 pointer = True 以及 weight_tying = True
+# 5. PGN (with Scheduled sampling)，令 pointer = True ， scheduled_sampling= True
+# 6. PGN (training with big_samples.txt)，令 pointer = True 以及 source = 'big_samples'
+pointer = True
+coverage = False
+fine_tune = False
+scheduled_sampling = False
+weight_tying = False
 
 if pointer:
     if coverage:

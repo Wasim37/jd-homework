@@ -3,8 +3,8 @@
 '''
 @Author: jby
 @Date: 2020-07-13 11:00:51
-@LastEditTime: 2020-07-26 17:53:01
-@LastEditors: Please set LastEditors
+LastEditTime: 2020-10-19 18:45:54
+LastEditors: Please set LastEditors
 @Description: Evaluate the loss in the dev set.
 @FilePath: /JD_project_2/model/evaluate.py
 @Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -60,9 +60,10 @@ def evaluate(model, val_data, epoch):
             ###########################################
             loss = model(x,
                          x_len,
+                         y,
                          len_oovs,
                          batch=batch,
                          num_batches=len(val_dataloader),
-                         teacher_foring=True)
+                         teacher_forcing=True)
             val_loss.append(loss.item())
     return np.mean(val_loss)

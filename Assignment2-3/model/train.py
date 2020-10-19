@@ -3,7 +3,7 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 12:31:25
-LastEditTime: 2020-10-17 21:22:00
+LastEditTime: 2020-10-19 19:41:59
 LastEditors: Please set LastEditors
 @Description: Train the model.
 @FilePath: /JD_project_2/model/train.py
@@ -74,7 +74,7 @@ def train(dataset, val_dataset, v, start_epoch=0):
 
     val_losses = np.inf
     if (os.path.exists(config.losses_path)):
-        with open(config.losses_path, 'rb', encoding='utf-8') as f:
+        with open(config.losses_path, 'rb') as f:
             val_losses = pickle.load(f)
 
     # torch.cuda.empty_cache()
@@ -177,7 +177,7 @@ def train(dataset, val_dataset, v, start_epoch=0):
                 torch.save(model.attention, config.attention_save_name)
                 torch.save(model.reduce_state, config.reduce_state_save_name)
                 val_losses = avg_val_loss
-            with open(config.losses_path, 'wb', encoding='utf-8') as f:
+            with open(config.losses_path, 'wb') as f:
                 pickle.dump(val_losses, f)
 
     writer.close()
