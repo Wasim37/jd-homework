@@ -18,9 +18,13 @@ from data_utils import write_samples
 
 import os
 
+curPath = os.path.abspath(os.path.dirname(__file__)) + "/"
+
 
 def translate(q, source, target):
     """translate q from source language to target language
+    Please refer to the official documentation   https://api.fanyi.baidu.com/ 通用翻译API
+    There are demo on the website ,  register on the web site ,and get AppID, key, python3 demo.
 
     Args:
         q (str): sentence
@@ -29,30 +33,30 @@ def translate(q, source, target):
     Returns:
         (str): result of translation
     """
-    # Please refer to the official documentation   https://api.fanyi.baidu.com/
-    # There are demo on the website ,  register on the web site ,and get AppID, key, python3 demo.
-    appid = ''  # Fill in your AppID
-    secretKey = ''  # Fill in your key
-
     ###########################################
     #          TODO: module 2 task 1          #
     ###########################################
+    appid = '20201019000593790'  # Fill in your AppID
+    secretKey = 'meLMnlr5lBpDjpL5kLIr'  # Fill in your key
+
     httpClient = None
-    fromLang = source
-    toLang = target
+    myurl = '/api/trans/vip/translate'
+
+    fromLang = source  # 原文语种
+    toLang = target  # 译文语种
     salt = random.randint(32768, 65536)
     sign = appid + q + str(salt) + secretKey
     sign = hashlib.md5(sign.encode()).hexdigest()
-    myurl = '/api/trans/vip/translate?appid=' + appid + '&q=' + urllib.parse.quote(
+    myurl = myurl + '?appid=' + appid + '&q=' + urllib.parse.quote(
         q) + '&from=' + fromLang + '&to=' + toLang + '&salt=' + str(
-            salt) + '&sign' + sign
+            salt) + '&sign=' + sign
 
     try:
-        httpClient = http.client.HTTPSConnection('api.fanyi.baidu.com')
+        httpClient = http.client.HTTPConnection('api.fanyi.baidu.com')
         httpClient.request('GET', myurl)
-        respone = httpClient.getresponse()
-        result_all = respone.read().decode("utf-8")
-        result = json.load(result_all)
+        response = httpClient.getresponse()
+        result_all = response.read().decode("utf-8")
+        result = json.loads(result_all)
         return result
     except Exception as e:
         print(e)
@@ -76,7 +80,7 @@ def back_translate(q):
     en = translate(q, "zh", "en")['trans_result'][0]['dst']
     time.sleep(2)
     target = translate(en, "en", "zh")['trans_result'][0]['dst']
-    target.sleep(2)
+    time.sleep(2)
     return target
 
 
@@ -96,12 +100,12 @@ def translate_continue(sample_path, translate_path):
         with open(translate_path, 'r+', encoding='urf-8') as file:
             exit_len = len(list(file))
     else:
-        with open(translate_path, 'w', encoding='urf-8') as file:
-            exit_len = 0
+        # with open(translate_path, 'w', encoding='urf-8') as file:
+        exit_len = 0
 
     translated = []
     count = 0
-    with open(sample_path, 'r', encoding='utf8') as file:
+    with open(curPath + sample_path, 'r', encoding='utf-8') as file:
         for line in file:
             count += 1
             print(count)
@@ -113,7 +117,7 @@ def translate_continue(sample_path, translate_path):
             source = ' '.join(list(jieba.cut(source)))
             ref = ' '.join(list(jieba.cut(ref)))
             translated.append(source + ' <sep> ' + ref)
-            if count % 10 == 0:
+            if count % 1 == 0:
                 print(count)
                 write_samples(translated, translate_path, 'a')
                 translated = []

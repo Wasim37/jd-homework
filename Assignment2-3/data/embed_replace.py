@@ -3,7 +3,7 @@
 '''
 @Author: lpx
 @Date: 2020-07-13 20:16:37
-@LastEditTime: 2020-07-18 17:28:41
+LastEditTime: 2020-10-19 17:13:33
 @FilePath: /JD_project_2/data/embed_replace.py
 @Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
 '''
@@ -31,6 +31,7 @@ class EmbedReplace():
             self.dct = Dictionary.load('saved/tfidf.dict')
             self.corpus = [self.dct.doc2bow(doc) for doc in self.refs]
         else:
+            # 训练tfidf，后续单词替换时，用来排除核心词汇
             print("train tfidf model..")
             self.dct = Dictionary(self.refs)
             self.corpus = [self.dct.doc2bow(doc) for doc in self.refs]
@@ -66,6 +67,7 @@ class EmbedReplace():
         ###########################################
         # 降序。sort 是应用在 list 上的方法，sorted 可以对所有可迭代的对象进行排序操作
         tfidf = sorted(tfidf, key=lambda x: x[1], reverse=True)
+        # islice()获取迭代器的切片，消耗迭代器. islice(iterable, [start, ] stop [, step])
         return list(islice([dct[w] for w, score in tfidf if score > threshold], topk))
 
     def replace(self, token_list, doc):

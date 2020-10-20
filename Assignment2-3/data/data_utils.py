@@ -3,8 +3,8 @@
 '''
 @Author: lpx
 @Date: 2020-07-13 11:00:51
-@LastEditTime: 2020-07-26 20:07:41
-@LastEditors: Please set LastEditors
+LastEditTime: 2020-10-20 10:16:25
+LastEditors: Please set LastEditors
 @Description: Helper functions or classes used in data processing.
 @FilePath: /JD_project_2/data/data_utils.py
 @Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -16,6 +16,7 @@ import sys
 
 abs_path = pathlib.Path(__file__).parent.absolute()
 sys.path.append(sys.path.append(abs_path))
+curPath = os.path.abspath(os.path.dirname(__file__)) + "/"
 
 
 def read_samples(filename):
@@ -42,7 +43,7 @@ def write_samples(samples, file_path, opt='w'):
         file_path (str): The path of file to write.
         opt (str, optional): The "mode" parameter in open(). Defaults to 'w'.
     """
-    with open(file_path, opt, encoding='utf8') as file:
+    with open(curPath + file_path, opt, encoding='utf8') as file:
         for line in samples:
             file.write(line)
             file.write('\n')
