@@ -117,13 +117,12 @@ def translate_continue(sample_path, translate_path):
             source = ' '.join(list(jieba.cut(source)))
             ref = ' '.join(list(jieba.cut(ref)))
             translated.append(source + ' <sep> ' + ref)
-            if count % 1 == 0:
+            if count % 10 == 0:
                 print(count)
                 write_samples(translated, translate_path, 'a')
                 translated = []
-            if count == 12 or count == 25:
-                write_samples(translated, translate_path, 'a')
-                break
+                if count == 1000:
+                    break
 
 
 if __name__ == '__main__':

@@ -3,7 +3,7 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 11:07:48
-LastEditTime: 2020-10-17 21:18:14
+LastEditTime: 2020-10-20 15:11:03
 LastEditors: Please set LastEditors
 @Description: Helper functions or classes used for the model.
 @FilePath: /JD_project_2/model/utils.py
@@ -290,9 +290,11 @@ class ScheduledSampler():
     def teacher_forcing(self, phase):
         """According to a certain probability to choose whether to execute teacher_forcing
         每个 time step 以一个 p 的概率进行 Teacher forcing，以 1-p的概率不进行 Teacher forcing。
-        p 的大小可以随着 batch 或者 epoch衰减，即开始训练的阶段完全使⽤ ground truth 以加快模型收敛，
+        p 的大小可以随着 batch 或者 epoch衰减，即开始训练的阶段完全使用 ground truth 以加快模型收敛，
         到后面逐渐将 ground truth 替换成模型自己的输出，到训练后期就与预测阶段的输出一致
-
+        论文参考：https://arxiv.org/pdf/1506.03099.pdf
+        文章参考：Teacher Forcing训练机制详解 https://blog.csdn.net/qq_30219017/article/details/89090690
+        
         Args:
             phase (int): probability level  if phase = 0, 100% teacher_forcing ,phase = self.phases - 1, 0% teacher_forcing
 

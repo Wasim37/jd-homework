@@ -3,7 +3,7 @@
 '''
 @Author: your name
 @Date: 2020-07-13 11:00:51
-LastEditTime: 2020-10-17 21:13:13
+LastEditTime: 2020-10-20 15:22:09
 LastEditors: Please set LastEditors
 @Description: Define the model.
 @FilePath: /JD_project_2/model/model.py
@@ -43,7 +43,7 @@ class Encoder(nn.Module):
                             batch_first=True)
 
 #     @timer('encoder')
-# forward调用链 https://blog.csdn.net/u011501388/article/details/84062483
+    # forward调用链 https://blog.csdn.net/u011501388/article/details/84062483
     def forward(self, x, decoder_embedding):
         """Define forward propagation for the endoer.
 
@@ -73,11 +73,11 @@ class Attention(nn.Module):
     def __init__(self, hidden_units):
         super(Attention, self).__init__()
         # Define feed-forward layers.
-        self.Wh = nn.Linear(2*hidden_units, 2*hidden_units, bias=False)
-        self.Ws = nn.Linear(2*hidden_units, 2*hidden_units)
+        self.Wh = nn.Linear(2 * hidden_units, 2 * hidden_units, bias=False)
+        self.Ws = nn.Linear(2 * hidden_units, 2 * hidden_units)
         # wc for coverage feature
-        self.wc = nn.Linear(1, 2*hidden_units, bias=False)
-        self.v = nn.Linear(2*hidden_units, 1, bias=False)
+        self.wc = nn.Linear(1, 2 * hidden_units, bias=False)
+        self.v = nn.Linear(2 * hidden_units, 1, bias=False)
 
 #     @timer('attention')
     def forward(self,
@@ -225,6 +225,7 @@ class Decoder(nn.Module):
         ###########################################
         # (batch_size, vocab_size)
         if config.weight_tying:
+            # three-way tying，即Encoder的input embedding，Decoder的input emdedding 和Decoder的output embedding之间的权重共享
             FF2_out = torch.mm(FF1_out, torch.t(self.embedding.weight))
         else:
             FF2_out = self.W2(FF1_out)
@@ -240,12 +241,11 @@ class Decoder(nn.Module):
             # Calculate p_gen.
             # Refer to equation (8). 论文公式8
             # 虽然论文是各项相加，但此处使用的是cat拼接。只是信息累加的方式不同而已
-            x_gen = torch.cat([
-                context_vector,
-                s_t.squeeze(0),
-                decoder_emb.squeeze(1)
-            ],
-                              dim=-1)
+            x_gen = torch.cat(
+                [context_vector,
+                 s_t.squeeze(0),
+                 decoder_emb.squeeze(1)],
+                dim=-1)
             p_gen = torch.sigmoid(self.w_gen(x_gen))
 
         return p_vocab, decoder_states, p_gen
@@ -449,7 +449,7 @@ class PGN(nn.Module):
             # Get the probabilities predict by the model for target tokens.
             if not config.pointer:
                 y_t = replace_oovs(y_t, self.v)
-                
+
             # https://blog.csdn.net/cpluss/article/details/90260550
             # gather，根据index来索引input特定位置的数值
             target_probs = torch.gather(final_dist, 1, y_t.unsqueeze(1))

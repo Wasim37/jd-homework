@@ -3,7 +3,7 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 12:31:25
-LastEditTime: 2020-10-19 19:41:59
+LastEditTime: 2020-10-20 15:03:46
 LastEditors: Please set LastEditors
 @Description: Train the model.
 @FilePath: /JD_project_2/model/train.py
@@ -58,12 +58,11 @@ def train(dataset, val_dataset, v, start_epoch=0):
             if name != 'attention.wc.weight':
                 params.requires_grad = False
     # forward
-    print("loading data")
+    print("loading data ...")
     train_data = SampleDataset(dataset.pairs, v)
     val_data = SampleDataset(val_dataset.pairs, v)
 
     print("initializing optimizer")
-
     # Define the optimizer.
     optimizer = optim.Adam(model.parameters(),
                            lr=config.learning_rate)
