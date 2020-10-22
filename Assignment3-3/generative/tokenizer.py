@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-29 17:05:16
-LastEditTime: 2020-09-30 10:23:49
+LastEditTime: 2020-10-22 14:51:09
 FilePath: /Assignment3-3/generative/tokenizer.py
 Desciption: The tokenizer for the generative module.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -15,7 +15,6 @@ from typing import Dict, List
 
 sys.path.append('..')
 from config import base_chinese_bert_vocab
-
 
 
 def load_chinese_base_vocab() -> Dict[str, int]:
@@ -109,17 +108,14 @@ class BasicTokenizer(object):
         first_token_ids = self.tokens_to_ids(first_tokens)
         if first_length is not None:
             first_token_ids = first_token_ids[:first_length]
-            first_token_ids.extend([self._token_pad_id] *
-                                   (first_length - len(first_token_ids)))
+            first_token_ids.extend([self._token_pad_id] * (first_length - len(first_token_ids)))
         first_segment_ids = [0] * len(first_token_ids)
 
         if second_text is not None:
             second_token_ids = self.tokens_to_ids(second_tokens)
             if second_length is not None:
                 second_token_ids = second_token_ids[:second_length]
-                second_token_ids.extend(
-                    [self._token_pad_id] *
-                    (second_length - len(second_token_ids)))
+                second_token_ids.extend([self._token_pad_id] * (second_length - len(second_token_ids)))
             second_segment_ids = [1] * len(second_token_ids)
 
             first_token_ids.extend(second_token_ids)

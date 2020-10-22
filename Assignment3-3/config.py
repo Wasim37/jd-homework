@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-08-21 16:20:49
-LastEditTime: 2020-10-17 22:10:02
+LastEditTime: 2020-10-22 15:46:20
 FilePath: /Assignment3-1_solution/config.py
 Desciption: 配置文件。
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -22,6 +22,10 @@ ware_path = os.path.join(root_path, 'data/ware.txt')
 atec_nlp_sim_train = os.path.join(root_path, 'data/ranking_datasets/atec_nlp_sim_train.csv')
 atec_nlp_sim_train_add = os.path.join(root_path, 'data/ranking_datasets/atec_nlp_sim_train_add.csv')
 task3_train = os.path.join(root_path, 'data/ranking_datasets/task3_train.txt')
+
+LCCC_base_train_json = os.path.join(root_path, 'data/generative/LCCC-base_train.json')
+LCCC_base_dev_json = os.path.join(root_path, 'data/generative/LCCC-base_valid.json')
+LCCC_base_test_json = os.path.join(root_path, 'data/generative/LCCC-base_test.json')
 
 max_sequence_length = 512
 
@@ -59,8 +63,3 @@ if is_cuda:
     device = torch.device('cuda')
 else:
     device = torch.device('cpu')
-
-
-
-
-

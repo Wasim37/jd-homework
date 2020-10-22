@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-29 17:05:15
-LastEditTime: 2020-09-30 10:26:23
+LastEditTime: 2020-10-22 14:50:29
 FilePath: /Assignment3-3/generative/config_distil.py
 Desciption: Hyper-parameters for KD.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -39,13 +39,16 @@ def parse(opt=None):
     )
     # Other parameters
     parser.add_argument("--train_path",
-                        default=os.path.join(root_path, 'data/generative/train.tsv'),
+                        default=os.path.join(root_path,
+                                             'data/generative/train.tsv'),
                         type=str)
     parser.add_argument("--dev_path",
-                        default=os.path.join(root_path, 'data/generative/dev.tsv'),
+                        default=os.path.join(root_path,
+                                             'data/generative/dev.tsv'),
                         type=str)
     parser.add_argument("--test_path",
-                        default=os.path.join(root_path, 'data/generative/test.tsv'),
+                        default=os.path.join(root_path,
+                                             'data/generative/test.tsv'),
                         type=str)
     parser.add_argument(
         "--do_lower_case",
@@ -57,14 +60,16 @@ def parse(opt=None):
         "--max_length",
         default=416,
         type=int,
-        help="The maximum total input sequence length after WordPiece tokenization.\
+        help=
+        "The maximum total input sequence length after WordPiece tokenization.\
         Sequences longer than this will be truncated, and sequences shorter than this will be padded."
     )
     parser.add_argument(
         "--doc_stride",
         default=128,
         type=int,
-        help="When splitting up a long document into chunks, how much stride to take between chunks."
+        help=
+        "When splitting up a long document into chunks, how much stride to take between chunks."
     )
 
     parser.add_argument("--do_train",
@@ -95,23 +100,29 @@ def parse(opt=None):
         "--warmup_proportion",
         default=0.1,
         type=float,
-        help="Proportion of training to perform linear learning rate warmup for. E.g., 0.1 = 10% of training.")
+        help=
+        "Proportion of training to perform linear learning rate warmup for. E.g., 0.1 = 10% of training."
+    )
     parser.add_argument(
         "--n_best_size",
         default=20,
         type=int,
-        help="The total number of n-best predictions to generate in the nbest_predictions.json output file.")
+        help=
+        "The total number of n-best predictions to generate in the nbest_predictions.json output file."
+    )
     parser.add_argument(
         "--max_answer_length",
         default=30,
         type=int,
-        help="The maximum length of an answer that can be generated. This is needed because the start \
+        help=
+        "The maximum length of an answer that can be generated. This is needed because the start \
              and end predictions are not conditioned on one another.")
     parser.add_argument(
         "--verbose_logging",
         default=True,
         action='store_true',
-        help="If true, all of the warnings related to data processing will be printed. \
+        help=
+        "If true, all of the warnings related to data processing will be printed. \
              A number of warnings are expected for a normal SQuAD evaluation.")
     parser.add_argument("--is_cuda",
                         default=True,
@@ -121,7 +132,8 @@ def parse(opt=None):
         '--gradient_accumulation_steps',
         type=int,
         default=1,
-        help="Number of updates steps to accumualte before performing a backward/update pass."
+        help=
+        "Number of updates steps to accumualte before performing a backward/update pass."
     )
     parser.add_argument('--random_seed', type=int, default=10236797)
     parser.add_argument('--load_model_type',
@@ -136,11 +148,12 @@ def parse(opt=None):
 
     parser.add_argument('--tuned_checkpoint_T',
                         type=str,
-                        default=os.path.join(root_path, 'model/generative/bert.model.epoch.29'))
+                        default=os.path.join(
+                            root_path, 'model/generative/bert.model.epoch.29'))
     parser.add_argument('--tuned_checkpoint_S', type=str, default=None)
     parser.add_argument("--init_checkpoint_S",
                         default=os.path.join(root_path,
-                        'lib/bert/pytorch_model.bin'),
+                                             'lib/bert/pytorch_model.bin'),
                         type=str)
     parser.add_argument("--temperature", default=1, type=float, required=False)
     parser.add_argument("--teacher_cached", action='store_true')
