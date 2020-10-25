@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-29 17:05:15
-LastEditTime: 2020-10-23 09:13:14
+LastEditTime: 2020-10-23 12:29:24
 FilePath: /Assignment3-3/generative/bert_model.py
 Desciption: Implement the BERT model.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -429,7 +429,5 @@ class BertModel(BertPreTrainedModel):
             encoder_layers = encoder_layers[-1]
         if not output_attentions:
             return encoder_layers, pooled_output
-        return encoder_layers, pooled_output, attention_mask
-
-        
-        return encoder_layers, pooled_output
+        return encoder_layers, pooled_output, attention_layers
+    

@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-29 17:05:16
-LastEditTime: 2020-09-30 10:26:33
+LastEditTime: 2020-10-23 11:55:26
 FilePath: /Assignment3-3/generative/train.py
 Desciption: Train a BERT seq2seq model.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
 '''
-import torch 
+import torch
 from tqdm import tqdm
-import torch.nn as nn 
+import torch.nn as nn
 from torch.optim import Adam
 import pandas as pd
 import numpy as np
@@ -38,8 +38,7 @@ def read_corpus(data_path):
                      sep='\t',
                      header=None,
                      names=['src', 'tgt'],
-                     quoting=csv.QUOTE_NONE
-                    ).dropna()
+                     quoting=csv.QUOTE_NONE).dropna()
     sents_src = []
     sents_tgt = []
     for index, row in df.iterrows():
@@ -107,31 +106,32 @@ def collate_fn(batch):
 
 class Trainer:
     def __init__(self):
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        logger.info('using device:{}'.format(self.device))
+
         self.pretrain_model_path = bert_chinese_model_path
         self.batch_size = batch_size
         self.lr = lr
-        logger.info('加载字典')
-        self.word2idx = load_chinese_base_vocab()
-        # 判断是否有可用GPU
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        logger.info('using device:{}'.format(self.device))
+        logger.info('加载字典 ...')
+        self.word2idx = load_chinese_base_vocab()
+
         # 定义模型超参数
         bertconfig = BertConfig(vocab_size=len(self.word2idx))
-        logger.info('初始化BERT模型')
+        logger.info('初始化BERT模型...')
         self.bert_model = Seq2SeqModel(config=bertconfig)
-        logger.info('加载预训练的模型～')
+        logger.info('加载预训练的模型...')
         self.load_model(self.bert_model, self.pretrain_model_path)
-        logger.info('将模型发送到计算设备(GPU或CPU)')
+        logger.info('将模型发送到计算设备(GPU或CPU)...')
         self.bert_model.to(self.device)
-        logger.info(' 声明需要优化的参数')
+        logger.info(' 声明需要优化的参数...')
         self.optim_parameters = list(self.bert_model.parameters())
         self.init_optimizer(lr=self.lr)
-        # 声明自定义的数据加载器
 
-        logger.info('加载训练数据')
+        # 声明自定义的数据加载器
+        logger.info('加载训练数据...')
         train = SelfDataset(os.path.join(root_path, 'data/generative/train.tsv'))
-        logger.info('加载测试数据')
+        logger.info('加载测试数据...')
         dev = SelfDataset(os.path.join(root_path, 'data/generative/dev.tsv'))
         self.trainloader = DataLoader(train, batch_size=self.batch_size, shuffle=True, collate_fn=collate_fn)
         self.devloader = DataLoader(dev, batch_size=self.batch_size, shuffle=True, collate_fn=collate_fn)
@@ -141,12 +141,13 @@ class Trainer:
         self.optimizer = torch.optim.Adam(self.optim_parameters, lr=lr, weight_decay=1e-3)
 
     def load_model(self, model, pretrain_model_path):
-
-        checkpoint = torch.load(pretrain_model_path)
         # 模型刚开始训练的时候, 需要载入预训练的BERT
-
-        checkpoint = {k[5:]: v for k, v in checkpoint.items()
-                      if k[:4] == "bert" and "pooler" not in k}
+        checkpoint = torch.load(pretrain_model_path)
+        checkpoint = {
+            k[5:]: v
+            for k, v in checkpoint.items()
+            if k[:4] == "bert" and "pooler" not in k
+        }
         model.load_state_dict(checkpoint, strict=False)
         torch.cuda.empty_cache()
         logger.info("{} loaded!".format(pretrain_model_path))
@@ -160,8 +161,11 @@ class Trainer:
 
     def iteration(self, epoch, dataloader):
         total_loss = 0
-        start_time = time.time() ## 得到当前时间
-        for batch_idx, data in enumerate(tqdm(dataloader,position=0, leave=True)):
+        start_time = time.time()
+        
+        # tqdm 参数详解：https://www.cnblogs.com/wanghui-garcia/p/11514579.html
+        # leave: 保留进度条存在的痕迹，简单来说就是会把进度条的最终形态保留下来，默认为True.
+        for batch_idx, data in enumerate(tqdm(dataloader, position=0, leave=True)):
             token_ids, token_type_ids, target_ids = data
             token_ids = token_ids.to(self.device)
             token_type_ids = token_type_ids.to(self.device)
@@ -169,17 +173,16 @@ class Trainer:
             # 因为传入了target标签，因此会计算loss并且返回
             predictions, loss = self.bert_model(token_ids,
                                                 token_type_ids,
-                                                labels=target_ids
-                                                )
+                                                labels=target_ids)
             loss = loss / gradient_accumulation
             loss.backward()
             if (batch_idx + 1) % gradient_accumulation == 0:
-                    # 为计算当前epoch的平均loss
-                    total_loss += loss.item()
-                    # 更新参数
-                    self.optimizer.step()
-                    # 清空梯度信息
-                    self.optimizer.zero_grad()
+                # 为计算当前epoch的平均loss
+                total_loss += loss.item()
+                # 更新参数
+                self.optimizer.step()
+                # 清空梯度信息
+                self.optimizer.zero_grad()
             torch.nn.utils.clip_grad_norm_(self.bert_model.parameters(), max_grad_norm)
         end_time = time.time()
         spend_time = end_time - start_time
@@ -188,28 +191,30 @@ class Trainer:
         # 保存模型
         self.save_state_dict(self.bert_model, epoch)
 
-    def evaluate(self):
-        logger.info("start evaluating model")
-        self.bert_model.eval()
-        logger.info('starting evaluating')
-        with torch.no_grad():
-            for token_ids, token_type_ids, target_ids in tqdm(self.devloader,position=0, leave=True):
-                token_ids = token_ids.to(self.device)
-                token_type_ids = token_type_ids.to(self.device)
-                target_ids = target_ids.to(self.device)
+    # def evaluate(self):
+    #     logger.info("start evaluating model")
+    #     self.bert_model.eval()
+    #     logger.info('starting evaluating')
+    #     with torch.no_grad():
+    #         for token_ids, token_type_ids, target_ids in tqdm(self.devloader,
+    #                                                           position=0,
+    #                                                           leave=True):
+    #             token_ids = token_ids.to(self.device)
+    #             token_type_ids = token_type_ids.to(self.device)
+    #             target_ids = target_ids.to(self.device)
 
-                predictions, loss = self.bert_model(token_ids,
-                                                token_type_ids,
-                                                labels=target_ids
-                                                )
+    #             predictions, loss = self.bert_model(token_ids,
+    #                                                 token_type_ids,
+    #                                                 labels=target_ids)
 
-                loss, accuracy = calculate_loss_and_accuracy(outputs, labels=input_ids, device=device)
+    #             loss, accuracy = calculate_loss_and_accuracy(outputs,
+    #                                                          labels=input_ids,
+    #                                                          device=device)
 
-                loss = loss.mean()
-                accuracy = accuracy.mean()
-                logger.info("evaluate batch {} ,loss {}".format(batch_idx, loss))
-        logger.info("finishing evaluating")
-
+    #             loss = loss.mean()
+    #             accuracy = accuracy.mean()
+    #             logger.info("evaluate batch {} ,loss {}".format(batch_idx, loss))
+    #     logger.info("finishing evaluating")
 
     def save_state_dict(self, model, epoch, file_path="model/generative/bert.model"):
         """存储当前模型参数"""

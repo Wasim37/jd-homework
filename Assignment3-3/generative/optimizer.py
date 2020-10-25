@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-29 17:05:16
-LastEditTime: 2020-09-30 10:26:05
+LastEditTime: 2020-10-23 10:46:36
 FilePath: /Assignment3-3/generative/optimizer.py
 Desciption: Define the BERTAdam optimizer.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -157,7 +157,6 @@ class BERTAdam(Optimizer):
                     lr_scheduled = group['lr']
                 lr.append(lr_scheduled)
         return lr
-
 
     def step(self, closure=None):
         """Performs a single optimization step.
