@@ -1,13 +1,16 @@
 '''
 @Author: your name
 @Date: 2020-03-31 10:27:19
-@LastEditTime: 2020-04-09 21:25:32
-@LastEditors: your name
+LastEditTime: 2020-10-26 00:17:53
+LastEditors: Please set LastEditors
 @Description: In User Settings Edit
 @FilePath: /dialogue/utils/tools.py
 '''
 import logging
-from generate.bert_seq2seq import config_distil
+import sys
+
+sys.path.append(sys.path.append('..'))
+from generative import config_distil
 
 
 def create_logger(log_path):
@@ -17,12 +20,10 @@ def create_logger(log_path):
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
 
-    formatter = logging.Formatter(
-        '%(asctime)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
     # 创建一个handler，用于写入日志文件
-    file_handler = logging.FileHandler(
-        filename=log_path)
+    file_handler = logging.FileHandler(filename=log_path)
     file_handler.setFormatter(formatter)
     file_handler.setLevel(logging.INFO)
     logger.addHandler(file_handler)
@@ -35,31 +36,51 @@ def create_logger(log_path):
 
     return logger
 
+
 def divide_parameters(named_parameters, lr=None):
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
-    decay_parameters_names = list(zip(*[(p,n) for n,p in named_parameters if not any((di in n) for di in no_decay)]))
-    no_decay_parameters_names = list(zip(*[(p,n) for n,p in named_parameters if any((di in n) for di in no_decay)]))
+    decay_parameters_names = list(
+        zip(*[(p, n) for n, p in named_parameters if not any(
+            (di in n) for di in no_decay)]))
+    no_decay_parameters_names = list(
+        zip(*[(p, n) for n, p in named_parameters if any((di in n)
+                                                         for di in no_decay)]))
     param_group = []
-    if len(decay_parameters_names)>0:
+    if len(decay_parameters_names) > 0:
         decay_parameters, decay_names = decay_parameters_names
-        #print ("decay:",decay_names)
+        # print ("decay:",decay_names)
         if lr is not None:
-            decay_group = {'params':decay_parameters,   'weight_decay_rate': config_distil.args.weight_decay_rate, 'lr':lr}
+            decay_group = {
+                'params': decay_parameters,
+                'weight_decay_rate': config_distil.args.weight_decay_rate,
+                'lr': lr
+            }
         else:
-            decay_group = {'params': decay_parameters, 'weight_decay_rate': config_distil.args.weight_decay_rate}
+            decay_group = {
+                'params': decay_parameters,
+                'weight_decay_rate': config_distil.args.weight_decay_rate
+            }
         param_group.append(decay_group)
 
-    if len(no_decay_parameters_names)>0:
+    if len(no_decay_parameters_names) > 0:
         no_decay_parameters, no_decay_names = no_decay_parameters_names
-        #print ("no decay:", no_decay_names)
+        # print ("no decay:", no_decay_names)
         if lr is not None:
-            no_decay_group = {'params': no_decay_parameters, 'weight_decay_rate': 0.0, 'lr': lr}
+            no_decay_group = {
+                'params': no_decay_parameters,
+                'weight_decay_rate': 0.0,
+                'lr': lr
+            }
         else:
-            no_decay_group = {'params': no_decay_parameters, 'weight_decay_rate': 0.0}
+            no_decay_group = {
+                'params': no_decay_parameters,
+                'weight_decay_rate': 0.0
+            }
         param_group.append(no_decay_group)
 
-    assert len(param_group)>0
+    assert len(param_group) > 0
     return param_group
+
 
 def clean_str(string):
     """

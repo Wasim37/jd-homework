@@ -4,12 +4,13 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-29 17:05:15
-LastEditTime: 2020-10-23 12:29:24
+LastEditTime: 2020-10-26 00:20:04
 FilePath: /Assignment3-3/generative/bert_model.py
 Desciption: Implement the BERT model.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
 '''
 import math
+import copy
 
 import torch
 from torch import nn
@@ -165,7 +166,7 @@ class BertSelfAttention(nn.Module):
         context_layer = torch.matmul(attention_probs, value_layer)
         # 把加权后的V reshape, 得到[batch_size, length, embedding_dimension]
         context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
-        new_context_layer_shape = contest_layer.size()[:-2] + (self.all_head_size, )
+        new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size, )
         context_layer = context_layer.view(*new_context_layer_shape)
 
         # 得到输出
@@ -203,18 +204,19 @@ class BertAttention(nn.Module):
 class BertIntermediate(nn.Module):
     def __init__(self, config):
         super().__init__()
-       self.dense = nn.Linear(config.hidden_size, config.intermediate_size)
-       self.intermediate_act_fn = ACT2FN(config.hidden_act)
+        self.dense = nn.Linear(config.hidden_size, config.intermediate_size)
+        self.intermediate_act_fn = ACT2FN[config.hidden_act]
        
     def forward(self, hidden_states):
         hidden_states = self.dense(hidden_states)
         hidden_states = self.intermediate_act_fn(hidden_states)
         return hidden_states
 
+
 class BertOutput(nn.Module):
     def __init__(self, config):
         super().__init__()
-        self.dense = nn.Liner(config.intermediate_size, config.hidden_size)
+        self.dense = nn.Linear(config.intermediate_size, config.hidden_size)
         self.LayerNorm = BertLayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.droput = nn.Dropout(config.hidden_dropout_prob)
         
@@ -242,6 +244,7 @@ class BertLayer(nn.Module):
 class BertEncoder(nn.Module):
     def __init__(self, config):
         super().__init__()
+        layer = BertLayer(config)
         self.layer = nn.ModuleList([copy.deepcopy(layer) for _ in range(config.num_hidden_layers)])
 
     def forward(self,
@@ -268,7 +271,7 @@ class BertPooler(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.hidden_size)
-        self.activation =  nn.Tanh()     
+        self.activation = nn.Tanh()
 
     def forward(self, hidden_states):
         # We "pool" the model by simply taking the hidden state corresponding
@@ -283,7 +286,7 @@ class BertPredictionHeadTransform(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.dense = nn.Linear(config.hidden_size, config.hidden_size)
-        self.transform_act_fn = ACT2FN(config.hidden_act)
+        self.transform_act_fn = ACT2FN[config.hidden_act]
         self.LayerNorm = BertLayerNorm(config.hidden_size, eps=config.layer_norm_eps)
 
     def forward(self, hidden_states):
