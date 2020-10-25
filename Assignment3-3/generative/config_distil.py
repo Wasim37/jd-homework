@@ -4,8 +4,8 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-29 17:05:15
-LastEditTime: 2020-10-22 14:50:29
-FilePath: /Assignment3-3/generative/config_distil.py
+LastEditTime: 2020-10-26 00:32:48
+FilePath: /Assignment3-3_solution/generative/config_distil.py
 Desciption: Hyper-parameters for KD.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
 '''
@@ -60,16 +60,14 @@ def parse(opt=None):
         "--max_length",
         default=416,
         type=int,
-        help=
-        "The maximum total input sequence length after WordPiece tokenization.\
+        help="The maximum total input sequence length after WordPiece tokenization.\
         Sequences longer than this will be truncated, and sequences shorter than this will be padded."
     )
     parser.add_argument(
         "--doc_stride",
         default=128,
         type=int,
-        help=
-        "When splitting up a long document into chunks, how much stride to take between chunks."
+        help="When splitting up a long document into chunks, how much stride to take between chunks."
     )
 
     parser.add_argument("--do_train",
@@ -85,11 +83,11 @@ def parse(opt=None):
                         type=int,
                         help="Total batch size for training.")
     parser.add_argument("--predict_batch_size",
-                        default=16,
+                        default=32,
                         type=int,
                         help="Total batch size for predictions.")
     parser.add_argument("--learning_rate",
-                        default=1e-4,
+                        default=0.01,
                         type=float,
                         help="The initial learning rate for Adam.")
     parser.add_argument("--num_train_epochs",
@@ -100,29 +98,25 @@ def parse(opt=None):
         "--warmup_proportion",
         default=0.1,
         type=float,
-        help=
-        "Proportion of training to perform linear learning rate warmup for. E.g., 0.1 = 10% of training."
+        help="Proportion of training to perform linear learning rate warmup for. E.g., 0.1 = 10% of training."
     )
     parser.add_argument(
         "--n_best_size",
         default=20,
         type=int,
-        help=
-        "The total number of n-best predictions to generate in the nbest_predictions.json output file."
+        help="The total number of n-best predictions to generate in the nbest_predictions.json output file."
     )
     parser.add_argument(
         "--max_answer_length",
         default=30,
         type=int,
-        help=
-        "The maximum length of an answer that can be generated. This is needed because the start \
+        help="The maximum length of an answer that can be generated. This is needed because the start \
              and end predictions are not conditioned on one another.")
     parser.add_argument(
         "--verbose_logging",
         default=True,
         action='store_true',
-        help=
-        "If true, all of the warnings related to data processing will be printed. \
+        help="If true, all of the warnings related to data processing will be printed. \
              A number of warnings are expected for a normal SQuAD evaluation.")
     parser.add_argument("--is_cuda",
                         default=True,
@@ -132,8 +126,7 @@ def parse(opt=None):
         '--gradient_accumulation_steps',
         type=int,
         default=1,
-        help=
-        "Number of updates steps to accumualte before performing a backward/update pass."
+        help="Number of updates steps to accumualte before performing a backward/update pass."
     )
     parser.add_argument('--random_seed', type=int, default=10236797)
     parser.add_argument('--load_model_type',
@@ -144,7 +137,7 @@ def parse(opt=None):
     parser.add_argument('--do_eval', action='store_true')
     parser.add_argument('--PRINT_EVERY', type=int, default=200)
     parser.add_argument('--weight', type=float, default=1.0)
-    parser.add_argument('--ckpt_frequency', type=int, default=2)
+    parser.add_argument('--ckpt_frequency', type=int, default=1)
 
     parser.add_argument('--tuned_checkpoint_T',
                         type=str,
@@ -153,7 +146,7 @@ def parse(opt=None):
     parser.add_argument('--tuned_checkpoint_S', type=str, default=None)
     parser.add_argument("--init_checkpoint_S",
                         default=os.path.join(root_path,
-                                             'lib/bert/pytorch_model.bin'),
+                                             'lib/rbt3/pytorch_model.bin'),
                         type=str)
     parser.add_argument("--temperature", default=1, type=float, required=False)
     parser.add_argument("--teacher_cached", action='store_true')
@@ -173,7 +166,17 @@ def parse(opt=None):
     parser.add_argument('--schedule',
                         type=str,
                         default='warmup_linear_release')
-    parser.add_argument('--matches', nargs='*', type=str)
+    parser.add_argument('--matches',
+                        nargs='*',
+                        type=list,
+                        default=[
+                            'L3_hidden_smmd',
+                            'L3_hidden_mse',
+                            'L3_attention_mse',
+                            'L3_attention_ce',
+                            'L3_attention_mse_sum',
+                            'L3_attention_ce_mean',
+                        ])
     global args
     if opt is None:
         args = parser.parse_args()
