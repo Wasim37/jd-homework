@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-29 17:05:17
-LastEditTime: 2020-10-25 23:53:05
+LastEditTime: 2020-10-26 08:07:49
 FilePath: /Assignment3-3/generative/seq2seq.py
 Desciption: Using the BERT model for seq2seq task.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -32,7 +32,7 @@ class Seq2SeqModel(nn.Module):
         self.vocab_size = config.vocab_size
         self.decoder = BertLMPredictionHead(
             config, self.bert.embeddings.word_embeddings.weight)
-        
+
         # 加载字典和分词器
         self.word2ix = load_chinese_base_vocab()
         self.tokenizer = Tokenizer(self.word2ix)
@@ -55,23 +55,25 @@ class Seq2SeqModel(nn.Module):
                 position_enc=None,
                 is_cuda=True,
                 train=True):
-        # 传入输入，位置编码， token type id, 还有句子a和句子b的长度，注意都是传入batch数据
-        # 传入的几个字，在seq2seq 的batch iter 函数里面都可以返回
-        input_shape = input_tensor.input_shape
+        # 传入输入，位置编码，token type id ，还有句子a 和句子b的长度，注意都是传入一个batch数据
+        # 传入的几个值，在seq2seq 的batch iter 函数里面都可以返回
+        input_shape = input_tensor.shape
         seq_len = input_shape[1]
-
         # 构建特殊的mask
         device = torch.device("cuda" if is_cuda else "cpu")
+
         ones = torch.ones((1, 1, seq_len, seq_len), device=device)
         a_mask = ones.tril().float()  # 下三角矩阵
         s_ex12 = token_type_id.unsqueeze(1).unsqueeze(2).float()
         s_ex13 = token_type_id.unsqueeze(1).unsqueeze(3).float()
         a_mask = (1 - s_ex12) * (1 - s_ex13) + s_ex13 * a_mask
-        enc_layers, pooled_output, attention_layers = self.bert(input_tensor,
-                                                                position_ids=position_enc,
-                                                                token_type_ids=token_type_id,
-                                                                attention_mask=a_mask,
-                                                                output_all_encoded_layers=True)
+        enc_layers, pooled_output, attention_layers = self.bert(
+            input_tensor,
+            position_ids=position_enc,
+            token_type_ids=token_type_id,
+            attention_mask=a_mask,
+            output_all_encoded_layers=True)
+
         # 取出来最后一层输出
         squence_out = enc_layers[-1]
         logits = self.decoder(squence_out)
@@ -84,7 +86,9 @@ class Seq2SeqModel(nn.Module):
             target_mask = token_type_id[:, 1:].contiguous()
             labels = input_tensor[:, 1:].contiguous()
             loss = self.compute_loss(logits, labels, target_mask)
+
             return enc_layers, logits, loss, attention_layers
+
         else:
             return logits
 
@@ -95,8 +99,11 @@ class Seq2SeqModel(nn.Module):
         input_max_length = max_length - out_max_length
         device = "cuda" if is_cuda else "cpu"
 
-        token_ids, token_type_ids = self.tokenizer.encode(text, max_length=input_max_length)
+        token_ids, token_type_ids = self.tokenizer.encode(
+            text, max_length=input_max_length)
         token_ids = torch.tensor(token_ids, device=device).view(1, -1)
+        token_type_ids = torch.tensor(token_type_ids,
+                                      device=device).view(1, -1)
 
         out_puts_ids = self.beam_search(token_ids,
                                         token_type_ids,
@@ -189,4 +196,3 @@ class Seq2SeqModel(nn.Module):
 
         # 如果达到最大长度的话 直接把得分最高的输出序列返回把
         return output_ids[output_scores.argmax().item()]
-
