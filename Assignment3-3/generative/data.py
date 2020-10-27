@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-29 17:05:16
-LastEditTime: 2020-10-22 15:43:24
+LastEditTime: 2020-10-26 09:48:46
 FilePath: /Assignment3-3/generative/data.py
 Desciption: Data processing for the generative module.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。

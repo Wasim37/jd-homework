@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 '''
 Author: Bingyu Jiang, Peixin Lin
-LastEditors: Peixin Lin
+LastEditors: Please set LastEditors
 Date: 2020-09-29 17:05:16
-LastEditTime: 2020-09-30 10:02:51
+LastEditTime: 2020-10-27 14:29:01
 FilePath: /Assignment3-3/generative/predict.py
 Desciption: Predict using BERT seq2seq model.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -46,7 +46,7 @@ class bertSeq2Seq(object):
 
 
 if __name__ == "__main__":
-    text = '新 年 快 乐 ！'
+    text = '最近有什么优惠么'
     bs = bertSeq2Seq(os.path.join(root_path, 'model/generative/bert.model.epoch.29'), is_cuda)
     print(bs.generate(text, k=5))
     distilled = bertSeq2Seq(os.path.join(root_path, 'model/generative/gs82500.pkl'), is_cuda, distilled=True)
