@@ -51,3 +51,14 @@ if __name__ == "__main__":
     print(bs.generate(text, k=5))
     distilled = bertSeq2Seq(os.path.join(root_path, 'model/generative/gs82500.pkl'), is_cuda, distilled=True)
     print(distilled.generate(text, k=5))
+
+#     text = '我 要 退货'
+#     bs = bertSeq2Seq(os.path.join(root_path, 'model/generative/bert.model.epoch.29'), is_cuda)
+#     print(bs.generate(text, k=5))
+    
+#     text = '什么 时候 发货'
+#     bs = bertSeq2Seq(os.path.join(root_path, 'model/generative/bert.model.epoch.29'), is_cuda)
+#     print(bs.generate(text, k=5))
+
+#     distilled = bertSeq2Seq(os.path.join(root_path, 'model/generative/gs82500.pkl'), is_cuda, distilled=True)
+#     print(distilled.generate(text, k=5))
