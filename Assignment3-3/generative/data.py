@@ -4,7 +4,7 @@
 Author: Bingyu Jiang, Peixin Lin
 LastEditors: Please set LastEditors
 Date: 2020-09-29 17:05:16
-LastEditTime: 2020-10-26 09:48:46
+LastEditTime: 2020-10-22 15:43:24
 FilePath: /Assignment3-3/generative/data.py
 Desciption: Data processing for the generative module.
 Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -32,9 +32,10 @@ def generate_data(to_file=os.path.join(root_path, 'data/generative/')):
                     break
                 if len(item) == 2:
                     line = '\t'.join(item)
-                    train.write(line)
-                    train.write('\n')
-                    count += 1
+                    if line.find("哈") == -1:
+                        train.write(line)
+                        train.write('\n')
+                        count += 1
     logging.info("train data size:", count)
 
     logging.info("generating dev data.... ")
@@ -45,9 +46,10 @@ def generate_data(to_file=os.path.join(root_path, 'data/generative/')):
             for item in json_file:
                 if len(item) == 2:
                     line = '\t'.join(item)
-                    dev.write(line)
-                    dev.write('\n')
-                    count += 1
+                    if line.find("哈") == -1:
+                        dev.write(line)
+                        dev.write('\n')
+                        count += 1
     logging.info("dev data size:", count)
 
     logging.info("generating test data.... ")
@@ -58,9 +60,10 @@ def generate_data(to_file=os.path.join(root_path, 'data/generative/')):
             for item in json_file:
                 if len(item) == 2:
                     line = '\t'.join(item)
-                    test.write(line)
-                    test.write('\n')
-                    count += 1
+                    if line.find("哈") == -1:
+                        test.write(line)
+                        test.write('\n')
+                        count += 1
     logging.info("test data size:", count)
 
 
