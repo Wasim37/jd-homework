@@ -3,8 +3,8 @@
 '''
 @Author: lpx, jby
 @Date: 2020-07-13 11:07:48
-@LastEditTime: 2020-07-26 20:25:17
-@LastEditors: Please set LastEditors
+LastEditTime: 2020-10-20 14:46:44
+LastEditors: Please set LastEditors
 @Description: Helper functions or classes used for the model.
 @FilePath: /JD_project_2/model/utils.py
 @Copyright: 北京贪心科技有限公司版权所有。仅供教学目的使用。
@@ -269,7 +269,7 @@ def replace_oovs(in_tensor, vocab):
 
     Returns:
         Tensor: The tensor after replacement.
-    """    
+    """
     oov_token = torch.full(in_tensor.shape, vocab.UNK).long().to(config.DEVICE)
     out_tensor = torch.where(in_tensor > len(vocab) - 1, oov_token, in_tensor)
     return out_tensor
@@ -296,7 +296,6 @@ class ScheduledSampler():
             return False
 
 
-
 def config_info(config):
     """get some config information
 
@@ -306,7 +305,7 @@ def config_info(config):
         string: config information
     """
     info = 'model_name = {}, pointer = {}, coverage = {}, fine_tune = {}, scheduled_sampling = {}, weight_tying = {},' +\
-          'source = {}  '
-    return (info.format(config.model_name, config.pointer, config.coverage, config.fine_tune, config.scheduled_sampling,
-                      config.weight_tying, config.source))
-
+           'source = {}  '
+    return (info.format(config.model_name, config.pointer, config.coverage,
+                        config.fine_tune, config.scheduled_sampling,
+                        config.weight_tying, config.source))
