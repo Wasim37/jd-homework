@@ -179,7 +179,7 @@ pycurl==7.43.0.1
 PyDispatcher==2.0.5
 pyemd==0.5.1
 pyflakes==2.1.1
-Pygments==2.2.0
+Pygments==2.7.4
 PyHamcrest==2.0.2
 pylint==1.8.4
 pyltp==0.2.1
