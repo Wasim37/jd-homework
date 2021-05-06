@@ -60,7 +60,7 @@ fasttext==0.9.1
 filelock==3.0.4
 flake8==3.7.9
 Flask==1.0.2
-Flask-Cors==3.0.4
+Flask-Cors==3.0.9
 fsspec==0.7.2
 gast==0.2.2
 gensim==3.8.1
